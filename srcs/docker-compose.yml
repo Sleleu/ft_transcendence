@@ -1,0 +1,56 @@
+version: '3.9'
+
+networks:
+  ft_transcendence:
+    driver: bridge
+
+services:
+  # postgresql:
+  #   build: requirements/postgresql
+  #   # volumes:
+  #   #   - vol_postgresql:/var/lib/mysql
+  #   container_name: postgresql
+  #   restart: always
+  #   ports:
+  #     - "5432:5432"
+  #   networks:
+  #     - ft_transcendence
+  #   env_file: .env
+
+  # backend:
+  #   build: requirements/backend
+  #   # volumes:
+  #   #   - vol_node:/var/www/html
+  #   container_name: backend
+  #   restart: always
+  #   expose:
+  #     - "3000"
+  #   # depends_on:
+  #   #   - postgresql
+  #   networks:
+  #     - ft_transcendence
+  #   env_file: .env
+  nginx:
+    build: requirements/nginx
+    # volumes:
+    #   - vol_node:/var/www/html
+    container_name: nginx
+    # depends_on:
+    #   - node
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - ft_transcendence
+    env_file: .env
+
+  frontend:
+    build: requirements/frontend
+    container_name: frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    networks:
+      - ft_transcendence
+    env_file:
+      - .env
