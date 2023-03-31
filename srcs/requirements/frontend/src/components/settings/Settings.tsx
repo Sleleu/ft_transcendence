@@ -3,6 +3,7 @@ import './Settings.css'
 import '../../assets/css/Text.css'
 import settings_svg from '../../assets/img/settings.svg';
 import return_svg from '../../assets/img/return.svg';
+import frog_svg from '../../assets/img/frog.svg';
 
 function Home() {
     return (
@@ -26,6 +27,10 @@ function Home() {
 						<div className='profile'>
 							<div className='profile-header'>
 								<p className='text big bold purple-stroke'>Profile</p>
+							</div>
+							<div className='avatar'>
+								<img src={frog_svg} className='vector-neon'/>
+								<h3 className='text'>Avatar</h3>
 							</div>
 							<div className='profile-header'>
 								<p className='text big bold purple-stroke'>Confidentiality</p>
