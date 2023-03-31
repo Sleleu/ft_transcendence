@@ -1,0 +1,12 @@
+.Home
+{
+  background-image: url("../../img/background.gif");
+  position: absolute;
+  min-width: 1280px;
+  min-height: 832px;
+  height:100%;
+  width: 100%;
+  left: 0px;
+  top: 0px;
+  background-size: cover;
+}
