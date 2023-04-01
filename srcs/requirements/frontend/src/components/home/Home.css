@@ -12,7 +12,7 @@
   background-size: cover;
 }
 
-.containerRectangle
+.containerFullPage
 {
   /* rectangle */
   position: absolute;
@@ -23,7 +23,7 @@
   align-items: center; 
 }
 
-.rectangleLeftTopRight
+.containerRectangle
 {
   position: absolute;
   width: 73%;
@@ -31,20 +31,12 @@
   min-height: 656px;
   min-width: 1079px;
   box-sizing: border-box;
-
-  /* color */
-  /* border-width: 4px 4px 0px 4px;
-  border-style: solid;
-  border-color: #FFFFFF;*/
-  /* neon */
-  /*box-shadow: inset 0px 0px 10px 4px #f975ed, 0px 0px 10px 4px #f975ed;
-  clip-path: inset(-5px -5px 0px -5px);
-  clip-path: inset(-5px -5px 0px -5px); */
 }
 .rectangleRight, .rectangleTop, .rectangleBottomLeft, .rectangleBottomRight, .rectangleLeft
 {
   position: absolute;
   background-color: #FFFFFF;
+  /* neon */
   box-shadow: inset 0px 0px 20px 4px #f975ed, 0px 0px 20px 4px #f975ed;
 }
 
@@ -52,13 +44,14 @@
 {
   bottom:100%;
   height: 4px;
-  width: 100%;
+  width: 100.3%;
 }
 
 .rectangleRight
 {
   height: 100%;
   width: 4px;
+  left: 100%;
 }
 
 .rectangleLeft
@@ -81,4 +74,22 @@
   left: 60%;
   height: 4px;
   width: 40%;
+}
+
+.containerHeader
+{
+  min-height: 132px;
+  width: 100%;
+  height: 20%;
+}
+
+.containerCenter
+{
+  min-height: 507px;
+  height: 80%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 50px;
 }
