@@ -1,0 +1,79 @@
+.containerName
+{
+    position: relative;
+    /* background-color: blue; */
+    min-height: 110px;
+    min-width: 285px;
+    height: 80%;
+    width: 25.5%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.brushBot, .brushTop
+{
+    position:absolute;
+    min-height: 46px;
+    min-width: 280px;
+}
+
+.brushTop
+{
+    /* background-image: url(../../img/brush1.png); */
+    top: 0px;
+}
+
+.brushBot
+{
+    /* background-image: url(../../img/brush2.png); */
+    top:80%;
+}
+
+.containerRoseName
+{
+    min-width: 275.28px;
+    min-height: 100px;
+    background: linear-gradient(90.94deg, rgba(213, 61, 156, 0.72) -2.85%, #71DFFF 113.66%);
+    border-radius: 25px; 
+    height: 80%;
+    width: 90%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding:0px;
+}
+
+.containerTextName
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 3%;
+
+    padding: 0px;
+    min-height: 43px;
+    min-width: 210px;
+    width: 80%;
+    height: 42%;
+}
+
+.nameText
+{
+    font-weight: 700;
+    color:white;
+    display:flex;
+    align-items: center;
+    text-align: center;
+
+    /* font-size: 35px; */
+    font-size:4vh;
+    text-shadow:
+    0 0 10px #fff,
+    0 0 42px white;
+}

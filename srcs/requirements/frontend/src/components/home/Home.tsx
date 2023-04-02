@@ -33,14 +33,19 @@ function Home() {
     return (
         <div className="baground">
             <div className='containerFullPage'>
-                <div className='containerRectangle'>
-                    <div className='rectangleLeft'></div>
-                    <div className='rectangleRight'></div>
-                    <div className='rectangleTop'></div>
-                    <div className='rectangleBottomLeft'></div>
-                    <div className='rectangleBottomRight'></div>
+                <div className='containerRectangle' >
+                    <div className='rectangleLeft' />
+                    <div className='rectangleRight' />
+                    <div className='rectangleTop' />
+                    <div className='rectangleBottomLeft' />
+                    <div className='rectangleBottomRight' />
                     <div className='containerHeader'>
-                        {user.map((user) => <Name name={user.name} />)} 
+                        {user.map((user) => 
+                        <Name 
+                        name={user.name} 
+                        elo={user.elo}
+                        rank={user.rank}
+                        />)} 
                     </div>
                     <div className='containerCenter'>
                         
