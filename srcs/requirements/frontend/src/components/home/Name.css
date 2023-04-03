@@ -6,6 +6,7 @@
     min-width: 285px;
     height: 80%;
     width: 25.5%;
+    width: 28vh;
 
     display: flex;
     flex-direction: column;
@@ -22,13 +23,13 @@
 
 .brushTop
 {
-    /* background-image: url(../../img/brush1.png); */
+    background-image: url(../../img/brush1.png);
     top: 0px;
 }
 
 .brushBot
 {
-    /* background-image: url(../../img/brush2.png); */
+    background-image: url(../../img/brush2.png);
     top:80%;
 }
 
@@ -76,4 +77,5 @@
     text-shadow:
     0 0 10px #fff,
     0 0 42px white;
+    font-size:calc(32px + 1.5vh);
 }
