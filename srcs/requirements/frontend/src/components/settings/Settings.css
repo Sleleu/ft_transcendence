@@ -15,7 +15,6 @@
 
 .settings
 {
-	/* Auto layout */
 
 	display: flex;
 	flex-direction: column;
@@ -32,8 +31,6 @@
 	background: rgba(0, 0, 0, 0.75);
 	border-radius: 15px;
 
-	/* Inside auto layout */
-
 	flex: none;
 	order: 0;
 	flex-grow: 0;
@@ -42,32 +39,17 @@
 .settings .header-bar
 {
 	box-sizing: border-box;
-
-	/* Auto layout */
-	
 	display: flex;
-
 	flex-direction: row;
 	align-items: flex-start;
-
 	gap: 5px;
-	
 	width: 669px;
 	height: 70px;
-	
 	border-bottom: 1px solid #FFFFFF;
-
-	/* Inside auto layout */
-	
-	flex: none;
-	order: 0;
-	flex-grow: 0;
 }
 
-.settings .header-bar .display-settings
+.display-settings
 {
-	/* Auto layout */
-
 	display: flex;
 	flex-direction: row;
 	align-items: center;
@@ -76,15 +58,7 @@
 
 	width: 549px;
 	height: 60px;
-
-	border-radius: 15px;
-
-	/* Inside auto layout */
-
-	flex: none;
-	order: 0;
-	align-self: stretch;
-	flex-grow: 1;	
+	flex-grow: 1;
 }
 
 .settings .header-bar .display-settings .symbol
@@ -229,8 +203,9 @@
 	flex-grow: 0;
 }
 
-.settings-container .display-settings .profile
+.profile
 {
+	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
@@ -242,10 +217,11 @@
 	
 	flex: none;
 	order: 0;
+	align-self: stretch;
 	flex-grow: 0;
 }
 
-.settings-container .display-settings .profile .profile-header
+.profile-header
 {
 	box-sizing: border-box;
 
