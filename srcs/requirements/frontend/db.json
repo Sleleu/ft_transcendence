@@ -1,9 +1,10 @@
 {
-  "posts": [
+  "user": [
     {
       "id": 1,
-      "title": "json-server",
-      "author": "typicode"
+      "name": "gottie",
+      "rank": "gold",
+      "elo": 2561
     }
   ],
   "comments": [
