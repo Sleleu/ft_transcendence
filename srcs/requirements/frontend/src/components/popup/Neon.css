@@ -1,0 +1,33 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100;800&display=swap");
+
+.neonText { 
+    color: transparent;
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+}
+    .Solid {
+
+            background: linear-gradient(to bottom, var(--topColor) 40%, var(--bottomColor));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px var(--topColor);
+            margin-top: -61px;
+        }
+    .Shadow
+    {
+        -webkit-text-stroke: 10px #9a08b1;
+        margin-top: -60px;
+    }
+    .Stroke {
+        -webkit-text-stroke: 1px #ffffff;
+        margin-top: -61px;
+    }  
+    .Blur
+    {
+        background: linear-gradient(to bottom, var(--topColor) 40%, var(--bottomColor));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter:blur(var(--blur));
+    }
