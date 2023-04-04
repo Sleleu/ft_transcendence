@@ -1,132 +1,58 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import HistoryEntry from './HistoryEntry'
-import UserPic from '../UserPic'
-import '../Popup.css'
-import './History.css'
 import { historyData } from './typeHistory'
+import { CSSProperties } from 'react'
 import Neon from '../Neon'
 
+
 const History:React.FC = () => {
-  
-  // /* MUST BE FETCHED IN DATABASE*/
-  const [entryData, setEntryData] = useState<historyData[]>([
-    {
-      id : 1,
-      victory:'DEFEAT',
-      mode: 'King',
-      date: '06/05/2024',
-      userPoints: 1,
-      advPoints: 3,
-      adversary: 'qBoRnE67',
-      elo: -156
-    },
-    {
-      id : 2,
-      victory:'VICTORY',
-      mode: 'Classic',
-      date: '29/03/2023',
-      userPoints: 3,
-      advPoints: 0,
-      adversary: 'xXGottie69',
-      elo: 123
-    },
-    {
-      id : 3,
-      victory:'VICTORY',
-      mode: 'Classic',
-      date: '29/03/2023',
-      userPoints: 3,
-      advPoints: 0,
-      adversary: 'xXGottie69',
-      elo: 123
-    },
-    {
-      id : 4,
-      victory:'VICTORY',
-      mode: 'Classic',
-      date: '29/03/2023',
-      userPoints: 3,
-      advPoints: 0,
-      adversary: 'xXGottie69',
-      elo: 123
-    },
-    {
-      id : 5,
-      victory:'VICTORY',
-      mode: 'Classic',
-      date: '29/03/2023',
-      userPoints: 3,
-      advPoints: 0,
-      adversary: 'xXGottie69',
-      elo: 123
-    },
-    {
-      id : 6,
-      victory:'VICTORY',
-      mode: 'Classic',
-      date: '29/03/2023',
-      userPoints: 3,
-      advPoints: 0,
-      adversary: 'xXGottie69',
-      elo: 123
-    },
-    {
-      id : 7,
-      victory:'VICTORY',
-      mode: 'Classic',
-      date: '29/03/2023',
-      userPoints: 3,
-      advPoints: 0,
-      adversary: 'xXGottie69',
-      elo: 123
-    },
-    {
-      id : 8,
-      victory:'VICTORY',
-      mode: 'Classic',
-      date: '29/03/2023',
-      userPoints: 3,
-      advPoints: 0,
-      adversary: 'xXGottie69',
-      elo: 123
-    },
-    {
-      id : 9,
-      victory:'VICTORY',
-      mode: 'Classic',
-      date: '29/03/2023',
-      userPoints: 3,
-      advPoints: 0,
-      adversary: 'xXGottie69',
-      elo: 123
-    },
-    {
-      id : 10,
-      victory:'VICTORY',
-      mode: 'Classic',
-      date: '29/03/2023',
-      userPoints: 3,
-      advPoints: 0,
-      adversary: 'xXGottie69',
-      elo: 123
-    },
-  ]);
+
+  const Container: CSSProperties = {
+    
+    border: '4px solid #40DEFF',
+    boxShadow: '0 0 10px #40DEFF, 0 0 60px #40DEFF, inset 0 0 40px #40DEFF',
+    position: 'relative',
+    flexGrow: 1,
+    height: '520px',
+    marginBottom: '85px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+}
+
+  const Entries : CSSProperties = {    
+    marginTop: '5px',
+    flexGrow: '1',
+    
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    
+    overflowY: 'scroll'
+  }
+
+  const [entryData, setEntryData] = useState<historyData[]>([]);
+
+  const fetchHistory = async () => {
+    const data = await fetch("http://localhost:5000/history" ,{ method:"GET" })
+    const jsonData = await data.json();
+    return jsonData;
+  }
+
+  useEffect(() => {
+    const getHistory = async () => {
+        const HistoryFromServer = await fetchHistory()
+        setEntryData(HistoryFromServer)
+    }
+    getHistory();
+  }, [])
 
   return (
-    <div className='Popup'>
-      <div className='Head'>
-        <span className='userName'>
-          <Neon text='SleleDu93' color='#bb7dd9' stroke={true}/>
-          {/* SleleDu93 */}
-        </span>
-        <div className='headRight'>
-          <UserPic />
+    <div style={Container}>
+      <div style={Entries}>
+        {entryData.map((entry) => (<HistoryEntry entry={entry} />))}
         </div>
       </div>
-      <div className='Mid'>
-        {entryData.map((entry) => (<HistoryEntry entry={entry} />))}
-      </div>
-    </div>      
   )
 }
 
