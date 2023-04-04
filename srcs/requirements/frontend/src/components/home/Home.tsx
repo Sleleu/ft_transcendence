@@ -1,8 +1,9 @@
 import React from 'react';
 import './Home.css'
 import { useState, useEffect } from 'react';
-import Name from './Name';
+import Name from './header/NameLeft/src/Name';
 import { AgnosticNonIndexRouteObject } from '@remix-run/router';
+import NavBar from './header/NavBar/src/NavBar';
 
 function Home() {
 
@@ -14,6 +15,8 @@ function Home() {
     }
 
     const [user, setUser] = useState<User[]>([])
+    const [activeComponent, setActiveComponent] = useState<string>('play')
+    const [oldComponent, setOldComponent] = useState<string>('play')
 
     const api = async () => {
         const data = await fetch("http://localhost:5000/user" ,{ method:"GET" })
@@ -26,9 +29,13 @@ function Home() {
             const userFromServer = await api()
             setUser(userFromServer)
         }
-        
     getUser()
     }, [])
+
+    const changeComponent = (component:string) => {
+        setOldComponent(activeComponent)
+        setActiveComponent(component)
+    }
 
     return (
         <div className="baground">
@@ -46,9 +53,14 @@ function Home() {
                         elo={user.elo}
                         rank={user.rank}
                         />)} 
+                        <NavBar 
+                        changeComponent={changeComponent}
+                        oldComponent={oldComponent}
+                        />
                     </div>
                     <div className='containerCenter'>
-                        
+                        {/* {activeComponent === "play" && <Play />} */}
+                        {/* {activeComponent === "menue" && <Menue />} */}
                     </div>
                 </div>
             </div>

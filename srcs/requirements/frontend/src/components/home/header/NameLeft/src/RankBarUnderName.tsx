@@ -1,5 +1,5 @@
 import React from 'react'
-import './RankBarUnderName.css'
+import '../css/RankBarUnderName.css'
 
 type RankProps = {
     elo: number;
