@@ -1,11 +1,6 @@
 .baground
 {
-<<<<<<< HEAD
   background-image: url("../../assets/img/background.gif");
-=======
-  /* baground */
-  background-image: url("../../img/background.gif");
->>>>>>> origin/eliot
   position: absolute;
   min-width: 1280px;
   min-height: 832px;
