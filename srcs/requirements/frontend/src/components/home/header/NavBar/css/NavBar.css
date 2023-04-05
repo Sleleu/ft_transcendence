@@ -7,6 +7,7 @@
     width: 40%;
     background-color: rgba(0, 0, 0, 0.8);
     border: 3px solid rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
 
     display: flex;
     flex-direction: row;
@@ -21,13 +22,14 @@
     height: 3.5vh;
     width: 3.5vh;
     background-size: cover;
-    filter: drop-shadow(0px 0px 20px white);
+    filter: drop-shadow(0px 0px 5px white);
     transition: filter 0.3s ease;
+    cursor: pointer;
 }
 
 .returnLogo:hover, .menueLogo:hover, .logoutLogo:hover
 {
-    filter: drop-shadow(0px 0px 6px white);
+    filter: drop-shadow(0px 0px 15px white);
 }
 
 .returnLogo
@@ -56,12 +58,12 @@
     margin-right: 30px;
     height: 7vh;
     width: 7vh;
-    transition: filter 0.3s ease;
-    filter: drop-shadow(0px 0px 10px white);
+    transition: drop-shadow 0.3s ease;
+    filter: drop-shadow(0px 0px 5px white);
+    cursor: pointer;
 }
 
 .avatar:hover
 {
-
-    filter: drop-shadow(0px 0px 5px white);
+    filter: drop-shadow(0px 0px 15px white);
 }

@@ -61,7 +61,7 @@ function Home() {
                         />
                     </div>
                     <div className='containerCenter'>
-                        {activeComponent === "play" && <Play />}
+                        {activeComponent === "play" && <Play changeComponent={changeComponent}/>}
                         {/* {activeComponent === "menue" && <Menue />} */}
                     </div>
                 </div>
