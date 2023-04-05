@@ -49,14 +49,15 @@ function Home() {
                     <div className='rectangleBottomRight' />
                     <div className='containerHeader'>
                         {user.map((user) => 
-                        <Name 
-                        name={user.name} 
-                        elo={user.elo}
-                        rank={user.rank}
-                        />)} 
+                            <Name 
+                                name={user.name} 
+                                elo={user.elo}
+                                rank={user.rank}
+                            />
+                        )} 
                         <NavBar 
-                        changeComponent={changeComponent}
-                        oldComponent={oldComponent}
+                            changeComponent={changeComponent}
+                            oldComponent={oldComponent}
                         />
                     </div>
                     <div className='containerCenter'>

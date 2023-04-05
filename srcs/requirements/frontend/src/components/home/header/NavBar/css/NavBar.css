@@ -14,30 +14,37 @@
     align-items: center;
 }
 
-
-.returnLogo
+.returnLogo, .menueLogo, .logoutLogo
 {
     min-height: 40px;
     min-width: 40px;
-    background-image: url(../../../../../assets/img/navBar/returnLogo.png);
+    height: 3.5vh;
+    width: 3.5vh;
     background-size: cover;
+    filter: drop-shadow(0px 0px 20px white);
+    transition: filter 0.3s ease;
+}
+
+.returnLogo:hover, .menueLogo:hover, .logoutLogo:hover
+{
+    filter: drop-shadow(0px 0px 6px white);
+}
+
+.returnLogo
+{
+    background-image: url(../../../../../assets/img/navBar/returnLogo.png);
     margin-left: 30px;
+
 }
 
 .menueLogo
 {
-    min-height: 40px;
-    min-width: 40px;
     background-image: url(../../../../../assets/img/navBar/menu.png);
-    background-size: cover;
 }
 
 .logoutLogo
 {
-    min-height: 40px;
-    min-width: 40px;
     background-image: url(../../../../../assets/img/navBar/logOut.png);
-    background-size: cover;
 }
 
 .avatar
@@ -47,4 +54,14 @@
     background-image: url(../../../../../assets/img/navBar/avatar.png);
     background-size: cover;
     margin-right: 30px;
+    height: 7vh;
+    width: 7vh;
+    transition: filter 0.3s ease;
+    filter: drop-shadow(0px 0px 10px white);
+}
+
+.avatar:hover
+{
+
+    filter: drop-shadow(0px 0px 5px white);
 }
