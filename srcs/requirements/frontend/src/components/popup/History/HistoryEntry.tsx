@@ -2,6 +2,7 @@ import React from 'react'
 import '../Font.css'
 import { historyData } from './typeHistory'
 import { CSSProperties, Component } from 'react'
+import Neon from '../Neon'
 
 interface Props {
     entry: historyData;
@@ -21,27 +22,29 @@ const HistoryEntry:React.FC<Props> = ({entry}) => {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        fontFamily: 'prompt',
+        fontFamily: 'montserrat',
         fontWeight : '800',
         letterSpacing : '5px',
         color: '#fff',
     }
         const histo1: CSSProperties = {
-            flexBasis: '250px',
+            flexBasis: '300px',
             margin: '2px',
             display: 'flex',
             flexDirection: 'column',
+            paddingLeft: '8px',
         }
             const victory: CSSProperties = {
                 fontSize: '40px',
                 letterSpacing : '10px',
                 textAlign: 'left',
                 padding: '5px',
-                background: win ? 'linear-gradient(to bottom, #63E9FF 20%, #00FBB0)' :
-                'linear-gradient(to bottom, red, #9A08B1 60%)',
+                paddingTop: '10px',
+                paddingLeft: '14px',
+                background: win ? 'linear-gradient(to bottom, #63E9FF 20%, #00FBB0 60%)' :
+                'linear-gradient(to bottom, #9A08B1 , #FC3030 90%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                textShadow: win ? "0 0 30px #63E9FF, 0 0 100px #63E9FF, 0 0 150px #63E9FF" : "0 0 30px red, 0 0 100px red, 0 0 150px red"
             }
             const modeDate: CSSProperties = {
                 fontSize: '15px',
@@ -49,8 +52,10 @@ const HistoryEntry:React.FC<Props> = ({entry}) => {
                 textAlign:'left',
                 padding:'10px',
                 paddingTop: '0px',
+                paddingRight: '40px',
                 display:'flex',
-                justifyContent: 'space-between',
+                justifyContent: 'space-around',
+                letterSpacing : '1px',
             }
 
         const histo2: CSSProperties = {
@@ -59,8 +64,11 @@ const HistoryEntry:React.FC<Props> = ({entry}) => {
             fontSize:' 40px',
             textAlign: 'center',
             paddingTop:' 15px',
-            color: win ? '#63E9FF' : 'red',
-            textShadow: win ? "0 0 30px #63E9FF, 0 0 100px #63E9FF, 0 0 150px #63E9FF" : "0 0 30px red, 0 0 100px red, 0 0 150px red",
+            background: win ? 'linear-gradient(to bottom, #63E9FF 20%, #00FBB0 60%)' :
+            'linear-gradient(to bottom, #9A08B1 , #FC3030 90%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            textShadow: win ? "0 0 30px #63E9FF, 0 0 100px #63E9FF, 0 0 150px #63E9FF" : "0 0 30px #FC3030, 0 0 100px #FC3030, 0 0 150px #FC3030",
         }
 
         const histo3: CSSProperties = {
@@ -69,6 +77,11 @@ const HistoryEntry:React.FC<Props> = ({entry}) => {
             fontSize: '24px',
             textAlign: 'right',
             paddingTop: '30px',
+            background: win ? 'linear-gradient(to bottom, #63E9FF 20%, #00FBB0 60%)' :
+            'linear-gradient(to bottom, #9A08B1 , #FC3030 90%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            textShadow: win ? "0 0 30px #63E9FF, 0 0 100px #63E9FF, 0 0 150px #63E9FF" : "0 0 30px #FC3030, 0 0 100px #FC3030, 0 0 150px #FC3030"
         }
 
         const histo4: CSSProperties = {
@@ -84,10 +97,10 @@ const HistoryEntry:React.FC<Props> = ({entry}) => {
                 textAlign: 'right',
                 paddingTop: '25px',
                 background: win ? 'linear-gradient(to bottom, #63E9FF 70%, #00FBB0)' :
-                'linear-gradient(to bottom, red, #9A08B1 90%)',
+                'linear-gradient(to bottom, #9A08B1 , #FC3030 200%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                textShadow: win ? "0 0 30px #63E9FF, 0 0 100px #63E9FF, 0 0 150px #63E9FF" : "0 0 30px red, 0 0 100px red, 0 0 150px red",
+                textShadow: win ? "0 0 30px #63E9FF, 0 0 100px #63E9FF, 0 0 150px #63E9FF" : "0 0 30px #FC3030, 0 0 100px #FC3030, 0 0 150px #FC3030",
             }
             const elo: CSSProperties = {
                 textAlign:'right',
@@ -95,7 +108,7 @@ const HistoryEntry:React.FC<Props> = ({entry}) => {
                 justifyContent: 'flex-end',            
                 paddingTop: '5px',
                 fontWeight : '600',
-
+                color : win ? 'lightgreen' : 'coral',
             }
                 const nbr: CSSProperties = {
                     flexBasis: '40px',
@@ -107,7 +120,7 @@ const HistoryEntry:React.FC<Props> = ({entry}) => {
     return (
     <div style={history}>
         <div style={histo1}>
-            <span style={victory}>{entry.victory}</span>
+            <span style={victory}> {entry.victory} </span>
             <div style={modeDate}>
                 <span> Mode {entry.mode} </span>
                 <span> {entry.date} </span>

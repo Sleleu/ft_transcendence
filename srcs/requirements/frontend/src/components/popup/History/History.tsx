@@ -49,6 +49,7 @@ const History:React.FC = () => {
 
   return (
     <div style={Container}>
+        {/* <Neon text='TestNeoon' color='green' /> */}
       <div style={Entries}>
         {entryData.map((entry) => (<HistoryEntry entry={entry} />))}
         </div>

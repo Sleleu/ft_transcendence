@@ -12,12 +12,12 @@
             background: linear-gradient(to bottom, var(--topColor) 40%, var(--bottomColor));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px var(--topColor);
+            /* text-shadow: 0 0 30px var(--topColor); */
             margin-top: -61px;
         }
     .Shadow
     {
-        -webkit-text-stroke: 10px #9a08b1;
+        -webkit-text-stroke: 10px lightgreen;
         margin-top: -60px;
     }
     .Stroke {
