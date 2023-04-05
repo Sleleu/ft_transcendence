@@ -16,6 +16,19 @@
 	color: #FFFFFF;
 }
 
+.medium
+{
+	font-family: 'Montserrat', sans-serif;
+	font-style: normal;
+
+	font-size: 24px;
+	line-height: 39px;
+
+	flex: none;
+	order: 1;
+	flex-grow: 0;
+}
+
 .big
 {
 	font-family: 'Montserrat', sans-serif;
@@ -33,7 +46,6 @@
 {
 	font-weight: bold;
 }
-
 
 .neonText {
 	color: #fff;

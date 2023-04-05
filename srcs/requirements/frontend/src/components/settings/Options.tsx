@@ -11,6 +11,8 @@ const SettingsUsername = () => {
 			<p className='text bold'>Your current username :</p>
 			
 			<p className='text bold'>If you want to change, please enter a new username :</p>
+
+			<button className="btn-little medium text bold cyan-stroke">Change Username</button>
 		</>
 	);
 }
@@ -19,7 +21,7 @@ const SettingsAvatar = () => {
 	return (
 		<>
 			<p className='text bold'>Current username :</p>
-			<button className='text bold'>Change Avatar</button>
+			<button className='btn-little text bold medium cyan-stroke'>Change Avatar</button>
 		</>
 	);
 }
@@ -63,7 +65,7 @@ const SettingsPassword = () => {
 
 	return (
 		<Cont alignItems='center' padding='10px' margin='10px' gap='10px' width='380px' height='90%'>
-			<p className='text bold cyan-stroke'>Change password</p>
+			<p className='text bold cyan-stroke'>Here you can change your password : </p>
 			<Cont gap='15px'>
 			<div className='password'>
 				<p className='text'>Current password</p>
@@ -84,7 +86,7 @@ const SettingsPassword = () => {
 				</button>
 			</div>
 			</Cont>
-			<button className='btn-little'><p className='text bold cyan-stroke'>CONFIRM</p></button>
+			<button className='btn-little medium text bold cyan-stroke'>Change Password</button>
 		</Cont>
 	);
 }
