@@ -5,8 +5,10 @@ interface Props {
 	minWidth?: string;
 	height?: string;
 	minHeight?: string;
+	alignItems?: string;
 	padding?: string;
 	margin?: string;
+	gap?: string;
 	backgroundColor?: string;
 	borderRadius?: string;
 	borderBottom?: string;
@@ -17,7 +19,10 @@ interface Props {
 
 class Cont extends Component<Props> {
 	render() {
-		const {backgroundColor, padding, margin, direction, width, minWidth, height, borderBottom, borderRight, minHeight, borderRadius, children} = this.props;
+		const {backgroundColor, padding, margin, direction,
+			   width, minWidth, height, gap,
+			   alignItems, borderBottom, borderRight, minHeight,
+			   borderRadius, children} = this.props;
 
 		const ContStyle: CSSProperties = {
 			backgroundColor: backgroundColor ? backgroundColor : 'none',
@@ -30,9 +35,10 @@ class Cont extends Component<Props> {
 			borderRight: borderRight ? borderRight : 'none',
 			display: "flex",
 			flexDirection: direction ? direction : "column",
-			alignItems: "flex-start",
+			alignItems: alignItems ? alignItems : "flex-start",
 			minWidth: minWidth ? minWidth : 'none',
-			minHeight: minHeight ? minHeight :'none'
+			minHeight: minHeight ? minHeight :'none',
+			gap: gap ? gap : 'none'
 		}
 		return (
 			<div style={ContStyle}> {children}</div>

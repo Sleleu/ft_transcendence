@@ -4,6 +4,7 @@ import './Settings.css'
 import '../../assets/css/Text.css'
 import { useNavigate } from 'react-router-dom';
 
+/* Side bar svg */
 import settings_svg from '../../assets/img/settings.svg';
 import return_svg from '../../assets/img/return.svg';
 import frog_svg from '../../assets/img/frog.svg';
@@ -11,6 +12,7 @@ import username_svg from '../../assets/img/username.svg';
 import block_svg from '../../assets/img/block.svg';
 import password_svg from '../../assets/img/password.svg';
 import lock_svg from '../../assets/img/lock.svg';
+
 import {Cont, HeaderBar} from '../container/container'
 import {SettingsUsername, SettingsAvatar, SettingsBlock, SettingsPassword, SettingsLock} from './Options'
 
@@ -62,7 +64,7 @@ const SettingsOptions = ({setSelectedOption, setShowOptions}: SettingsOptionsPro
 		<ButtonOption image={frog_svg} text='Avatar' onClick={() => handleOptionClick("avatar")}/>
 		<ButtonOption image={username_svg} text='Username' onClick={() => handleOptionClick("username")}/>
 		<ButtonOption image={block_svg} text='Blocked users' onClick={() => handleOptionClick("block")}/>
-		<Cont  padding='0px' width='95%' height='40px' borderBottom='1px solid white'>
+		<Cont  padding='0px' width='95%' height='38px' borderBottom='1px solid white'>
 			<Option text='Confidentiality'/>
 		</Cont>
 		<ButtonOption image={password_svg} text='Change password' onClick={() => handleOptionClick("password")}/>
@@ -73,7 +75,7 @@ const SettingsOptions = ({setSelectedOption, setShowOptions}: SettingsOptionsPro
 
 const Option = ({text}: Props) => {
 	return (
-		<div style={{ marginTop: '-28px' }}>
+		<div style={{ marginTop: '-28px', zIndex: '0' }}>
     		<p className='text big bold purple-stroke'>{text}</p>
 		</div>
 	);
@@ -108,6 +110,7 @@ const ButtonOption = ({ image, text, onClick}: Props) => {
         gap: '10px',
         width: '175px',
         height: '42px',
+		zIndex: '1',
 		backgroundColor: buttonColor
       }}
 	  onMouseEnter={handleMouseEnter}
@@ -131,11 +134,11 @@ function Settings() {
 				<HeaderBar borderBottom='1px solid #ffffff'>
 					<SettingsTitle /> <ReturnButton />
 				</HeaderBar>
-				<Cont backgroundColor='none' width='100%' direction='row'>
-					<Cont backgroundColor='none' borderRight='1px solid #ffffff' width='220px' height='94%' borderRadius='15px' >
+				<Cont width='100%' direction='row'>
+					<Cont borderRight='1px solid #ffffff' width='220px' height='100%' borderRadius='15px' >
 						<SettingsOptions setSelectedOption={setSelectedOption} setShowOptions={setShowOptions} />
 					</Cont>
-					<Cont backgroundColor='none' minWidth='270px' minHeight='340px' width='100%' height='98%'>
+					<Cont minWidth='270px' minHeight='340px' width='100%' height='98%'>
 						{selectedOption === "username" && showOptions && <SettingsUsername />}
 						{selectedOption === "avatar" && showOptions && <SettingsAvatar />}
 						{selectedOption === "block" && showOptions && <SettingsBlock />}
