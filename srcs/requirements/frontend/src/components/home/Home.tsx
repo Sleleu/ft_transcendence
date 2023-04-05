@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Name from './header/NameLeft/src/Name';
 import { AgnosticNonIndexRouteObject } from '@remix-run/router';
 import NavBar from './header/NavBar/src/NavBar';
+import Play from './play/src/Play';
 
 function Home() {
 
@@ -48,18 +49,19 @@ function Home() {
                     <div className='rectangleBottomRight' />
                     <div className='containerHeader'>
                         {user.map((user) => 
-                        <Name 
-                        name={user.name} 
-                        elo={user.elo}
-                        rank={user.rank}
-                        />)} 
+                            <Name 
+                                name={user.name} 
+                                elo={user.elo}
+                                rank={user.rank}
+                            />
+                        )} 
                         <NavBar 
-                        changeComponent={changeComponent}
-                        oldComponent={oldComponent}
+                            changeComponent={changeComponent}
+                            oldComponent={oldComponent}
                         />
                     </div>
                     <div className='containerCenter'>
-                        {/* {activeComponent === "play" && <Play />} */}
+                        {activeComponent === "play" && <Play />}
                         {/* {activeComponent === "menue" && <Menue />} */}
                     </div>
                 </div>
