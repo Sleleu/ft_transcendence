@@ -12,11 +12,18 @@ import block_svg from '../../assets/img/block.svg';
 import password_svg from '../../assets/img/password.svg';
 import lock_svg from '../../assets/img/lock.svg';
 import {Cont, HeaderBar} from '../container/container'
+import {SettingsUsername, SettingsAvatar, SettingsBlock, SettingsPassword, SettingsLock} from './Options'
 
 type Props = {
 	image?: string;
-	text: string;
+	text?: string;
+	onClick?: () => void;
 }
+
+type SettingsOptionsProps = {
+	setSelectedOption: (option: string) => void;
+	setShowOptions: (show: boolean) => void;
+  };
 
 const SettingsTitle = () => {
 	return (
@@ -40,21 +47,26 @@ const ReturnButton = () => {
 	);
 }
 
-const SettingsOptions = () => {
-	const navigate = useNavigate();
+const SettingsOptions = ({setSelectedOption, setShowOptions}: SettingsOptionsProps) => {
+	
+	const handleOptionClick = (option: string) => {
+		setSelectedOption(option);
+		setShowOptions(true);
+	  };
+
 	return (
 		<React.Fragment>
 		<Cont padding='0px' width='45%' height='39px' borderBottom='1px solid white'>
 			<Option text='Profile'/>
 		</Cont>
-		<ButtonOption image={frog_svg} text='Avatar'/>
-		<ButtonOption image={username_svg} text='Username'/>
-		<ButtonOption image={block_svg} text='Blocked users'/>
+		<ButtonOption image={frog_svg} text='Avatar' onClick={() => handleOptionClick("avatar")}/>
+		<ButtonOption image={username_svg} text='Username' onClick={() => handleOptionClick("username")}/>
+		<ButtonOption image={block_svg} text='Blocked users' onClick={() => handleOptionClick("block")}/>
 		<Cont  padding='0px' width='95%' height='40px' borderBottom='1px solid white'>
 			<Option text='Confidentiality'/>
 		</Cont>
-		<ButtonOption image={password_svg} text='Change password'/>
-		<ButtonOption image={lock_svg} text='2FA authentication'/>
+		<ButtonOption image={password_svg} text='Change password' onClick={() => handleOptionClick("password")}/>
+		<ButtonOption image={lock_svg} text='2FA authentication'onClick={() => handleOptionClick("lock")}/>
 		</React.Fragment>
 	);
 }
@@ -67,12 +79,12 @@ const Option = ({text}: Props) => {
 	);
 }
 
-const ButtonOption = ({ image, text }: Props) => {
-  const [showOptions, setShowOptions] = useState(false);
+const ButtonOption = ({ image, text, onClick}: Props) => {
   const [hovered, setHovered] = React.useState(false);
 
   const handleTextClick = () => {
-		setShowOptions(true);
+		if (onClick)
+			onClick();
   };
 
   const handleMouseEnter = () => {
@@ -92,28 +104,28 @@ const ButtonOption = ({ image, text }: Props) => {
 		justifyContent: 'left',
         display: 'flex',
         flexDirection: 'row',
-        alignItems: 'center',
         padding: '5px',
         gap: '10px',
         width: '175px',
         height: '42px',
-        alignSelf: 'auto',
 		backgroundColor: buttonColor
       }}
 	  onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-	  onClick={handleTextClick}
+	  onClick={handleTextClick} // call le onclick de props
     >
       <img src={image} />
       <p className='text bold'>{text}</p>
-      {showOptions && <div className='text'>Options</div>}
     </button>
   );
 };
 
-
 function Settings() {
-    return (
+
+	const [selectedOption, setSelectedOption] = useState(''); // stock l'option selectionnee
+	const [showOptions, setShowOptions] = useState(false);
+
+	return (
         <div className="Home">
 			<Cont width='50%' height='30%' direction='column' borderRadius='15px' backgroundColor='rgba(0, 0, 0, 0.75)' minWidth='679px' minHeight='425px'>
 				<HeaderBar borderBottom='1px solid #ffffff'>
@@ -121,10 +133,14 @@ function Settings() {
 				</HeaderBar>
 				<Cont backgroundColor='none' width='100%' direction='row'>
 					<Cont backgroundColor='none' borderRight='1px solid #ffffff' width='220px' height='94%' borderRadius='15px' >
-						<SettingsOptions/>
+						<SettingsOptions setSelectedOption={setSelectedOption} setShowOptions={setShowOptions} />
 					</Cont>
 					<Cont backgroundColor='none' minWidth='270px' minHeight='340px' width='100%' height='98%'>
-
+						{selectedOption === "username" && showOptions && <SettingsUsername />}
+						{selectedOption === "avatar" && showOptions && <SettingsAvatar />}
+						{selectedOption === "block" && showOptions && <SettingsBlock />}
+						{selectedOption === "password" && showOptions && <SettingsPassword />}
+						{selectedOption === "lock" && showOptions && <SettingsLock />}
 					</Cont>
 				</Cont>
 			</Cont>

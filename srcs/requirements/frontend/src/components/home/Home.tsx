@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Name from './header/NameLeft/src/Name';
 import { AgnosticNonIndexRouteObject } from '@remix-run/router';
 import NavBar from './header/NavBar/src/NavBar';
+import Settings from '../settings/Settings'
 
 function Home() {
 
@@ -15,7 +16,7 @@ function Home() {
     }
 
     const [user, setUser] = useState<User[]>([])
-    const [activeComponent, setActiveComponent] = useState<string>('play')
+    const [activeComponent, setActiveComponent] = useState<string>('settings')
     const [oldComponent, setOldComponent] = useState<string>('play')
 
     const api = async () => {
@@ -59,7 +60,7 @@ function Home() {
                         />
                     </div>
                     <div className='containerCenter'>
-                        {/* {activeComponent === "play" && <Play />} */}
+                        {activeComponent === "settings" && <Settings />}
                         {/* {activeComponent === "menue" && <Menue />} */}
                     </div>
                 </div>
