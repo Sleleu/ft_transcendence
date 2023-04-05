@@ -44,7 +44,7 @@ const ReturnButton = () => {
 	const navigate = useNavigate();
 	return (
 		<button className='btn' onClick={() => navigate("/")}>
-			<img src={return_svg} className='vector-neon-return'/>
+			<img src={return_svg} className='vector-neon'/>
 		</button>
 	);
 }
