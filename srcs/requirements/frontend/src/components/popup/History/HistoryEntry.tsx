@@ -1,8 +1,9 @@
 import React from 'react'
 import '../Font.css'
 import { historyData } from './typeHistory'
-import { CSSProperties, Component } from 'react'
-import Neon from '../Neon'
+import { CSSProperties } from 'react'
+import crown from '../../../img/history/crown.png';
+import skull from '../../../img/history/skull.png';
 
 interface Props {
     entry: historyData;
@@ -19,6 +20,7 @@ const HistoryEntry:React.FC<Props> = ({entry}) => {
         margin: '10px',
         marginBottom: '0px',
         marginTop: '5px',
+        
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -28,24 +30,34 @@ const HistoryEntry:React.FC<Props> = ({entry}) => {
         color: '#fff',
     }
         const histo1: CSSProperties = {
-            flexBasis: '300px',
+            flexGrow: '0',
             margin: '2px',
             display: 'flex',
             flexDirection: 'column',
             paddingLeft: '8px',
         }
-            const victory: CSSProperties = {
-                fontSize: '40px',
-                letterSpacing : '10px',
-                textAlign: 'left',
-                padding: '5px',
-                paddingTop: '10px',
-                paddingLeft: '14px',
-                background: win ? 'linear-gradient(to bottom, #63E9FF 20%, #00FBB0 60%)' :
-                'linear-gradient(to bottom, #9A08B1 , #FC3030 90%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
+            const divVictory: CSSProperties = {
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
             }
+                const victory: CSSProperties = {
+                    fontSize: '40px',
+                    letterSpacing : '10px',
+                    textAlign: 'left',
+                    padding: '5px',
+                    paddingLeft: '14px',
+                    paddingTop: '10px',
+                    background: win ? 'linear-gradient(to bottom, #63E9FF 20%, #00FBB0 60%)' :
+                    'linear-gradient(to bottom, #9A08B1 , #FC3030 90%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                }
+                const pic: CSSProperties = {
+                    width: win ? '70px':'45px',
+                    height: win ? '70px':'45px',
+                    paddingTop: win ? '0px':'10px',
+                }
             const modeDate: CSSProperties = {
                 fontSize: '15px',
                 fontWeight : '600',
@@ -59,7 +71,7 @@ const HistoryEntry:React.FC<Props> = ({entry}) => {
             }
 
         const histo2: CSSProperties = {
-            flexBasis: '200px',
+            flexGrow: '3',
             margin: '2px',
             fontSize:' 40px',
             textAlign: 'center',
@@ -71,21 +83,21 @@ const HistoryEntry:React.FC<Props> = ({entry}) => {
             textShadow: win ? "0 0 30px #63E9FF, 0 0 100px #63E9FF, 0 0 150px #63E9FF" : "0 0 30px #FC3030, 0 0 100px #FC3030, 0 0 150px #FC3030",
         }
 
-        const histo3: CSSProperties = {
-            flexBasis: '100px',
-            margin:' 2px',
-            fontSize: '24px',
-            textAlign: 'right',
-            paddingTop: '30px',
-            background: win ? 'linear-gradient(to bottom, #63E9FF 20%, #00FBB0 60%)' :
-            'linear-gradient(to bottom, #9A08B1 , #FC3030 90%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            textShadow: win ? "0 0 30px #63E9FF, 0 0 100px #63E9FF, 0 0 150px #63E9FF" : "0 0 30px #FC3030, 0 0 100px #FC3030, 0 0 150px #FC3030"
-        }
+        // const histo3: CSSProperties = {
+        //     flexBasis: '100px',
+        //     margin:' 2px',
+        //     fontSize: '24px',
+        //     textAlign: 'right',
+        //     paddingTop: '30px',
+        //     background: win ? 'linear-gradient(to bottom, #63E9FF 20%, #00FBB0 60%)' :
+        //     'linear-gradient(to bottom, #9A08B1 , #FC3030 90%)',
+        //     WebkitBackgroundClip: 'text',
+        //     WebkitTextFillColor: 'transparent',
+        //     textShadow: win ? "0 0 30px #63E9FF, 0 0 100px #63E9FF, 0 0 150px #63E9FF" : "0 0 30px #FC3030, 0 0 100px #FC3030, 0 0 150px #FC3030"
+        // }
 
         const histo4: CSSProperties = {
-            flexGrow: '1',
+            flexGrow: '0',
             margin: '2px',
             paddingRight: '10px',
 
@@ -118,30 +130,34 @@ const HistoryEntry:React.FC<Props> = ({entry}) => {
                 }
 
     return (
-    <div style={history}>
-        <div style={histo1}>
-            <span style={victory}> {entry.victory} </span>
-            <div style={modeDate}>
-                <span> Mode {entry.mode} </span>
-                <span> {entry.date} </span>
+        <div style={history}>
+            <div style={histo1}>
+                <div style={divVictory}>
+                    <span style={victory}> {entry.victory} </span>
+                    {win ? <img src={crown} alt='crown' style={pic} />
+                    : <img src={skull} alt='skull' style={pic} />}
+                </div>
+                <div style={modeDate}>
+                    <span> Mode {entry.mode} </span>
+                    <span> {entry.date} </span>
+                </div>
+            </div>
+
+            <div style={histo2}> {entry.userPoints} - {entry.advPoints} </div>
+
+            {/* <div style={histo3}> VS </div> */}
+
+            <div style={histo4}>
+                <span style={adversary}> {entry.adversary} </span>
+                <div style={elo}>
+                    {entry.elo >= 0 ?
+                    <span style={nbr}> +{entry.elo}</span> 
+                    : <span style={nbr}> {entry.elo}</span>}
+                    <span style={icon}>ELO</span>
+                </div>
             </div>
         </div>
-
-        <div style={histo2}> {entry.userPoints} - {entry.advPoints} </div>
-
-        <div style={histo3}> VS </div>
-
-        <div style={histo4}>
-            <span style={adversary}> {entry.adversary} </span>
-            <div style={elo}>
-                {entry.elo >= 0 ?
-                 <span style={nbr}> +{entry.elo}</span> 
-                 : <span style={nbr}> {entry.elo}</span>}
-                <span style={icon}>ELO</span>
-            </div>
-        </div>
-    </div>
-  )
+    )
 }
 
 export default HistoryEntry

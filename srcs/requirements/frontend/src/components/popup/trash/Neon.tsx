@@ -23,14 +23,13 @@ const Neon: React.FC<Props> = ({text, color, linear=color, stroke=true, blur='40
         
             <span className='Blur'>{text}</span>
 
-            {/* <span className='Shadow'>{text}</span> */}
+            <span className='Shadow'>{text}</span>
 
             {/* {moreBlur !== 'false' ? <span className='Blur' style = {{'--blur':moreBlur} as React.CSSProperties}>{text}</span> : null} */}
         
-            <span className='Solid'>{text}</span>
+            {stroke ? <span className='Stroke'>{text}</span> : null}
 
-            {/* {stroke ? <span className='Stroke'>{text}</span> : null} */}
-            
+            <span className='Solid'>{text}</span>
     </div>
   )
 }

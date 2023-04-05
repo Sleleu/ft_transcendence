@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react'
 import HistoryEntry from './HistoryEntry'
 import { historyData } from './typeHistory'
 import { CSSProperties } from 'react'
-import Neon from '../Neon'
 
 
 const History:React.FC = () => {
@@ -49,7 +48,6 @@ const History:React.FC = () => {
 
   return (
     <div style={Container}>
-        {/* <Neon text='TestNeoon' color='green' /> */}
       <div style={Entries}>
         {entryData.map((entry) => (<HistoryEntry entry={entry} />))}
         </div>

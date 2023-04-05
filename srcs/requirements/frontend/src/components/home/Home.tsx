@@ -5,6 +5,7 @@ import Name from './header/NameLeft/src/Name';
 import { AgnosticNonIndexRouteObject } from '@remix-run/router';
 import NavBar from './header/NavBar/src/NavBar';
 import History from '../popup/History/History';
+import Rank from '../popup/Rank/Rank';
 
 function Home() {
 
@@ -16,8 +17,8 @@ function Home() {
     }
 
     const [user, setUser] = useState<User[]>([])
-    const [activeComponent, setActiveComponent] = useState<string>('history')
-    const [oldComponent, setOldComponent] = useState<string>('history')
+    const [activeComponent, setActiveComponent] = useState<string>('rank')
+    const [oldComponent, setOldComponent] = useState<string>('rank')
 
     const api = async () => {
         const data = await fetch("http://localhost:5000/user" ,{ method:"GET" })
@@ -62,7 +63,8 @@ function Home() {
                     <div className='containerCenter'>
                         {/* {activeComponent === "play" && <Play />} */}
                         {/* {activeComponent === "menue" && <Menue />} */}
-                        {activeComponent === "history" && <History />}
+                        {activeComponent === "rank" && <Rank />}
+                        {/* {activeComponent === "history" && <History />} */}
                     </div>
                 </div>
             </div>
