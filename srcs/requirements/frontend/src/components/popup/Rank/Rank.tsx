@@ -47,7 +47,7 @@ const Rank:React.FC<Props> = ({user}) => {
     textAlign: 'center',
     fontWeight : '600',
     fontSize : '20px',
-    fontFamily: 'montserrat',
+    fontFamily: 'Montserrat, sans-serif',
     letterSpacing : '5px',
 
   }

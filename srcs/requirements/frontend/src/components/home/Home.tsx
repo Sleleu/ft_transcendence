@@ -23,7 +23,6 @@ function Home() {
 
     const [user, setUser] = useState<User[]>([])
     const [activeComponent, setActiveComponent] = useState<string>('play')
-    // const [activeComponent, setActiveComponent] = useState<string>('menue')
     const [stack, setStack] = useState<string[]>([]);
 
     const push = (item:string) => {
@@ -93,8 +92,8 @@ function Home() {
                         {activeComponent === "play" && <Play changeComponent={changeComponent}/>}
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent}/>}
                         {activeComponent === "settings" && <Settings user={user[0]} />}
-                        {activeComponent === "history" && <History />}
-                        {activeComponent === "classement" && <Classement rank='gold'/>}
+                        {activeComponent === "historic" && <History />}
+                        {activeComponent === "leader" && <Classement rank='gold'/>}
                         {activeComponent === "rank" && <Rank user=              {{name:'gottie', rank:'gold', id:1, elo:2561}}/>}
                     </div>
                 </div>
