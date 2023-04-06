@@ -90,8 +90,9 @@ function Home() {
                         />
                     </div>
                     <div className='containerCenter'>
+                        {activeComponent === "play" && <Play changeComponent={changeComponent}/>}
+                        {activeComponent === "menue" && <Menue changeComponent={changeComponent}/>}
                         {activeComponent === "settings" && <Settings user={user[0]} />}
-                        {/* {activeComponent === "menue" && <Menue />} */}
                         {activeComponent === "history" && <History />}
                         {activeComponent === "classement" && <Classement rank='gold'/>}
                         {activeComponent === "rank" && <Rank user=              {{name:'gottie', rank:'gold', id:1, elo:2561}}/>}
