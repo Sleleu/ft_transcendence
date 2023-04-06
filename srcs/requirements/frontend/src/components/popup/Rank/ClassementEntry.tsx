@@ -25,7 +25,7 @@ const Entry: CSSProperties = {
 const entryText: CSSProperties = {
     flexBasis: '250px',
     marginTop: '10px',
-    marginLeft: '30px',
+    marginLeft: '0px',
     fontWeight : '600',
     fontSize : '24px',
     fontFamily: 'Montserrat, sans-serif',
