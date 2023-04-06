@@ -16,6 +16,13 @@ import lock_svg from '../../assets/img/lock.svg';
 import {Cont, HeaderBar} from '../container/container'
 import {SettingsUsername, SettingsAvatar, SettingsBlock, SettingsPassword, SettingsLock} from './Options'
 
+type User = {
+	name: string;
+	rank: string;
+	id : number;
+	elo: number;
+}
+
 type Props = {
 	image?: string;
 	text?: string;
@@ -123,7 +130,7 @@ const ButtonOption = ({ image, text, onClick}: Props) => {
   );
 };
 
-function Settings() {
+function Settings({ user }: { user: User }) {
 
 	const [selectedOption, setSelectedOption] = useState(''); // stock l'option selectionnee
 	const [showOptions, setShowOptions] = useState(false);
@@ -139,7 +146,7 @@ function Settings() {
 						<SettingsOptions setSelectedOption={setSelectedOption} setShowOptions={setShowOptions} />
 					</Cont>
 					<Cont minWidth='270px' minHeight='340px' width='100%' height='98%'>
-						{selectedOption === "username" && showOptions && <SettingsUsername />}
+						{selectedOption === "username" && showOptions && <SettingsUsername user={user} />}
 						{selectedOption === "avatar" && showOptions && <SettingsAvatar />}
 						{selectedOption === "block" && showOptions && <SettingsBlock />}
 						{selectedOption === "password" && showOptions && <SettingsPassword />}

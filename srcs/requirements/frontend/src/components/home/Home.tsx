@@ -61,7 +61,7 @@ function Home() {
                         />
                     </div>
                     <div className='containerCenter'>
-                        {activeComponent === "settings" && <Settings />}
+                        {activeComponent === "settings" && <Settings user={user[0]} />}
                         {/* {activeComponent === "menue" && <Menue />} */}
                     </div>
                 </div>

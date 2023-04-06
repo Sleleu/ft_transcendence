@@ -12,34 +12,27 @@
 {
 	font-weight: 300;
 	font-family: 'Montserrat', sans-serif;
-
 	color: #FFFFFF;
+}
+
+.little
+{
+	font-size: 20px;
+	line-height: normal;
 }
 
 .medium
 {
-	font-family: 'Montserrat', sans-serif;
 	font-style: normal;
-
 	font-size: 24px;
-	line-height: 39px;
-
-	flex: none;
-	order: 1;
-	flex-grow: 0;
+	line-height: normal;
 }
 
 .big
 {
-	font-family: 'Montserrat', sans-serif;
 	font-style: normal;
-
 	font-size: 30px;
-	line-height: 39px;
-
-	flex: none;
-	order: 1;
-	flex-grow: 0;
+	line-height: normal;
 }
 
 .bold
@@ -47,17 +40,34 @@
 	font-weight: bold;
 }
 
-.neonText {
-	color: #fff;
+.neon-text {
 	text-shadow:
-	  /* White glow */
 	  0 0 7px #fff,
 	  0 0 10px #fff,
 	  0 0 21px #fff,
-	  /* cyan glow */
 	  0 0 42px #40ddff,
 	  0 0 82px #40ddff,
 	  0 0 92px #40ddff,
 	  0 0 102px #40ddff,
 	  0 0 151px #40ddff;
   }
+
+.neon-cyan {
+	text-shadow:	0 0 42px #40ddff,
+	  				0 0 82px #40ddff,
+					0 0 92px #40ddff,
+					0 0 102px #40ddff,
+	  				0 0 151px #40ddff;
+}
+
+.neon-purple {
+	text-shadow:
+					0 0 7px #fff,
+					0 0 10px #fff,
+					0 0 21px #fff,
+					0 0 42px #f975ed,
+	  				0 0 82px #f975ed,
+					0 0 92px #f975ed,
+					0 0 102px #f975ed,
+	  				0 0 151px #f975ed;
+}

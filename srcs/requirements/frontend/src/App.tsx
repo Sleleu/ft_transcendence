@@ -12,9 +12,6 @@ function App() {
       <Routes>
         <Route path="/" Component={Home} />
       </Routes>
-      <Routes>
-        <Route path="/settings" Component={Settings} />
-      </Routes>
       </div>
     </Router>
   );
