@@ -6,19 +6,21 @@ import { AgnosticNonIndexRouteObject } from '@remix-run/router';
 import NavBar from './header/NavBar/src/NavBar';
 import History from '../popup/History/History';
 import Rank from '../popup/Rank/Rank';
+import Classement from '../popup/Rank/Classement';
+import {User} from '../types'
 
 function Home() {
 
-    type User = {
-        name: string;
-        rank: string;
-        id : number;
-        elo: number;
-    }
+    // type User = {
+    //     name: string;
+    //     rank: string;
+    //     id : number;
+    //     elo: number;
+    // }
 
     const [user, setUser] = useState<User[]>([])
-    const [activeComponent, setActiveComponent] = useState<string>('rank')
-    const [oldComponent, setOldComponent] = useState<string>('rank')
+    const [activeComponent, setActiveComponent] = useState<string>('classement')
+    const [oldComponent, setOldComponent] = useState<string>('classement')
 
     const api = async () => {
         const data = await fetch("http://localhost:5000/user" ,{ method:"GET" })
@@ -63,8 +65,9 @@ function Home() {
                     <div className='containerCenter'>
                         {/* {activeComponent === "play" && <Play />} */}
                         {/* {activeComponent === "menue" && <Menue />} */}
-                        {activeComponent === "rank" && <Rank />}
-                        {/* {activeComponent === "history" && <History />} */}
+                        {activeComponent === "history" && <History />}
+                        {activeComponent === "classement" && <Classement rank='gold'/>}
+                        {activeComponent === "rank" && <Rank user=              {{name:'gottie', rank:'gold', id:1, elo:2561}}/>}
                     </div>
                 </div>
             </div>

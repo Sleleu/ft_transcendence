@@ -134,8 +134,8 @@ const HistoryEntry:React.FC<Props> = ({entry}) => {
             <div style={histo1}>
                 <div style={divVictory}>
                     <span style={victory}> {entry.victory} </span>
-                    {win ? <img src={crown} alt='crown' style={pic} />
-                    : <img src={skull} alt='skull' style={pic} />}
+                   {win ? <img src={crown} alt='crown' style={pic} />
+                    : <img src={skull} alt='skull' style={pic} />} 
                 </div>
                 <div style={modeDate}>
                     <span> Mode {entry.mode} </span>
