@@ -90,5 +90,64 @@
       "adversary": "KylianMbappé98",
       "elo": -109
     }
+  ],
+  
+  "leader": [
+      {
+        "id": 1,
+        "username": "SleleDu93",
+        "elo": 2561,
+        "victory": 143,
+        "defeat": 34
+      },
+      {
+        "id": 2,
+        "username": "xxGottie69",
+        "elo": 2551,
+        "victory": 133,
+        "defeat": 34
+      },
+      {
+        "id": 3,
+        "username": "IlyesLeCrack",
+        "elo": 2664,
+        "victory": 113,
+        "defeat": 34
+      },
+      {
+        "id": 4,
+        "username": "EdeSmetLeChad78",
+        "elo": 2260,
+        "victory": 143,
+        "defeat": 34
+      },
+      {
+        "id": 5,
+        "username": "xXMeloFullStackPro",
+        "elo": 2458,
+        "victory": 111,
+        "defeat": 34
+      },
+      {
+        "id": 6,
+        "username": "François Fillon",
+        "elo": 2193,
+        "victory": 100,
+        "defeat": 34
+      },
+      {
+        "id": 7,
+        "username": "KylianMbappé98",
+        "elo": 2061,
+        "victory": 47,
+        "defeat": 34
+      },
+      {
+        "id": 8,
+        "username": "qBornE67",
+        "elo": 2261,
+        "victory": 41,
+        "defeat": 112
+      }
   ]
 }

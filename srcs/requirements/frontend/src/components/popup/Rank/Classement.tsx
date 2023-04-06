@@ -1,6 +1,6 @@
 import React from 'react'
-import { CSSProperties, useState } from 'react'
-import { User } from '../../types'
+import { CSSProperties, useState, useEffect } from 'react'
+import { User, rankData } from '../../types'
 import ClassementEntry from './ClassementEntry'
 
 import bronze from '../../../img/bronzeRank.png'
@@ -8,6 +8,7 @@ import silver from '../../../img/silverRank.png'
 import gold from '../../../img/goldRank.png'
 import crack from '../../../img/crakRank.png'
 import ultime from '../../../img/ultimeCrackRank.png'
+import Play from '../../home/play/src/Play'
 
 interface Props {
   rank : string;
@@ -38,8 +39,8 @@ const Classement:React.FC<Props> = ({rank}) => {
   }
 
   const Classement: CSSProperties = {
-    flexGrow: '1',
-    height:'100%',
+    flexBasis: '90%',
+    height:'95%',
     margin: '5px',
 
     background: 'rgba(0, 0, 0, 0.6)',
@@ -55,7 +56,7 @@ const Classement:React.FC<Props> = ({rank}) => {
 
 const Header: CSSProperties = {
   flexBasis: '150px',
-  margin: '5px',
+  margin: '0px',
 
   background: 'rgba(0, 0, 0, 0.9)',
   borderRadius: '15px',
@@ -102,13 +103,13 @@ const Header: CSSProperties = {
     flexBasis: '50px',
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginRight: '20px',
+    justifyContent: 'space-between',
+    marginLeft: '80px',
   }
     const legendText: CSSProperties = {
       flexBasis: '50px',
       marginTop: '10px',
-      marginRight: '110px',
+      marginRight: '30px',
 
       fontWeight : '600',
       fontSize : '24px',
@@ -120,13 +121,32 @@ const Header: CSSProperties = {
     flexGrow: '1',
     margin: '5px',
   
-    background: 'rgba(255, 0, 0, 0.3)',
     borderRadius: '15px',
     
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',
+    overflow: 'scroll',
   }
+
+  const [leaders, setLeaders] = useState<rankData[]>([]);
+
+  const fetchHistory = async () => {
+    const data = await fetch("http://localhost:5000/leader" ,{ method:"GET" });
+    const jsonData = await data.json();
+    return jsonData;
+  }
+
+  useEffect(() => {
+    const getLeaders = async () => {
+        const leaderDatabase = await fetchHistory();
+        setLeaders(leaderDatabase);
+    }
+    getLeaders();
+  }, [])
+
+  const leadersSorted: rankData[] = leaders.sort((a, b) => b.elo - a.elo);
+  leadersSorted.forEach((leader, index) => { leader.rank = index + 1});
 
   return (
     <div style={Classement}>
@@ -143,7 +163,8 @@ const Header: CSSProperties = {
         <span style={legendText}>RATIO</span>
       </div>
       <div style={Entries}>
-        <ClassementEntry />
+        {/* MUST SORT LEADERS BY ELO (+ victory + ratio) */}
+        {leadersSorted.map((leader) => <ClassementEntry leader={leader} />)}
       </div>
     </div>
   )

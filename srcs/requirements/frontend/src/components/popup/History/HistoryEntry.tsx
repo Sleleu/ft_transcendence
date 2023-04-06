@@ -59,7 +59,7 @@ const HistoryEntry:React.FC<Props> = ({entry}) => {
                 }
             const modeDate: CSSProperties = {
                 fontSize: '15px',
-                fontWeight : '600',
+                fontWeight : '800',
                 textAlign:'left',
                 padding:'10px',
                 paddingTop: '0px',
@@ -118,7 +118,7 @@ const HistoryEntry:React.FC<Props> = ({entry}) => {
                 display: 'flex',
                 justifyContent: 'flex-end',            
                 paddingTop: '5px',
-                fontWeight : '600',
+                fontWeight : '800',
                 color : win ? 'lightgreen' : 'coral',
             }
                 const nbr: CSSProperties = {
