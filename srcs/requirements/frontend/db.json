@@ -16,5 +16,79 @@
   ],
   "profile": {
     "name": "typicode"
-  }
+  },
+
+
+  "history": [
+    {
+      "id" : 1,
+      "victory": "DEFEAT",
+      "mode": "King",
+      "date": "06/05/2024",
+      "userPoints": 1,
+      "advPoints": 3,
+      "adversary": "qBoRnE67",
+      "elo": -156
+    },
+    {
+      "id" : 2,
+      "victory": "VICTORY",
+      "mode": "Classic",
+      "date": "03/02/2023",
+      "userPoints": 3,
+      "advPoints": 0,
+      "adversary": "xxGottie69",
+      "elo": 145
+    },
+    {
+      "id" : 3,
+      "victory": "VICTORY",
+      "mode": "Classic",
+      "date": "02/02/2023",
+      "userPoints": 3,
+      "advPoints": 2,
+      "adversary": "IlyesLeCrack",
+      "elo": 122
+    },
+    {
+      "id" : 4,
+      "victory": "DEFEAT",
+      "mode": "King",
+      "date": "02/02/2023",
+      "userPoints": 2,
+      "advPoints": 3,
+      "adversary": "EdeSmetLeChad78",
+      "elo": -112
+    },
+    {
+      "id" : 5,
+      "victory": "DEFEAT",
+      "mode": "King",
+      "date": "02/02/2023",
+      "userPoints": 0,
+      "advPoints": 3,
+      "adversary": "xXMeloFullStackPro",
+      "elo": -112
+    },
+    {
+      "id" : 6,
+      "victory": "DEFEAT",
+      "mode": "King",
+      "date": "02/02/2023",
+      "userPoints": 0,
+      "advPoints": 3,
+      "adversary": "François Fillon",
+      "elo": -113
+    },
+    {
+      "id" : 7,
+      "victory": "DEFEAT",
+      "mode": "King",
+      "date": "02/02/2023",
+      "userPoints": 2,
+      "advPoints": 3,
+      "adversary": "KylianMbappé98",
+      "elo": -109
+    }
+  ]
 }
