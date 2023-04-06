@@ -50,7 +50,7 @@
     height: 8.5vh;
     width: 8vh; 
     filter: drop-shadow(0px 0px 8px gold);
-    background-image: url(../../../../../assets/img/goldRank.png);
+    background-image: url(../../../../../img/goldRank.png);
 }
 
 .gold:hover
@@ -65,7 +65,7 @@
     height: 9.3vh;
     width: 7.5vh;
     filter: drop-shadow(0px 0px 8px #741010);
-    background-image: url(../../../../../assets/img/bronzeRank.png);
+    background-image: url(../../../../../img/bronzeRank.png);
 }
 
 .bronze:hover
@@ -80,7 +80,7 @@
     height: 11vh;
     width: 7vh;
     filter: drop-shadow(0px 0px 8px #86CFCB);
-    background-image: url(../../../../../assets/img/silverRank.png);
+    background-image: url(../../../../../img/silverRank.png);
 }
 
 .silver:hover
@@ -95,7 +95,7 @@
     height: 8.7vh;
     width: 7.5vh;
     filter: drop-shadow(0px 0px 8px #9409AA);
-    background-image: url(../../../../../assets/img/crakRank.png);
+    background-image: url(../../../../../img/crakRank.png);
 }
 
 .crack:hover
@@ -110,7 +110,7 @@
     height: 6vh;
     width: 8vh; 
     filter: drop-shadow(0px 0px 8px white);
-    background-image: url(../../../../../assets/img/ultimeCrackRank.png);
+    background-image: url(../../../../../img/ultimeCrackRank.png);
 }
 
 .ultimeCrack:hover

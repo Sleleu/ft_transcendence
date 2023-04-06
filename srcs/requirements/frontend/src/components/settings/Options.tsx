@@ -1,7 +1,7 @@
 import {useState, ChangeEvent} from 'react';
 
-import reveal_svg from '../../assets/img/reveal.svg'
-import hide_svg from '../../assets/img/hide.svg'
+import reveal_svg from '../../img/reveal.svg'
+import hide_svg from '../../img/hide.svg'
 
 import {Cont} from '../container/container'
 

@@ -32,26 +32,26 @@
 
 .returnLogo
 {
-    background-image: url(../../../../../assets/img/navBar/returnLogo.png);
+    background-image: url(../../../../../img/navBar/returnLogo.png);
     margin-left: 30px;
 
 }
 
 .menueLogo
 {
-    background-image: url(../../../../../assets/img/navBar/menu.png);
+    background-image: url(../../../../../img/navBar/menu.png);
 }
 
 .logoutLogo
 {
-    background-image: url(../../../../../assets/img/navBar/logOut.png);
+    background-image: url(../../../../../img/navBar/logOut.png);
 }
 
 .avatar
 {
     min-height: 80px;
     min-width: 80px;
-    background-image: url(../../../../../assets/img/navBar/avatar.png);
+    background-image: url(../../../../../img/navBar/avatar.png);
     background-size: cover;
     margin-right: 30px;
     height: 7vh;

@@ -1,17 +1,17 @@
 import React, { CSSProperties, Component } from 'react';
 import { useState } from 'react';
 import './Settings.css'
-import '../../assets/css/Text.css'
+import '../../css/Text.css'
 import { useNavigate } from 'react-router-dom';
 
 /* Side bar svg */
-import settings_svg from '../../assets/img/settings.svg';
-import return_svg from '../../assets/img/return.svg';
-import frog_svg from '../../assets/img/frog.svg';
-import username_svg from '../../assets/img/username.svg';
-import block_svg from '../../assets/img/block.svg';
-import password_svg from '../../assets/img/password.svg';
-import lock_svg from '../../assets/img/lock.svg';
+import settings_svg from '../../img/settings.svg';
+import return_svg from '../../img/return.svg';
+import frog_svg from '../../img/frog.svg';
+import username_svg from '../../img/username.svg';
+import block_svg from '../../img/block.svg';
+import password_svg from '../../img/password.svg';
+import lock_svg from '../../img/lock.svg';
 
 import {Cont, HeaderBar} from '../container/container'
 import {SettingsUsername, SettingsAvatar, SettingsBlock, SettingsPassword, SettingsLock} from './Options'
