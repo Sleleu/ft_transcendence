@@ -23,7 +23,7 @@ const entryText: CSSProperties = {
     marginLeft: '30px',
     fontWeight : '600',
     fontSize : '24px',
-    fontFamily: 'montserrat',
+    fontFamily: 'Montserrat, sans-serif',
     color: '#fff',
 
     // border: '2px solid red',

@@ -1,5 +1,4 @@
 import React from 'react'
-import '../Font.css'
 import { historyData } from './typeHistory'
 import { CSSProperties } from 'react'
 import crown from '../../../img/history/crown.png';
@@ -24,7 +23,7 @@ const HistoryEntry:React.FC<Props> = ({entry}) => {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        fontFamily: 'montserrat',
+        fontFamily: 'Montserrat, sans-serif',
         fontWeight : '800',
         letterSpacing : '5px',
         color: '#fff',

@@ -76,7 +76,7 @@ const Header: CSSProperties = {
 
     fontWeight : '800',
     fontSize : '64px',
-    fontFamily: 'montserrat',
+    fontFamily: 'Montserrat, sans-serif',
     letterSpacing : '5px',
 
     background: gradient.substring(0, gradient.length - 2),
@@ -90,7 +90,7 @@ const Header: CSSProperties = {
 
     fontWeight : '800',
     fontSize : '24px',
-    fontFamily: 'montserrat',
+    fontFamily: 'Montserrat, sans-serif',
     letterSpacing : '5px',
 
     background: gradient.substring(0, gradient.length - 2),
@@ -112,7 +112,7 @@ const Header: CSSProperties = {
 
       fontWeight : '600',
       fontSize : '24px',
-      fontFamily: 'montserrat',
+      fontFamily: 'Montserrat, sans-serif',
       color: '#fff',
     }
 

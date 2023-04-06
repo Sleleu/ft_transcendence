@@ -1,6 +1,5 @@
 import React from 'react'
 import { CSSProperties, useState } from 'react'
-import '../Font.css'
 import { User } from '../../types'
 
 import bronze from '../../../img/bronzeRank.png'
@@ -73,7 +72,7 @@ const RankEntry:React.FC<Props> = ({rank, userLevel=false, elo, user}) => {
 
         fontWeight : '800',
         fontSize : '36px',
-        fontFamily: 'montserrat',
+        fontFamily: 'Montserrat, sans-serif',
         letterSpacing : '5px',
 
         background: gradient.substring(0, gradient.length - 2),
@@ -86,7 +85,7 @@ const RankEntry:React.FC<Props> = ({rank, userLevel=false, elo, user}) => {
 
         fontWeight : '800',
         fontSize : '32px',
-        fontFamily: 'montserrat',
+        fontFamily: 'Montserrat, sans-serif',
         letterSpacing : '5px',
 
         background: gradient.substring(0, gradient.length - 2),
@@ -136,7 +135,7 @@ const RankEntry:React.FC<Props> = ({rank, userLevel=false, elo, user}) => {
 
         fontWeight : '800',
         fontSize : '28px',
-        fontFamily: 'montserrat',
+        fontFamily: 'Montserrat, sans-serif',
         letterSpacing : '5px',
 
         background: gradient.substring(0, gradient.length - 2),
@@ -150,7 +149,7 @@ const RankEntry:React.FC<Props> = ({rank, userLevel=false, elo, user}) => {
 
         fontWeight : '800',
         fontSize : '22px',
-        fontFamily: 'montserrat',
+        fontFamily: 'Montserrat, sans-serif',
         letterSpacing : '3px',
         textAlign: 'center',
 
