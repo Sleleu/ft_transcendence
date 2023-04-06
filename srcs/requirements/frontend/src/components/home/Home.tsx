@@ -4,12 +4,8 @@ import { useState, useEffect } from 'react';
 import Name from './header/NameLeft/src/Name';
 import { AgnosticNonIndexRouteObject } from '@remix-run/router';
 import NavBar from './header/NavBar/src/NavBar';
-<<<<<<< HEAD
-import Settings from '../settings/Settings'
-=======
 import Play from './play/src/Play';
 import Menue from './menue/src/Menue';
->>>>>>> eliot
 
 function Home() {
 
@@ -21,12 +17,8 @@ function Home() {
     }
 
     const [user, setUser] = useState<User[]>([])
-<<<<<<< HEAD
-    const [activeComponent, setActiveComponent] = useState<string>('settings')
-    const [oldComponent, setOldComponent] = useState<string>('play')
-=======
-    // const [activeComponent, setActiveComponent] = useState<string>('play')
-    const [activeComponent, setActiveComponent] = useState<string>('menue')
+    const [activeComponent, setActiveComponent] = useState<string>('play')
+    // const [activeComponent, setActiveComponent] = useState<string>('menue')
     const [stack, setStack] = useState<string[]>([]);
 
     const push = (item:string) => {
@@ -55,7 +47,6 @@ function Home() {
             push(activeComponent)
         setActiveComponent(component)
     }
->>>>>>> eliot
 
     const api = async () => {
         const data = await fetch("http://localhost:5000/user" ,{ method:"GET" })
@@ -94,14 +85,9 @@ function Home() {
                         />
                     </div>
                     <div className='containerCenter'>
-<<<<<<< HEAD
-                        {activeComponent === "settings" && <Settings user={user[0]} />}
-                        {/* {activeComponent === "menue" && <Menue />} */}
-=======
                         {activeComponent === "play" && <Play changeComponent={changeComponent}/>}
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent}/>}
                         {/* <Menue changeComponent={changeComponent}/> */}
->>>>>>> eliot
                     </div>
                 </div>
             </div>
