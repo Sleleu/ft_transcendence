@@ -5,6 +5,7 @@ import Name from './header/NameLeft/src/Name';
 import { AgnosticNonIndexRouteObject } from '@remix-run/router';
 import NavBar from './header/NavBar/src/NavBar';
 import Play from './play/src/Play';
+import Menue from './menue/src/Menue';
 
 function Home() {
 
@@ -16,8 +17,36 @@ function Home() {
     }
 
     const [user, setUser] = useState<User[]>([])
-    const [activeComponent, setActiveComponent] = useState<string>('play')
-    const [oldComponent, setOldComponent] = useState<string>('play')
+    // const [activeComponent, setActiveComponent] = useState<string>('play')
+    const [activeComponent, setActiveComponent] = useState<string>('menue')
+    const [stack, setStack] = useState<string[]>([]);
+
+    const push = (item:string) => {
+        setStack([...stack, item]) 
+    }
+    const pop = () => {
+        setStack(stack.slice(0, -1))
+    };
+    const front = () => {
+        if (stack.length === 1)
+        {
+            setActiveComponent(stack[stack.length -1])
+            return ;
+        }
+        if (stack.length === 0)
+        {
+            setActiveComponent('play')
+            return ;
+        }
+        setActiveComponent(stack[stack.length -1])
+        pop()
+    }
+
+    const changeComponent = (component:string) => {
+        if (activeComponent !== component)
+            push(activeComponent)
+        setActiveComponent(component)
+    }
 
     const api = async () => {
         const data = await fetch("http://localhost:5000/user" ,{ method:"GET" })
@@ -32,11 +61,6 @@ function Home() {
         }
     getUser()
     }, [])
-
-    const changeComponent = (component:string) => {
-        setOldComponent(activeComponent)
-        setActiveComponent(component)
-    }
 
     return (
         <div className="baground">
@@ -57,12 +81,13 @@ function Home() {
                         )} 
                         <NavBar 
                             changeComponent={changeComponent}
-                            oldComponent={oldComponent}
+                            front={front}
                         />
                     </div>
                     <div className='containerCenter'>
                         {activeComponent === "play" && <Play changeComponent={changeComponent}/>}
-                        {/* {activeComponent === "menue" && <Menue />} */}
+                        {activeComponent === "menue" && <Menue changeComponent={changeComponent}/>}
+                        {/* <Menue changeComponent={changeComponent}/> */}
                     </div>
                 </div>
             </div>
