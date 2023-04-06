@@ -45,10 +45,10 @@ const Menue:FC<MenueProps> = ({changeComponent}) => {
                     <h3 className='chatTxt'>chat</h3>
                 </div>
                 <div className='containerHistoric'
-                onClick={() => changeComponent('historic')}
+                onClick={() => changeComponent('history')}
                 >
                     <div className='historicLogo' />
-                    <h3 className='historicTxt'>historic</h3>
+                    <h3 className='historicTxt'>history</h3>
                 </div>
             </div>
         </div>
