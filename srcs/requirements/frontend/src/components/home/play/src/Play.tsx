@@ -1,10 +1,15 @@
-import React from 'react'
+import React, { FC } from 'react'
 import '../css/Play.css'
 
-const Play = () => {
+interface PlayProps {
+    changeComponent: (component: string) => void;
+}
+
+const Play:FC<PlayProps> = ({changeComponent}) => {
   return (
     <div className='containerPlay'>
-
+        <h2 className='playTxt'>PLAY</h2>
+        <div className='playButton' />
     </div>
   )
 }
