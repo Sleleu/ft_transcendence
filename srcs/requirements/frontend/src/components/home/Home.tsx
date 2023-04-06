@@ -3,15 +3,12 @@ import './Home.css'
 import { useState, useEffect } from 'react';
 import Name from './header/NameLeft/src/Name';
 import { AgnosticNonIndexRouteObject } from '@remix-run/router';
-import NavBar from './header/NavBar/src/NavBar';
-<<<<<<< HEAD
 import Settings from '../settings/Settings'
-=======
+import NavBar from './header/NavBar/src/NavBar';
 import History from '../popup/History/History';
 import Rank from '../popup/Rank/Rank';
 import Classement from '../popup/Rank/Classement';
 import {User} from '../types'
->>>>>>> gmansuy
 
 function Home() {
 
@@ -23,13 +20,8 @@ function Home() {
     // }
 
     const [user, setUser] = useState<User[]>([])
-<<<<<<< HEAD
-    const [activeComponent, setActiveComponent] = useState<string>('settings')
-    const [oldComponent, setOldComponent] = useState<string>('play')
-=======
-    const [activeComponent, setActiveComponent] = useState<string>('classement')
+    const [activeComponent, setActiveComponent] = useState<string>('history')
     const [oldComponent, setOldComponent] = useState<string>('classement')
->>>>>>> gmansuy
 
     const api = async () => {
         const data = await fetch("http://localhost:5000/user" ,{ method:"GET" })
