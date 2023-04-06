@@ -4,7 +4,12 @@ import { useState, useEffect } from 'react';
 import Name from './header/NameLeft/src/Name';
 import { AgnosticNonIndexRouteObject } from '@remix-run/router';
 import NavBar from './header/NavBar/src/NavBar';
+<<<<<<< HEAD
 import Settings from '../settings/Settings'
+=======
+import Play from './play/src/Play';
+import Menue from './menue/src/Menue';
+>>>>>>> eliot
 
 function Home() {
 
@@ -16,8 +21,41 @@ function Home() {
     }
 
     const [user, setUser] = useState<User[]>([])
+<<<<<<< HEAD
     const [activeComponent, setActiveComponent] = useState<string>('settings')
     const [oldComponent, setOldComponent] = useState<string>('play')
+=======
+    // const [activeComponent, setActiveComponent] = useState<string>('play')
+    const [activeComponent, setActiveComponent] = useState<string>('menue')
+    const [stack, setStack] = useState<string[]>([]);
+
+    const push = (item:string) => {
+        setStack([...stack, item]) 
+    }
+    const pop = () => {
+        setStack(stack.slice(0, -1))
+    };
+    const front = () => {
+        if (stack.length === 1)
+        {
+            setActiveComponent(stack[stack.length -1])
+            return ;
+        }
+        if (stack.length === 0)
+        {
+            setActiveComponent('play')
+            return ;
+        }
+        setActiveComponent(stack[stack.length -1])
+        pop()
+    }
+
+    const changeComponent = (component:string) => {
+        if (activeComponent !== component)
+            push(activeComponent)
+        setActiveComponent(component)
+    }
+>>>>>>> eliot
 
     const api = async () => {
         const data = await fetch("http://localhost:5000/user" ,{ method:"GET" })
@@ -32,11 +70,6 @@ function Home() {
         }
     getUser()
     }, [])
-
-    const changeComponent = (component:string) => {
-        setOldComponent(activeComponent)
-        setActiveComponent(component)
-    }
 
     return (
         <div className="baground">
@@ -57,12 +90,18 @@ function Home() {
                         )} 
                         <NavBar 
                             changeComponent={changeComponent}
-                            oldComponent={oldComponent}
+                            front={front}
                         />
                     </div>
                     <div className='containerCenter'>
+<<<<<<< HEAD
                         {activeComponent === "settings" && <Settings user={user[0]} />}
                         {/* {activeComponent === "menue" && <Menue />} */}
+=======
+                        {activeComponent === "play" && <Play changeComponent={changeComponent}/>}
+                        {activeComponent === "menue" && <Menue changeComponent={changeComponent}/>}
+                        {/* <Menue changeComponent={changeComponent}/> */}
+>>>>>>> eliot
                     </div>
                 </div>
             </div>

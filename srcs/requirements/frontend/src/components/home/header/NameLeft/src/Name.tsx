@@ -32,8 +32,6 @@ const Name = ({name, elo, rank}: NameProps) => {
     return name
   }
 
-  console.log(size)
-
   return (
     <div className='containerName'>
       <div className='containerRoseName'>

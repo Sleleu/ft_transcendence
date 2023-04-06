@@ -3,14 +3,14 @@ import '../css/NavBar.css'
 
 interface NavBarProps {
     changeComponent: (component: string) => void;
-    oldComponent: string;
+    front: () => void;
 }
 
-const NavBar: FC<NavBarProps> = ({changeComponent, oldComponent}) => {
+const NavBar: FC<NavBarProps> = ({changeComponent, front}) => {
   return (
     <div className='containerNavBar'>
         <div
-        onClick={() => changeComponent(oldComponent)} 
+        onClick={() => front()} 
         className='returnLogo'
         />   
         <div

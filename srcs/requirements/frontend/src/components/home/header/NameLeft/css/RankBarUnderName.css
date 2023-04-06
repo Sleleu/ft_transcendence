@@ -34,6 +34,7 @@
     font-size:calc(12px + 1vh);
     color:white;
     font-weight: 700;
+    cursor: pointer;
 }
 
 .bronze, .silver, .gold, .crack, .ultimeCrack
@@ -41,6 +42,7 @@
     position: absolute;
     left: 0%;
     background-size: cover;
+    cursor: pointer;
 }
 
 .gold

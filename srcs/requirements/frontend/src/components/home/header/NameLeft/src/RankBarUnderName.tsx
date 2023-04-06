@@ -8,7 +8,6 @@ type RankProps = {
 
 const RankBarUnderName = ({elo, rank}:RankProps) => {
 let porcent:number = 0
-console.log(rank)
 
 const calculWidth = (elo: number) => {
     if (elo < 1000)
