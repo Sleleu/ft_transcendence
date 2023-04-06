@@ -6,15 +6,20 @@ import { AgnosticNonIndexRouteObject } from '@remix-run/router';
 import NavBar from './header/NavBar/src/NavBar';
 import Play from './play/src/Play';
 import Menue from './menue/src/Menue';
+import History from '../popup/History/History';
+import Rank from '../popup/Rank/Rank';
+import Classement from '../popup/Rank/Classement';
+import Settings from '../settings/Settings';
+import {User} from '../types'
 
 function Home() {
 
-    type User = {
-        name: string;
-        rank: string;
-        id : number;
-        elo: number;
-    }
+    // type User = {
+    //     name: string;
+    //     rank: string;
+    //     id : number;
+    //     elo: number;
+    // }
 
     const [user, setUser] = useState<User[]>([])
     const [activeComponent, setActiveComponent] = useState<string>('play')
@@ -85,9 +90,11 @@ function Home() {
                         />
                     </div>
                     <div className='containerCenter'>
-                        {activeComponent === "play" && <Play changeComponent={changeComponent}/>}
-                        {activeComponent === "menue" && <Menue changeComponent={changeComponent}/>}
-                        {/* <Menue changeComponent={changeComponent}/> */}
+                        {activeComponent === "settings" && <Settings user={user[0]} />}
+                        {/* {activeComponent === "menue" && <Menue />} */}
+                        {activeComponent === "history" && <History />}
+                        {activeComponent === "classement" && <Classement rank='gold'/>}
+                        {activeComponent === "rank" && <Rank user=              {{name:'gottie', rank:'gold', id:1, elo:2561}}/>}
                     </div>
                 </div>
             </div>
