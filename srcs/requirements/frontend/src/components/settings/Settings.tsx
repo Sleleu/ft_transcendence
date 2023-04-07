@@ -13,9 +13,11 @@ import lock_svg from '../../img/lock.svg';
 import {User} from '../types'
 
 import {Cont, HeaderBar} from '../container/container'
-import {SettingsAvatar, SettingsBlock, SettingsLock} from './Options'
 import SettingsPassword from './settingsPassword';
 import SettingsUsername from './settingsUsername';
+import SettingsAuth from './settingsAuth';
+import SettingsAvatar from './settingsAvatar';
+import SettingsBlock from './settingsBlock';
 
 type ButtonOptionProps = {
 	image?: string;
@@ -107,7 +109,7 @@ function Settings({ user }: { user: User }) {
 						{selectedOption === "avatar"  && <SettingsAvatar />}
 						{selectedOption === "block"  && <SettingsBlock />}
 						{selectedOption === "password"  && <SettingsPassword />}
-						{selectedOption === "lock"  && <SettingsLock />}
+						{selectedOption === "lock"  && <SettingsAuth />}
 					</Cont>
 				</Cont>
 			</Cont>
