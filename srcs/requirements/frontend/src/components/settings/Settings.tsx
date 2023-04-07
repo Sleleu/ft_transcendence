@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 
 /* Side bar svg */
 import settings_svg from '../../img/settings.svg';
-import return_svg from '../../img/return.svg';
 import frog_svg from '../../img/frog.svg';
 import username_svg from '../../img/username.svg';
 import block_svg from '../../img/block.svg';
@@ -15,10 +14,11 @@ import lock_svg from '../../img/lock.svg';
 import {User} from '../types'
 
 import {Cont, HeaderBar} from '../container/container'
-import {SettingsUsername, SettingsAvatar, SettingsBlock, SettingsLock} from './Options'
+import {SettingsAvatar, SettingsBlock, SettingsLock} from './Options'
 import SettingsPassword from './settingsPassword';
+import SettingsUsername from './settingsUsername';
 
-type Props = {
+type ButtonOptionProps = {
 	image?: string;
 	text?: string;
 	onClick?: () => void;
@@ -26,7 +26,6 @@ type Props = {
 
 type SettingsOptionsProps = {
 	setSelectedOption: (option: string) => void;
-	setShowOptions: (show: boolean) => void;
   };
 
 const SettingsTitle = () => {
@@ -35,27 +34,15 @@ const SettingsTitle = () => {
 			<div className='symbol'>
 				<img src={settings_svg} className='vector-neon'/>
 			</div>
-			<div>
 				<p className='text big bold cyan-stroke'>Settings</p>
-			</div>
 		</div>
 	);
 }
 
-const ReturnButton = () => {
-	const navigate = useNavigate();
-	return (
-		<button className='btn' onClick={() => navigate("/")}>
-			<img src={return_svg} className='vector-neon'/>
-		</button>
-	);
-}
-
-const SettingsOptions = ({setSelectedOption, setShowOptions}: SettingsOptionsProps) => {
+const SettingsOptions = ({setSelectedOption}: SettingsOptionsProps) => {
 	
 	const handleOptionClick = (option: string) => {
 		setSelectedOption(option);
-		setShowOptions(true);
 	  };
 
 	return (
@@ -75,7 +62,7 @@ const SettingsOptions = ({setSelectedOption, setShowOptions}: SettingsOptionsPro
 	);
 }
 
-const Option = ({text}: Props) => {
+const Option = ({text}: ButtonOptionProps) => {
 	return (
 		<div style={{ marginTop: '-28px', zIndex: '0' }}>
     		<p className='text big bold purple-stroke'>{text}</p>
@@ -83,40 +70,17 @@ const Option = ({text}: Props) => {
 	);
 }
 
-const ButtonOption = ({ image, text, onClick}: Props) => {
-  const [hovered, setHovered] = React.useState(false);
+const ButtonOption = ({ image, text, onClick}: ButtonOptionProps) => {
 
   const handleTextClick = () => {
 		if (onClick)
 			onClick();
   };
 
-  const handleMouseEnter = () => {
-    setHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    setHovered(false);
-  };
-
-  const buttonColor = hovered ? 'rgba(255, 255, 255, 0.50)' : 'rgba(0, 0, 0, 0)'; 
-
   return (
     <button className='btn'
-      style={{
-		border: 'none',
-		justifyContent: 'left',
-        display: 'flex',
-        flexDirection: 'row',
-        padding: '5px',
-        gap: '10px',
-        width: '175px',
-        height: '42px',
-		zIndex: '1',
-		backgroundColor: buttonColor
-      }}
-	  onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      style={{ border: 'none', justifyContent: 'left', display: 'flex',
+        	   flexDirection: 'row', gap: '1vw', zIndex: '1', backgroundColor: 'transparent' }}
 	  onClick={handleTextClick} // call le onclick de props
     >
       <img src={image} />
@@ -127,25 +91,24 @@ const ButtonOption = ({ image, text, onClick}: Props) => {
 
 function Settings({ user }: { user: User }) {
 
-	const [selectedOption, setSelectedOption] = useState(''); // stock l'option selectionnee
-	const [showOptions, setShowOptions] = useState(false);
+	const [selectedOption, setSelectedOption] = useState('avatar'); // stock l'option selectionnee
 
 	return (
         <div className="Home">
 			<Cont width='50vw' height='40vh' direction='column' borderRadius='15px' backgroundColor='rgba(0, 0, 0, 0.75)' minWidth='679px' minHeight='425px'>
 				<HeaderBar borderBottom='1px solid #ffffff'>
-					<SettingsTitle /> <ReturnButton />
+					<SettingsTitle />
 				</HeaderBar>
 				<Cont width='100%' height='100%'direction='row'>
-					<Cont borderRight='1px solid #ffffff' minHeight='330px' width='25vw' height='80%' borderRadius='15px' >
-						<SettingsOptions setSelectedOption={setSelectedOption} setShowOptions={setShowOptions} />
+					<Cont borderRight='1px solid #ffffff' minHeight='330px' minWidth='237px' width='25vw' height='80%' borderRadius='15px' >
+						<SettingsOptions setSelectedOption={setSelectedOption}/>
 					</Cont>
 					<Cont minWidth='270px' minHeight='340px' width='75vw' height='38vh' alignItems='center'>
-						{selectedOption === "username" && showOptions && <SettingsUsername user={user} />}
-						{selectedOption === "avatar" && showOptions && <SettingsAvatar />}
-						{selectedOption === "block" && showOptions && <SettingsBlock />}
-						{selectedOption === "password" && showOptions && <SettingsPassword />}
-						{selectedOption === "lock" && showOptions && <SettingsLock />}
+						{selectedOption === "username"  && <SettingsUsername user={user} />}
+						{selectedOption === "avatar"  && <SettingsAvatar />}
+						{selectedOption === "block"  && <SettingsBlock />}
+						{selectedOption === "password"  && <SettingsPassword />}
+						{selectedOption === "lock"  && <SettingsLock />}
 					</Cont>
 				</Cont>
 			</Cont>
