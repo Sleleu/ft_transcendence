@@ -98,4 +98,14 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  /* animation: test 1s ease-in-out; */
+}
+
+@keyframes test {
+  from{
+    transform: translateX(-100%);
+  } 
+  to {
+    transform: translateX(0%);
+  }
 }

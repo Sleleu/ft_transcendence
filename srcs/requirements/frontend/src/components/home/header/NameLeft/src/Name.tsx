@@ -36,7 +36,9 @@ const Name = ({name, elo, rank, changeComponent}: NameProps) => {
   return (
     <div className='containerName'>
       <div className='containerRoseName'>
-        <div className='containerTextName'>
+        <div className='containerTextName'
+        onClick={() => changeComponent('stat')}
+        >
           <h1 className='nameText' style={nameSize}>{NamePars(name)}</h1>
         </div>
         <RankBarUnderName
