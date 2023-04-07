@@ -6,9 +6,11 @@ import StatMatch from './StatMatch';
 
 interface Props {
     user: User;
+    changeComponent: (component: string) => void;
+
 }
 
-const Stats: React.FC<Props> = ({user}) => {
+const Stats: React.FC<Props> = ({user, changeComponent}) => {
 
     const Container: CSSProperties = {
         position: 'relative', flexGrow: 1, height: '90%',
@@ -20,8 +22,8 @@ const Stats: React.FC<Props> = ({user}) => {
   return (
     <div style={Container}>
         <StatVictory user={user}/>
-        <StatElo user={user}/>
-        <StatMatch user={user}/>
+        <StatElo user={user} changeComponent={changeComponent}/>
+        <StatMatch user={user} changeComponent={changeComponent}/>
     </div>
   )
 }

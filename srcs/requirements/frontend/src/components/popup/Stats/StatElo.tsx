@@ -4,9 +4,10 @@ import RankIcon from '../Rank/RankIcon';
 
 interface Props {
     user: User;
+    changeComponent: (component: string) => void;
 }
 
-const StatElo:React.FC<Props> = ({user}) => {
+const StatElo:React.FC<Props> = ({user, changeComponent}) => {
   
     const StatElo: CSSProperties = {
         flexBasis:'25%', height:'75%', alignSelf:'center',
@@ -21,10 +22,14 @@ const StatElo:React.FC<Props> = ({user}) => {
       letterSpacing: '5px',
     }
 
+    const handleClick = () => {
+      changeComponent('rank');
+    }
+
     return (
     <div style={StatElo}>
       <span>GOLD</span>
-      <RankIcon user={user} />
+      <div onClick={handleClick}><RankIcon user={user} /></div>
       <span style={Elo}>Elo</span>
       <span style={Nbr}>2561</span>
     </div>

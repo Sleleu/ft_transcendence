@@ -211,6 +211,13 @@
         "elo": 1333,
         "victory": 100,
         "defeat": 112
+      },
+      {
+        "id": 18,
+        "username": "gottie",
+        "elo": 3444,
+        "victory": 200,
+        "defeat": 76
       }
   ]
 }

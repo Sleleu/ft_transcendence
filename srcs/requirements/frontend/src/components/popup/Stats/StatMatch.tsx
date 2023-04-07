@@ -5,10 +5,20 @@ import skull from '../../../img/history/skull.png'
 
 interface Props {
     user: User;
+    changeComponent: (component: string) => void;
 }
 
-const StatMatch:React.FC<Props> = ({user}) => {
+const StatMatch:React.FC<Props> = ({user, changeComponent}) => {
   
+    const [isHovered, setIsHovered] = useState<boolean>(false);
+
+    const handleClick = () => {
+        changeComponent('historic');
+    }
+    const handleHover = () => {
+        setIsHovered(!isHovered);
+    }
+
     const StatMatch: CSSProperties = {
         flexBasis:'25%', height:'75%', alignSelf:'center',
         background :'rgba(0, 0, 0, 0.7)', borderRadius:'30px',  
@@ -16,7 +26,7 @@ const StatMatch:React.FC<Props> = ({user}) => {
         display:'flex', flexDirection:'column', justifyContent:'space-around',
     }
     const Recent: CSSProperties = {
-        fontSize: '24px',        
+        fontSize: '24px',  
     }
     const Icons: CSSProperties = {
         display:'flex', justifyContent: 'space-around',
@@ -27,11 +37,15 @@ const StatMatch:React.FC<Props> = ({user}) => {
     const Crown: CSSProperties = {
         height: '65px', width:'65px', marginTop:'-13px', marginLeft: '-10px', marginRight: '-10px',
     }
+    const HistoryLink: CSSProperties = {
+        cursor: isHovered ? 'pointer' : 'auto',
+    }
 
     return (
     <div style={StatMatch}>
       <span>RANK</span>
       <span>197</span>
+      <div onClick={handleClick} onMouseEnter={handleHover} onMouseLeave={handleHover} style={HistoryLink}>
       <span style={Recent}>Recent Match</span>
       <div style={Icons}>
         {/* Fetch them from history */}
@@ -40,6 +54,7 @@ const StatMatch:React.FC<Props> = ({user}) => {
       <img src={skull} alt='skull' style={Skull}/>
       <img src={skull} alt='skull' style={Skull}/>
       <img src={skull} alt='skull' style={Skull}/>
+      </div>
       </div>
     </div>
   )

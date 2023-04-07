@@ -94,7 +94,7 @@ function Home() {
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent}/>}
                         {activeComponent === "settings" && <Settings user={user[0]} />}
                         {activeComponent === "historic" && <History />}
-                        {activeComponent === "stat" && <Stats user={user[0]}/>}
+                        {activeComponent === "stat" && <Stats user={user[0]} changeComponent={changeComponent}/>}
 
                         {activeComponent === "leader" && <Classement rank={user[0].rank} changeComponent={changeComponent}/>}
                         {activeComponent === "bronzeLead" && <Classement rank={'bronze'} changeComponent={changeComponent}/>}
@@ -103,7 +103,7 @@ function Home() {
                         {activeComponent === "crackLead" && <Classement rank={'crack'} changeComponent={changeComponent}/>}
                         {activeComponent === "ultimeLead" && <Classement rank={'ultime'} changeComponent={changeComponent}/>}
 
-                        {activeComponent === "rank" && <Rank user=              {{name:'gottie', rank:'gold', id:1, elo:2561}}/>}
+                        {activeComponent === "rank" && <Rank user=  {{name:'gottie', rank:'gold', id:1, elo:2561}} changeComponent={changeComponent}/>}
                     </div>
                 </div>
             </div>

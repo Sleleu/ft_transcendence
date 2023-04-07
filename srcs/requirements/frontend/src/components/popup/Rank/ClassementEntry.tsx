@@ -10,7 +10,7 @@ interface Props {
 const ClassementEntry:React.FC<Props> = ({leader}) => {
 
 const Entry: CSSProperties = {
-    flexBasis: '20%',
+    flexBasis: '38px',
     margin: '5px',
     marginLeft: '5px',
     
