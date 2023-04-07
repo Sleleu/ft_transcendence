@@ -10,6 +10,7 @@ import History from '../popup/History/History';
 import Rank from '../popup/Rank/Rank';
 import Classement from '../popup/Rank/Classement';
 import Settings from '../settings/Settings';
+import Stats from '../popup/Stats/Stats';
 import {User} from '../types'
 
 function Home() {
@@ -93,7 +94,15 @@ function Home() {
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent}/>}
                         {activeComponent === "settings" && <Settings user={user[0]} />}
                         {activeComponent === "historic" && <History />}
-                        {activeComponent === "leader" && <Classement rank='gold'/>}
+                        {activeComponent === "stat" && <Stats user={user[0]}/>}
+
+                        {activeComponent === "leader" && <Classement rank={user[0].rank} changeComponent={changeComponent}/>}
+                        {activeComponent === "bronzeLead" && <Classement rank={'bronze'} changeComponent={changeComponent}/>}
+                        {activeComponent === "silverLead" && <Classement rank={'silver'} changeComponent={changeComponent}/>}
+                        {activeComponent === "goldLead" && <Classement rank={'gold'} changeComponent={changeComponent}/>}
+                        {activeComponent === "crackLead" && <Classement rank={'crack'} changeComponent={changeComponent}/>}
+                        {activeComponent === "ultimeLead" && <Classement rank={'ultime'} changeComponent={changeComponent}/>}
+
                         {activeComponent === "rank" && <Rank user=              {{name:'gottie', rank:'gold', id:1, elo:2561}}/>}
                     </div>
                 </div>

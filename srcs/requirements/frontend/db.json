@@ -96,7 +96,7 @@
       {
         "id": 1,
         "username": "SleleDu93",
-        "elo": 2561,
+        "elo": 3561,
         "victory": 143,
         "defeat": 34
       },
@@ -110,7 +110,7 @@
       {
         "id": 3,
         "username": "IlyesLeCrack",
-        "elo": 2664,
+        "elo": 3664,
         "victory": 113,
         "defeat": 34
       },
@@ -124,14 +124,14 @@
       {
         "id": 5,
         "username": "xXMeloFullStackPro",
-        "elo": 2458,
+        "elo": 3458,
         "victory": 111,
         "defeat": 34
       },
       {
         "id": 6,
         "username": "François Fillon",
-        "elo": 2193,
+        "elo": 1193,
         "victory": 100,
         "defeat": 34
       },
@@ -145,8 +145,71 @@
       {
         "id": 8,
         "username": "qBornE67",
-        "elo": 2261,
+        "elo": 1261,
         "victory": 41,
+        "defeat": 112
+      },
+      {
+        "id": 9,
+        "username": "LeBronzosNul",
+        "elo": 261,
+        "victory": 4,
+        "defeat": 112
+      },
+      {
+        "id": 10,
+        "username": "fanDeSushi69",
+        "elo": 561,
+        "victory": 50,
+        "defeat": 112
+      },
+      {
+        "id": 11,
+        "username": "GigaChadOmega",
+        "elo": 4561,
+        "victory": 500,
+        "defeat": 112
+      },
+      {
+        "id": 12,
+        "username": "Norminet",
+        "elo": 5661,
+        "victory": 800,
+        "defeat": 112
+      },
+      {
+        "id": 13,
+        "username": "silverBro",
+        "elo": 1600,
+        "victory": 101,
+        "defeat": 118
+      },
+      {
+        "id": 14,
+        "username": "silveRdude",
+        "elo": 1223,
+        "victory": 130,
+        "defeat": 112
+      },
+      {
+        "id": 15,
+        "username": "silverFrero",
+        "elo": 1984,
+        "victory": 110,
+        "defeat": 112
+      },
+      {
+        "id": 16,
+        "username": "idiotBête",
+        "elo": 1784,
+        "victory": 200,
+        "defeat": 112
+      },
+      {
+        "id": 17,
+        "username": "FrankyVincent",
+        "elo": 1333,
+        "victory": 100,
         "defeat": 112
       }
   ]
