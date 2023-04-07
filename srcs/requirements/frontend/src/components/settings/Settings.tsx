@@ -1,8 +1,7 @@
-import React, { CSSProperties, Component } from 'react';
+import React from 'react';
 import { useState } from 'react';
 import './Settings.css'
 import '../../css/Text.css'
-import { useNavigate } from 'react-router-dom';
 
 /* Side bar svg */
 import settings_svg from '../../img/settings.svg';
@@ -32,7 +31,7 @@ const SettingsTitle = () => {
 	return (
 		<div className='display-settings'>
 			<div className='symbol'>
-				<img src={settings_svg} className='vector-neon'/>
+				<img src={settings_svg} alt='settings' className='vector-neon'/>
 			</div>
 				<p className='text big bold cyan-stroke'>Settings</p>
 		</div>
@@ -47,13 +46,13 @@ const SettingsOptions = ({setSelectedOption}: SettingsOptionsProps) => {
 
 	return (
 		<React.Fragment>
-		<Cont padding='0px' width='45%' height='39px' borderBottom='1px solid white'>
+		<Cont padding='0px' width='45%' height='10%' borderBottom='1px solid white'>
 			<Option text='Profile'/>
 		</Cont>
 		<ButtonOption image={frog_svg} text='Avatar' onClick={() => handleOptionClick("avatar")}/>
 		<ButtonOption image={username_svg} text='Username' onClick={() => handleOptionClick("username")}/>
 		<ButtonOption image={block_svg} text='Blocked users' onClick={() => handleOptionClick("block")}/>
-		<Cont  padding='0px' width='95%' height='38px' borderBottom='1px solid white'>
+		<Cont  padding='0px' width='95%' height='10%' borderBottom='1px solid white'>
 			<Option text='Confidentiality'/>
 		</Cont>
 		<ButtonOption image={password_svg} text='Change password' onClick={() => handleOptionClick("password")}/>
@@ -83,7 +82,7 @@ const ButtonOption = ({ image, text, onClick}: ButtonOptionProps) => {
         	   flexDirection: 'row', gap: '1vw', zIndex: '1', backgroundColor: 'transparent' }}
 	  onClick={handleTextClick} // call le onclick de props
     >
-      <img src={image} />
+      <img src={image} alt='' />
       <p className='text bold'>{text}</p>
     </button>
   );
@@ -95,12 +94,12 @@ function Settings({ user }: { user: User }) {
 
 	return (
         <div className="Home">
-			<Cont width='50vw' height='40vh' direction='column' borderRadius='15px' backgroundColor='rgba(0, 0, 0, 0.75)' minWidth='679px' minHeight='425px'>
+			<Cont width='50vw' height='50vh' direction='column' borderRadius='15px' backgroundColor='rgba(0, 0, 0, 0.75)' minWidth='679px' minHeight='425px'>
 				<HeaderBar borderBottom='1px solid #ffffff'>
 					<SettingsTitle />
 				</HeaderBar>
-				<Cont width='100%' height='100%'direction='row'>
-					<Cont borderRight='1px solid #ffffff' minHeight='330px' minWidth='237px' width='25vw' height='80%' borderRadius='15px' >
+				<Cont width='100%' height='80%'direction='row'>
+					<Cont borderRight='1px solid #ffffff' minHeight='330px' minWidth='237px' width='25vw' height='90%' borderRadius='15px' >
 						<SettingsOptions setSelectedOption={setSelectedOption}/>
 					</Cont>
 					<Cont minWidth='270px' minHeight='340px' width='75vw' height='38vh' alignItems='center'>
