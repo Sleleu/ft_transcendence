@@ -6,9 +6,10 @@ type NameProps = {
   name: string;
   elo: number;
   rank: string;
+  changeComponent: (component: string) => void;
 }
 
-const Name = ({name, elo, rank}: NameProps) => {
+const Name = ({name, elo, rank, changeComponent}: NameProps) => {
 
   let size: number = 32
 
@@ -41,6 +42,7 @@ const Name = ({name, elo, rank}: NameProps) => {
         <RankBarUnderName
         elo={elo}
         rank={rank}
+        changeComponent={changeComponent}
         />
       </div>
     </div>

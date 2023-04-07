@@ -81,6 +81,7 @@ function Home() {
                                 name={user.name} 
                                 elo={user.elo}
                                 rank={user.rank}
+                                changeComponent={changeComponent}
                             />
                         )} 
                         <NavBar 

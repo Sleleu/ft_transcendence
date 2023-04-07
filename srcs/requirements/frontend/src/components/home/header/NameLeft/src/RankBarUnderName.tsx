@@ -4,9 +4,10 @@ import '../css/RankBarUnderName.css'
 type RankProps = {
     elo: number;
     rank: string;
+    changeComponent: (component: string) => void;
 }
 
-const RankBarUnderName = ({elo, rank}:RankProps) => {
+const RankBarUnderName = ({elo, rank, changeComponent}:RankProps) => {
 let porcent:number = 0
 
 const calculWidth = (elo: number) => {
@@ -34,7 +35,9 @@ const progressBar = {
 }
 
   return (
-    <div className='containerFooter'>
+    <div className='containerFooter'
+    onClick={() => changeComponent('rank')}
+    >
         <div className='containerEloUnderName' >
             <div style={progressBar} ></div>
             <div className='eloText'>{elo} ELO</div>
