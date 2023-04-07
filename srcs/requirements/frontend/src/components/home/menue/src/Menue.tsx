@@ -16,13 +16,13 @@ const Menue:FC<MenueProps> = ({changeComponent}) => {
                 onClick={() => changeComponent('friend')}
                 >
                     <div className='friendLogo' />
-                    <h3 className='friendTxt'>friends</h3>
+                    <h3 className='friendTxt'>Friends</h3>
                 </div>
                 <div className='containerStat'
                 onClick={() => changeComponent('stat')}
                 >
                     <div className='statLogo' />
-                    <h3 className='statTxt'>stat</h3>
+                    <h3 className='statTxt'>Statistics</h3>
                 </div>
                 <div className='containerLeader'
                 onClick={() => changeComponent('leader')}
@@ -36,19 +36,19 @@ const Menue:FC<MenueProps> = ({changeComponent}) => {
                 onClick={() => changeComponent('settings')}
                 >
                     <div className='settingsLogo' />
-                    <h3 className='settingsTxt'>settings</h3>
+                    <h3 className='settingsTxt'>Settings</h3>
                 </div>
                 <div className='containerChat'
                 onClick={() => changeComponent('chat')}
                 >
                     <div className='chatLogo' />
-                    <h3 className='chatTxt'>chat</h3>
+                    <h3 className='chatTxt'>Chat</h3>
                 </div>
                 <div className='containerHistoric'
                 onClick={() => changeComponent('history')}
                 >
                     <div className='historicLogo' />
-                    <h3 className='historicTxt'>history</h3>
+                    <h3 className='historicTxt'>History</h3>
                 </div>
             </div>
         </div>

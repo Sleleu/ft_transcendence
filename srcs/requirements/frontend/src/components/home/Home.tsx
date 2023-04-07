@@ -22,7 +22,8 @@ function Home() {
     // }
 
     const [user, setUser] = useState<User[]>([])
-    const [activeComponent, setActiveComponent] = useState<string>('play')
+    // const [activeComponent, setActiveComponent] = useState<string>('play')
+    const [activeComponent, setActiveComponent] = useState<string>('menue')
     const [stack, setStack] = useState<string[]>([]);
 
     const push = (item:string) => {
