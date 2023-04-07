@@ -12,16 +12,11 @@ import username_svg from '../../img/username.svg';
 import block_svg from '../../img/block.svg';
 import password_svg from '../../img/password.svg';
 import lock_svg from '../../img/lock.svg';
+import {User} from '../types'
 
 import {Cont, HeaderBar} from '../container/container'
-import {SettingsUsername, SettingsAvatar, SettingsBlock, SettingsPassword, SettingsLock} from './Options'
-
-type User = {
-	name: string;
-	rank: string;
-	id : number;
-	elo: number;
-}
+import {SettingsUsername, SettingsAvatar, SettingsBlock, SettingsLock} from './Options'
+import SettingsPassword from './settingsPassword';
 
 type Props = {
 	image?: string;
@@ -137,15 +132,15 @@ function Settings({ user }: { user: User }) {
 
 	return (
         <div className="Home">
-			<Cont width='50%' height='30%' direction='column' borderRadius='15px' backgroundColor='rgba(0, 0, 0, 0.75)' minWidth='679px' minHeight='425px'>
+			<Cont width='50vw' height='40vh' direction='column' borderRadius='15px' backgroundColor='rgba(0, 0, 0, 0.75)' minWidth='679px' minHeight='425px'>
 				<HeaderBar borderBottom='1px solid #ffffff'>
 					<SettingsTitle /> <ReturnButton />
 				</HeaderBar>
-				<Cont width='100%' direction='row'>
-					<Cont borderRight='1px solid #ffffff' width='220px' height='100%' borderRadius='15px' >
+				<Cont width='100%' height='100%'direction='row'>
+					<Cont borderRight='1px solid #ffffff' minHeight='330px' width='25vw' height='80%' borderRadius='15px' >
 						<SettingsOptions setSelectedOption={setSelectedOption} setShowOptions={setShowOptions} />
 					</Cont>
-					<Cont minWidth='270px' minHeight='340px' width='100%' height='98%'>
+					<Cont minWidth='270px' minHeight='340px' width='75vw' height='38vh' alignItems='center'>
 						{selectedOption === "username" && showOptions && <SettingsUsername user={user} />}
 						{selectedOption === "avatar" && showOptions && <SettingsAvatar />}
 						{selectedOption === "block" && showOptions && <SettingsBlock />}

@@ -13,6 +13,7 @@ interface Props {
 	borderRadius?: string;
 	borderBottom?: string;
 	borderRight?: string;
+	overflow?: string;
 	direction?: "row" | "column";
 	children?: React.ReactNode;
 }
@@ -20,7 +21,7 @@ interface Props {
 class Cont extends Component<Props> {
 	render() {
 		const {backgroundColor, padding, margin, direction,
-			   width, minWidth, height, gap,
+			   width, minWidth, height, gap, overflow,
 			   alignItems, borderBottom, borderRight, minHeight,
 			   borderRadius, children} = this.props;
 
@@ -38,7 +39,8 @@ class Cont extends Component<Props> {
 			alignItems: alignItems ? alignItems : "flex-start",
 			minWidth: minWidth ? minWidth : 'none',
 			minHeight: minHeight ? minHeight :'none',
-			gap: gap ? gap : 'none'
+			gap: gap ? gap : 'none',
+			overflow: overflow ? overflow : 'none'
 		}
 		return (
 			<div style={ContStyle}> {children}</div>

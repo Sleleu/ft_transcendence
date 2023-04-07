@@ -14,13 +14,6 @@ import {User} from '../types'
 
 function Home() {
 
-    // type User = {
-    //     name: string;
-    //     rank: string;
-    //     id : number;
-    //     elo: number;
-    // }
-
     const [user, setUser] = useState<User[]>([])
     const [activeComponent, setActiveComponent] = useState<string>('play')
     const [stack, setStack] = useState<string[]>([]);
