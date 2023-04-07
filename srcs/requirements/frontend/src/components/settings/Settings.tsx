@@ -19,6 +19,8 @@ import SettingsAuth from './settingsAuth';
 import SettingsAvatar from './settingsAvatar';
 import SettingsBlock from './settingsBlock';
 
+import Play from '../home/play/src/Play';
+
 type ButtonOptionProps = {
 	image?: string;
 	text?: string;
@@ -90,12 +92,17 @@ const ButtonOption = ({ image, text, onClick}: ButtonOptionProps) => {
   );
 };
 
-function Settings({ user }: { user: User }) {
+interface settingsProps {
+	user: User;
+	changeComponent: (component: string) => void;
+}
+
+function Settings({ user, changeComponent }: settingsProps) {
 
 	const [selectedOption, setSelectedOption] = useState('avatar'); // stock l'option selectionnee
 
 	return (
-        <div className="Home">
+        <div className="center">
 			<Cont width='50vw' height='50vh' direction='column' borderRadius='15px' backgroundColor='rgba(0, 0, 0, 0.75)' minWidth='679px' minHeight='425px'>
 				<HeaderBar borderBottom='1px solid #ffffff'>
 					<SettingsTitle />
@@ -113,6 +120,9 @@ function Settings({ user }: { user: User }) {
 					</Cont>
 				</Cont>
 			</Cont>
+			{/* <Cont>
+				<Play changeComponent={changeComponent}/>
+			</Cont> */}
         </div>
     );
 }
