@@ -2,7 +2,8 @@ import { ForbiddenException, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { AuthDto } from "./dto/auth.dto";
 import * as argon from 'argon2'
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import { Prisma } from "@prisma/client";
+import { transcode } from "buffer";
 
 @Injectable()
 export class AuthService{
@@ -23,14 +24,17 @@ export class AuthService{
 					hash
 				},
 			});
-			
+
 			// return the saved user
 			return (user);
 			} catch (error) {
-				if (error instanceof PrismaClientKnownRequestError) {
+				if (error instanceof Prisma.PrismaClientKnownRequestError) {
 					if (error.code === 'P2002') {
-						throw new ForbiddenException('Username already taken');
-					}
+						throw new ForbiddenException('Username already taken',)
+					};
+				}
+				else {
+					throw error;
 				}
 			}
 	}
