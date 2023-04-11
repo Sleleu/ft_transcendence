@@ -15,10 +15,20 @@ model User {
 	createAt DateTime @default(now()) // Time at creation
 	updateAt DateTime @updatedAt
 
-	email String?
 	hash String?
+	username String @unique
+	elo Int @default(400)
+ 	friends   Friend[]
+	
+	@@map("users")
+}
 
-	username String
-	rank String
-	elo String
+model Friend {
+
+	id          Int    @id @default(autoincrement())
+	createdAt   DateTime @default(now())
+	
+	userId Int
+	user User @relation(fields: [userId], references: [id])
+  	@@map("friends")
 }

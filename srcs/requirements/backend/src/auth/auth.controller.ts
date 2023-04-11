@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Get, ParseIntPipe, Post } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthDto } from './dto/auth.dto'
 
@@ -6,12 +6,11 @@ import { AuthDto } from './dto/auth.dto'
 export class AuthController{
 	constructor(private authService: AuthService) {}
 
-	@Get('signup')
-	signup(@Body() dto: AuthDto) {
-		console.log({
-			dto,
-		});
-		return this.authService.signup();
+	@Post('signup')
+	signup(
+		@Body() dto: AuthDto) {
+		console.log(dto)
+		return this.authService.signup(dto);
 	}
 
 
