@@ -105,6 +105,7 @@ function Home() {
 
                         {activeComponent === "rank" && <Rank user=  {{name:'gottie', rank:'gold', id:1, elo:2561}} changeComponent={changeComponent}/>}
                     </div>
+                    <h1>{user[0].name}</h1>
                 </div>
             </div>
         </div>
