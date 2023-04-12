@@ -12,6 +12,16 @@
     justify-content: center;
     align-items: center;
     gap:10%;
+    /* animation: slideInRight 0.5s forwards; */
+}
+
+@keyframes slideInRight {
+    0% {
+      transform: translateX(71%);
+    }
+    100% {
+      transform: translateX(0);
+    }
 }
 
 .containerPlay:active .playButton

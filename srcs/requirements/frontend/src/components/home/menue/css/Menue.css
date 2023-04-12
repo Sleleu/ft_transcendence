@@ -7,6 +7,16 @@
     height: 100%;
     width: 100%;
     padding: 0px 4%;
+    /* animation: slideOutLeft 0.5s forwards; */
+}
+
+@keyframes slideOutLeft {
+    0% {
+      transform: translateX(-50%);
+    }
+    100% {
+      transform: translateX(0%);
+    }
 }
 
 .containerLeftMenue
