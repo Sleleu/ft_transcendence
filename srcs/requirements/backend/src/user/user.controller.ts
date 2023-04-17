@@ -11,9 +11,7 @@ export class UserController {
 	@UseGuards(AuthGuard('jwt')) // cette route est protegee par le guard de JwtStrategy
 	@Get('profile')
 	getProfile(@Req() req: Request) {
-		console.log({
-			user: req.user
-		})
+		console.log({user: req.user})
 		return ('user informations here');
 	}
 }

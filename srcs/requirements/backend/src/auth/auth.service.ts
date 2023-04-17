@@ -67,13 +67,13 @@ export class AuthService{
 	async signToken(userId: number, username: string): Promise<{access_token: string}> {
 		const payload = {
 			sub: userId,
-			username
+			username: username,
 		}
 
 		const secret = this.config.get('JWT_SECRET') // On recupere la variable d'env
 
 		const token = await this.jwt.signAsync(payload, {
-			expiresIn: '5m', // Temps avant que le token expire
+			expiresIn: '1days', // Temps avant que le token expire
 			secret: secret,
 		});
 
