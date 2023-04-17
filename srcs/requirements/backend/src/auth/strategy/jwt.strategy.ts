@@ -13,12 +13,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  /**
-   * Validate the JWT payload and return the user without the password hash.
-   *
-   * @param payload - JWT payload containing user ID and username
-   */
-
+  // Validate the JWT payload and return the user without the password hash.
   async validate(payload: { sub: number; username: string }) {
     const user = await this.prisma.user.findUnique({
       where: { username: payload.username },

@@ -23,4 +23,19 @@ services:
       - "5000:5000"
     networks:
       - ft_transcendence
+    depends_on:
+      - database
     hostname: backend
+    command: bash -c "npx prisma migrate deploy ;
+             npm run start"
+
+  database:
+    image: postgres:13
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=nest
+    networks:
+      - ft_transcendence
