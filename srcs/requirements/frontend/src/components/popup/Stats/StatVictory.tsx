@@ -1,6 +1,5 @@
 import React, {useState, CSSProperties} from 'react';
 import { User } from '../../types';
-import {VictoryPie, VictoryContainer} from 'victory';
 import crown from '../../../img/history/crown.png'
 import skull from '../../../img/history/skull.png'
 

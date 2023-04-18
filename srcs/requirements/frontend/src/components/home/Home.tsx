@@ -11,19 +11,14 @@ import Rank from '../popup/Rank/Rank';
 import Classement from '../popup/Rank/Classement';
 import Settings from '../settings/Settings';
 import Stats from '../popup/Stats/Stats';
+import Login from '../Login/Login';
+import CreateAccount from '../Login/CreateAccount';
 import {User} from '../types'
 
 function Home() {
 
-    // type User = {
-    //     name: string;
-    //     rank: string;
-    //     id : number;
-    //     elo: number;
-    // }
-
     const [user, setUser] = useState<User[]>([])
-    const [activeComponent, setActiveComponent] = useState<string>('play')
+    const [activeComponent, setActiveComponent] = useState<string>('login')
     const [stack, setStack] = useState<string[]>([]);
 
     const push = (item:string) => {
@@ -66,17 +61,20 @@ function Home() {
         }
     getUser()
     }, [])
-
+    
     return (
         <div className="baground">
             <div className='containerFullPage'>
-                <div className='containerRectangle' >
+                {activeComponent === "login" && <Login changeComponent={changeComponent} />}
+                {activeComponent === "CreateAccount" && <CreateAccount changeComponent={changeComponent} />}
+
+                {activeComponent !== "login" && activeComponent !== "CreateAccount" && <div className='containerRectangle'>
                     <div className='rectangleLeft' />
                     <div className='rectangleRight' />
                     <div className='rectangleTop' />
                     <div className='rectangleBottomLeft' />
                     <div className='rectangleBottomRight' />
-                    <div className='containerHeader'>
+                    {activeComponent !== "login" && <div className='containerHeader'>
                         {user.map((user) => 
                             <Name 
                                 name={user.name} 
@@ -88,8 +86,9 @@ function Home() {
                             changeComponent={changeComponent}
                             front={front}
                         />
-                    </div>
+                    </div>}
                     <div className='containerCenter'>
+
                         {activeComponent === "play" && <Play changeComponent={changeComponent}/>}
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent}/>}
                         {activeComponent === "settings" && <Settings user={user[0]} />}
@@ -105,8 +104,7 @@ function Home() {
 
                         {activeComponent === "rank" && <Rank user=  {{name:'gottie', rank:'gold', id:1, elo:2561}} changeComponent={changeComponent}/>}
                     </div>
-                    <h1>{user[0].name}</h1>
-                </div>
+                </div>}
             </div>
         </div>
     );
