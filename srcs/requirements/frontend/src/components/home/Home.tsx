@@ -11,7 +11,7 @@ import Rank from '../popup/Rank/Rank';
 import Classement from '../popup/Rank/Classement';
 import Settings from '../settings/Settings';
 import {User} from '../types'
-import Friend from '../friend/list/src/Friend';
+import Friend from '../friend/list/src/friend';
 
 function Home() {
 
