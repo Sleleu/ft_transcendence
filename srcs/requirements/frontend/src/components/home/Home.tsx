@@ -1,5 +1,6 @@
 import React from 'react';
 import './Home.css'
+import { useNavigate } from "react-router-dom"
 import { useState, useEffect } from 'react';
 import Name from './header/NameLeft/src/Name';
 import { AgnosticNonIndexRouteObject } from '@remix-run/router';
@@ -22,6 +23,7 @@ function Home(props: { token: string }) {
     const [activeComponent, setActiveComponent] = useState<string>('play')
     const [stack, setStack] = useState<string[]>([]);
     const { token } = props
+    const navigate = useNavigate()
 
     // const aled: User[] = [{ name: 'gottie', rank: 'gold', id: 1, elo: 100 }]
     // setUser(aled)
@@ -57,6 +59,9 @@ function Home(props: { token: string }) {
         const bear = 'Bearer ' + token
         console.log('bear', bear)
         const data = await fetch("http://localhost:5000/users/profile", { method: "GET", headers: { 'Authorization': bear } })
+        if (data.status === 401) {
+            navigate('/')
+        }
         const jsonData = await data.json();
         return jsonData;
     }
