@@ -4,6 +4,10 @@ import { CSSProperties } from 'react'
 interface Props {
     changeComponent: (component: string) => void;
 }
+interface Account {
+    login: string,
+    password: string,
+}
 
 const CreateAccount:React.FC<Props> = ({changeComponent}) => {
 
@@ -99,13 +103,27 @@ const CreateAccount:React.FC<Props> = ({changeComponent}) => {
         if (click === 'create')
         {
             //ENVOYER AU BACK
-            console.log(inputLog);
-            console.log(inputPass);
-            console.log(confirmPass);
+            if (inputPass !== confirmPass)
+                return ;
+            const response = postAccount({login: inputLog, password: inputPass});
+
             //SI LE BACK VALIDE
-            changeComponent('play');
+            changeComponent('login');
         }
     };
+    
+    const postAccount = async (data: Account) => {
+        try {
+            const response = await fetch("http://localhost:5000/auth/signup" , { method:"POST", headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+            if (response.status === 200)
+                return true;
+            return false;
+        }
+        catch(error) {
+            console.error('Failed to send data:', error);
+            return false;
+        }
+    }
 
   return (
     <div style={Container}>
