@@ -121,6 +121,7 @@ const CreateAccount:React.FC<Props> = ({changeComponent}) => {
             const response = await fetch("http://localhost:5000/auth/signup" , { method:"POST", headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
             if (response.status === 200)
                 return true;
+            console.log('FETCH ERROR');
             return false;
         }
         catch(error) {
@@ -135,7 +136,7 @@ const CreateAccount:React.FC<Props> = ({changeComponent}) => {
             <span style={Title}>King Pong</span>
             <input ref={inputRef} style={InputBox} type='input' placeholder='Select Username' value={inputLog} onChange={handleLog}/>
             <input style={InputBox} type='input' placeholder='Select Password' value={inputPass} onChange={handlePass}/>
-            <input style={InputBox} type='input' placeholder='Confirm Password' value={inputPass} onChange={handleConfirm}/>
+            <input style={InputBox} type='input' placeholder='Confirm Password' value={confirmPass} onChange={handleConfirm}/>
                 <button style={BoxCreate} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => handleClick('create')}>Create account</button>
             <span>Or</span>
             <button style={Box42} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => handleClick('42')}>Sign up with 42</button>            
