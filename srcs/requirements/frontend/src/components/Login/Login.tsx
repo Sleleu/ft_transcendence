@@ -5,6 +5,10 @@ import CreateAccount from './CreateAccount';
 interface Props {
     changeComponent: (component: string) => void;
 }
+interface Account {
+    username: string,
+    password: string,
+}
 
 const Login:React.FC<Props> = ({changeComponent}) => {
 
@@ -102,13 +106,31 @@ const Login:React.FC<Props> = ({changeComponent}) => {
             console.log('LOG WITH 42');
         if (click === 'log')
         {
-            //ENVOYER AU BACK
-            console.log(inputLog);
-            console.log(inputPass);
-            //SI LE BACK VALIDE
-            changeComponent('play');
+            const response = logAccount({username: inputLog, password: inputPass});
+            response.then((result:boolean) => {
+                if (result) {
+                    changeComponent('home');
+                    return ;
+                }
+                else
+                    return ;
+            })
         }
     };
+
+    const logAccount = async (data: Account) => {
+        try {
+            const response = await fetch("http://localhost:5000/auth/signin" , { method:"POST", headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+            if (response.status === 200)
+                return true;
+            console.log('status code wrong');
+            return false;
+        }
+        catch(error) {
+            console.error('Failed to send data:', error);
+            return false;
+        }
+    }
 
   return (
     <div style={Container}>
