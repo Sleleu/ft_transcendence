@@ -2,13 +2,14 @@ import React from 'react'
 import '../css/Name.css' 
 import RankBarUnderName from './RankBarUnderName'
 
-type NameProps = {
-  name: string;
-  elo: number;
-  rank: string;
+type User = {
+	name: string;
+	rank: string;
+	id : number;
+	elo: number;
 }
 
-const Name = ({name, elo, rank}: NameProps) => {
+const Name = ({user, changeComponent}: {user:User, changeComponent:(component: string) => void}) => {
 
   let size: number = 32
 
@@ -23,7 +24,7 @@ const Name = ({name, elo, rank}: NameProps) => {
   }
 
   const nameSize = {
-    fontSize: `calc(${calculSize(name)}px + 1.5vh)`
+    fontSize: `calc(${calculSize(user.name)}px + 1.5vh)`
   }
 
   const NamePars = (name: string) => {
@@ -35,12 +36,15 @@ const Name = ({name, elo, rank}: NameProps) => {
   return (
     <div className='containerName'>
       <div className='containerRoseName'>
-        <div className='containerTextName'>
-          <h1 className='nameText' style={nameSize}>{NamePars(name)}</h1>
+        <div className='containerTextName'
+        onClick={() => changeComponent('stat')}
+        >
+          <h1 className='nameText' style={nameSize}>{NamePars(user.name)}</h1>
         </div>
         <RankBarUnderName
-        elo={elo}
-        rank={rank}
+        elo={user.elo}
+        rank={user.rank}
+        changeComponent={changeComponent}
         />
       </div>
     </div>

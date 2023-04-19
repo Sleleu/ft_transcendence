@@ -4,21 +4,14 @@
       "id": 1,
       "name": "gottie",
       "rank": "gold",
-      "elo": 2561
+      "elo": 2561,
+      "friend" : 
+      [
+        2,3,4,5,6,7,8
+      ],
+      "state": "is offline"
     }
   ],
-  "comments": [
-    {
-      "id": 1,
-      "body": "some comment",
-      "postId": 1
-    }
-  ],
-  "profile": {
-    "name": "typicode"
-  },
-
-
   "history": [
     {
       "id" : 1,
@@ -89,6 +82,58 @@
       "advPoints": 3,
       "adversary": "KylianMbappé98",
       "elo": -109
+    }
+  ],
+  "allUser": 
+  [
+    {
+      "id" : 2,
+      "name": "gabLaTortue",
+      "rank": "crack",
+      "elo": 3700,
+      "state": "is offline"
+    },
+    {
+      "id" : 3,
+      "name": "SebLeGoelan",
+      "rank": "crackUltime",
+      "elo": 8000,
+      "state": "is online"
+    },
+    {
+      "id" : 4,
+      "name": "MeloLePoulpe",
+      "rank": "silver",
+      "elo": 1561,
+      "state": "is playing"
+    },
+    {
+      "id" : 5,
+      "name": "PerinneLeCoq",
+      "rank": "gold",
+      "elo": 2791,
+      "state": "is offline"
+    },
+    {
+      "id" : 6,
+      "name": "HanzLeChameau",
+      "rank": "bronze",
+      "elo": 0561,
+      "state": "is online"
+    },
+    {
+      "id" : 7,
+      "name": "AntoineLePirate",
+      "rank": "crack",
+      "elo": 3461,
+      "state": "is playing"
+    },
+    {
+      "id" : 8,
+      "name": "AliceLartichaud",
+      "rank": "crackUltime",
+      "elo": 9999,
+      "state": "is playing"
     }
   ]
 }

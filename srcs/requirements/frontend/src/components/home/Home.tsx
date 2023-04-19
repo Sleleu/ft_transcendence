@@ -11,11 +11,12 @@ import Rank from '../popup/Rank/Rank';
 import Classement from '../popup/Rank/Classement';
 import Settings from '../settings/Settings';
 import {User} from '../types'
+import Friend from '../friend/list/src/Friend';
 
 function Home() {
 
     const [user, setUser] = useState<User[]>([])
-    const [activeComponent, setActiveComponent] = useState<string>('play')
+    const [activeComponent, setActiveComponent] = useState<string>('friend')
     const [stack, setStack] = useState<string[]>([]);
 
     const push = (item:string) => {
@@ -69,13 +70,10 @@ function Home() {
                     <div className='rectangleBottomLeft' />
                     <div className='rectangleBottomRight' />
                     <div className='containerHeader'>
-                        {user.map((user) => 
-                            <Name 
-                                name={user.name} 
-                                elo={user.elo}
-                                rank={user.rank}
-                            />
-                        )} 
+                        <Name
+                            user={user[0]}
+                            changeComponent={changeComponent}
+                        />
                         <NavBar 
                             changeComponent={changeComponent}
                             front={front}
@@ -86,6 +84,7 @@ function Home() {
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent}/>}
                         {activeComponent === "settings" && <Settings changeComponent={changeComponent} user={user[0]} />}
                         {activeComponent === "history" && <History />}
+                        {activeComponent === "friend" && <Friend changeComponent={changeComponent}/>}
                         {activeComponent === "leader" && <Classement rank='gold'/>}
                         {activeComponent === "rank" && <Rank user={{name:'gottie', rank:'gold', id:1, elo:2561}}/>}
                     </div>
