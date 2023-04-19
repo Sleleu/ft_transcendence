@@ -84,56 +84,133 @@
       "elo": -109
     }
   ],
-  "allUser": 
-  [
-    {
-      "id" : 2,
-      "name": "gabLaTortue",
-      "rank": "crack",
-      "elo": 3700,
-      "state": "is offline"
-    },
-    {
-      "id" : 3,
-      "name": "SebLeGoelan",
-      "rank": "crackUltime",
-      "elo": 8000,
-      "state": "is online"
-    },
-    {
-      "id" : 4,
-      "name": "MeloLePoulpe",
-      "rank": "silver",
-      "elo": 1561,
-      "state": "is playing"
-    },
-    {
-      "id" : 5,
-      "name": "PerinneLeCoq",
-      "rank": "gold",
-      "elo": 2791,
-      "state": "is offline"
-    },
-    {
-      "id" : 6,
-      "name": "HanzLeChameau",
-      "rank": "bronze",
-      "elo": 0561,
-      "state": "is online"
-    },
-    {
-      "id" : 7,
-      "name": "AntoineLePirate",
-      "rank": "crack",
-      "elo": 3461,
-      "state": "is playing"
-    },
-    {
-      "id" : 8,
-      "name": "AliceLartichaud",
-      "rank": "crackUltime",
-      "elo": 9999,
-      "state": "is playing"
-    }
+  
+  "leader": [
+      {
+        "id": 1,
+        "username": "SleleDu93",
+        "elo": 3561,
+        "victory": 143,
+        "defeat": 34
+      },
+      {
+        "id": 2,
+        "username": "xxGottie69",
+        "elo": 2551,
+        "victory": 133,
+        "defeat": 34
+      },
+      {
+        "id": 3,
+        "username": "IlyesLeCrack",
+        "elo": 3664,
+        "victory": 113,
+        "defeat": 34
+      },
+      {
+        "id": 4,
+        "username": "EdeSmetLeChad78",
+        "elo": 2260,
+        "victory": 143,
+        "defeat": 34
+      },
+      {
+        "id": 5,
+        "username": "xXMeloFullStackPro",
+        "elo": 3458,
+        "victory": 111,
+        "defeat": 34
+      },
+      {
+        "id": 6,
+        "username": "François Fillon",
+        "elo": 1193,
+        "victory": 100,
+        "defeat": 34
+      },
+      {
+        "id": 7,
+        "username": "KylianMbappé98",
+        "elo": 2061,
+        "victory": 47,
+        "defeat": 34
+      },
+      {
+        "id": 8,
+        "username": "qBornE67",
+        "elo": 1261,
+        "victory": 41,
+        "defeat": 112
+      },
+      {
+        "id": 9,
+        "username": "LeBronzosNul",
+        "elo": 261,
+        "victory": 4,
+        "defeat": 112
+      },
+      {
+        "id": 10,
+        "username": "fanDeSushi69",
+        "elo": 561,
+        "victory": 50,
+        "defeat": 112
+      },
+      {
+        "id": 11,
+        "username": "GigaChadOmega",
+        "elo": 4561,
+        "victory": 500,
+        "defeat": 112
+      },
+      {
+        "id": 12,
+        "username": "Norminet",
+        "elo": 5661,
+        "victory": 800,
+        "defeat": 112
+      },
+      {
+        "id": 13,
+        "username": "silverBro",
+        "elo": 1600,
+        "victory": 101,
+        "defeat": 118
+      },
+      {
+        "id": 14,
+        "username": "silveRdude",
+        "elo": 1223,
+        "victory": 130,
+        "defeat": 112
+      },
+      {
+        "id": 15,
+        "username": "silverFrero",
+        "elo": 1984,
+        "victory": 110,
+        "defeat": 112
+      },
+      {
+        "id": 16,
+        "username": "idiotBête",
+        "elo": 1784,
+        "victory": 200,
+        "defeat": 112
+      },
+      {
+        "id": 17,
+        "username": "FrankyVincent",
+        "elo": 1333,
+        "victory": 100,
+        "defeat": 112
+      },
+      {
+        "id": 18,
+        "username": "gottie",
+        "elo": 3444,
+        "victory": 200,
+        "defeat": 76
+      }
   ]
 }

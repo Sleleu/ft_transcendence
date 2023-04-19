@@ -5,9 +5,10 @@ import {User} from '../../types'
 
 interface Props {
   user: User;
+  changeComponent: (component: string) => void;
 }
 
-const Rank:React.FC<Props> = ({user}) => {
+const Rank:React.FC<Props> = ({user, changeComponent}) => {
 
     const rankContainer: CSSProperties = {
         flexBasis: '1750px',
@@ -52,6 +53,10 @@ const Rank:React.FC<Props> = ({user}) => {
 
   }
 
+  const handleClick = (component: string) => {
+    changeComponent(component + 'Lead');
+  }
+
   return (
     <div style={rankContainer}>
         <div style={Bar}>
@@ -59,11 +64,11 @@ const Rank:React.FC<Props> = ({user}) => {
               user.elo > 249 ? <span>{user.elo}</span>: null} </div>
         </div>
         <div style={rankIcons}>
-        <RankEntry rank='bronze' elo={0} userLevel={user.rank === 'bronze'} user={user}/>
-        <RankEntry rank='silver' elo={1000} userLevel={user.rank === 'silver'} user={user}/>
-        <RankEntry rank='gold'  elo={2000} userLevel={user.rank === 'gold'} user={user}/>
-        <RankEntry rank='crack' elo={3000} userLevel={user.rank === 'crack'} user={user}/>
-        <RankEntry rank='ultime' elo={4000} userLevel={user.rank === 'ultime'} user={user}/>
+        <div onClick={() => handleClick('bronze')}><RankEntry rank='bronze' elo={0} userLevel={user.rank === 'bronze'} user={user}/></div>
+        <div onClick={() => handleClick('silver')}><RankEntry rank='silver' elo={1000} userLevel={user.rank === 'silver'} user={user}/></div>
+        <div onClick={() => handleClick('gold')}><RankEntry rank='gold'  elo={2000} userLevel={user.rank === 'gold'} user={user}/></div>
+        <div onClick={() => handleClick('crack')}><RankEntry rank='crack' elo={3000} userLevel={user.rank === 'crack'} user={user}/></div>
+        <div onClick={() => handleClick('ultime')}><RankEntry rank='ultime' elo={4000} userLevel={user.rank === 'ultime'} user={user}/></div>
         </div>
     </div>
   )

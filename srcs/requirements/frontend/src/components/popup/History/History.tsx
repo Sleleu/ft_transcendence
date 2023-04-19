@@ -10,10 +10,13 @@ const History:React.FC = () => {
     
     border: '4px solid #40DEFF',
     boxShadow: '0 0 10px #40DEFF, 0 0 60px #40DEFF, inset 0 0 40px #40DEFF',
+
     position: 'relative',
     flexGrow: 1,
-    height: '520px',
+    height: '90%',
+    margin: '30px',
     marginBottom: '85px',
+    
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',

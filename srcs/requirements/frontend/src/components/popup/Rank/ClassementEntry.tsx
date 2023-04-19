@@ -1,11 +1,16 @@
 import { relative } from 'path'
 import React from 'react'
 import { CSSProperties, useState } from 'react'
+import { rankData } from '../../types'
 
-const ClassementEntry = () => {
+interface Props {
+  leader: rankData;
+}
+
+const ClassementEntry:React.FC<Props> = ({leader}) => {
 
 const Entry: CSSProperties = {
-    flexBasis: '50px',
+    flexBasis: '38px',
     margin: '5px',
     marginLeft: '5px',
     
@@ -20,22 +25,35 @@ const Entry: CSSProperties = {
 const entryText: CSSProperties = {
     flexBasis: '250px',
     marginTop: '10px',
+    marginLeft: '0px',
+    fontWeight : '600',
+    fontSize : '24px',
+    fontFamily: 'Montserrat, sans-serif',
+    color: '#fff',
+    textAlign:'right',
+
+    // border: '2px solid red',
+  }
+  const rank: CSSProperties = {
+    flexBasis: '100px',
+    marginTop: '10px',
     marginLeft: '30px',
     fontWeight : '600',
     fontSize : '24px',
     fontFamily: 'Montserrat, sans-serif',
     color: '#fff',
+    textAlign:'left',
 
     // border: '2px solid red',
   }
 
   return (
     <div style={Entry}>
-      <span style={entryText}>1</span>
-      <span style={entryText}>SleleDu93</span>
-      <span style={entryText}>2561</span>
-      <span style={entryText}>143</span>
-      <span style={entryText}>54%</span>
+      <span style={rank}>{leader.rank}</span>
+      <span style={entryText}> {leader.username} </span>
+      <span style={entryText}>{leader.elo}</span>
+      <span style={entryText}>{leader.victory}</span>
+      <span style={entryText}>{(leader.victory / (leader.victory + leader.defeat) * 100).toFixed(0)}%</span>
     </div>
   )
 }
