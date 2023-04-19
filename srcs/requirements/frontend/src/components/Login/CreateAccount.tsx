@@ -102,13 +102,17 @@ const CreateAccount:React.FC<Props> = ({changeComponent}) => {
             console.log('LOG WITH 42');
         if (click === 'create')
         {
-            //ENVOYER AU BACK
             if (inputPass !== confirmPass)
                 return ;
             const response = postAccount({login: inputLog, password: inputPass});
-
-            //SI LE BACK VALIDE
-            changeComponent('login');
+            response.then((result:boolean) => {
+                if (result) {
+                    changeComponent('login');
+                    return ;
+                }
+                else
+                    return ;
+            })
         }
     };
     
