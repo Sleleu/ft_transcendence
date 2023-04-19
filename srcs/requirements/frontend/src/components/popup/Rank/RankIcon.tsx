@@ -18,15 +18,15 @@ interface Props {
 
 }
 
-const RankIcon:React.FC<Props> = ({user, icon, scale=1, y=0, x=0, changeComponent}) => {
+const RankIcon: React.FC<Props> = ({ user, icon, scale = 1, y = 0, x = 0, changeComponent }) => {
 
     const [isHovered, setIsHovered] = useState<boolean>(false);
 
-    let display:string;
+    let display: string;
     if (icon)
         display = icon;
-    else if (user)
-        display = user.rank;
+    // else if (user)
+    // display = user.rank;
     else
         return (null);
 
@@ -34,8 +34,8 @@ const RankIcon:React.FC<Props> = ({user, icon, scale=1, y=0, x=0, changeComponen
     const handleHover = () => {
         setIsHovered(!isHovered);
     };
-    
-    const handleClick = () =>{
+
+    const handleClick = () => {
         if (changeComponent)
             changeComponent(display + 'Lead')
     }
@@ -63,7 +63,7 @@ const RankIcon:React.FC<Props> = ({user, icon, scale=1, y=0, x=0, changeComponen
     }
     const Container: CSSProperties = {
         cursor: isHovered ? 'pointer' : 'auto',
-        filter: isHovered ? 'drop-shadow(0px 0px 30px '+ auraColor +')': 'none',
+        filter: isHovered ? 'drop-shadow(0px 0px 30px ' + auraColor + ')' : 'none',
         transition: 'all 0.3s ease-in-out',
     }
     const bronzePic: CSSProperties = {
@@ -73,7 +73,7 @@ const RankIcon:React.FC<Props> = ({user, icon, scale=1, y=0, x=0, changeComponen
         marginTop: (-45 - y) + 'px',
         marginLeft: x + 'px',
         paddingRight: '5px',
-        
+
     }
     const silverPic: CSSProperties = {
         height: (250 * scale) + 'px',
@@ -108,15 +108,15 @@ const RankIcon:React.FC<Props> = ({user, icon, scale=1, y=0, x=0, changeComponen
         paddingRight: '5px',
     }
 
-  return (
-      <div onClick={handleClick} onMouseEnter={handleHover} onMouseLeave={handleHover} style={Container}>
-        {display === 'bronze' && <img src={bronze} alt='bronze' style={bronzePic}/>}
-        {display === 'silver' && <img src={silver} alt='silver' style={silverPic}/>}
-        {display === 'gold' && <img src={gold} alt='gold' style={goldPic}/>}
-        {display === 'crack' && <img src={crack} alt='crack' style={crackPic}/>}
-        {display === 'ultime' && <img src={ultime} alt='ultime' style={ultimePic}/>}
-    </div>
-  )
+    return (
+        <div onClick={handleClick} onMouseEnter={handleHover} onMouseLeave={handleHover} style={Container}>
+            {display === 'bronze' && <img src={bronze} alt='bronze' style={bronzePic} />}
+            {display === 'silver' && <img src={silver} alt='silver' style={silverPic} />}
+            {display === 'gold' && <img src={gold} alt='gold' style={goldPic} />}
+            {display === 'crack' && <img src={crack} alt='crack' style={crackPic} />}
+            {display === 'ultime' && <img src={ultime} alt='ultime' style={ultimePic} />}
+        </div>
+    )
 }
 
 export default RankIcon

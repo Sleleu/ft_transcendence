@@ -4,15 +4,15 @@ import '../css/friend.css'
 import Play from '../../../home/play/src/Play'
 
 interface FriendProps {
-    changeComponent: (component: string) => void;
+  changeComponent: (component: string) => void;
 }
 
-const Friend:FC<FriendProps> = ({changeComponent}) => {
+const Friend: FC<FriendProps> = ({ changeComponent }) => {
 
   // const [activeComponent.]
 
   return (
-    <div className='containerFriend'>
+    <div className='containerFriends'>
       <div className='containerLeft'>
         <div className='containerSearchHeader'>
           <div className='containerSearch'>

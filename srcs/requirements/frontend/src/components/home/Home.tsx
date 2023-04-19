@@ -16,12 +16,12 @@ import CreateAccount from '../Login/CreateAccount';
 import { User } from '../types'
 import Friend from '../friend/list/src/friend';
 
-function Home() {
+function Home(props: { token: string }) {
 
-    const [user, setUser] = useState<User[]>([])
-    const [token, setToken] = useState<string>('')
-    const [activeComponent, setActiveComponent] = useState<string>('login')
+    const [user, setUser] = useState<User>({ username: 'error', id: -1, elo: -1 })
+    const [activeComponent, setActiveComponent] = useState<string>('play')
     const [stack, setStack] = useState<string[]>([]);
+    const { token } = props
 
     // const aled: User[] = [{ name: 'gottie', rank: 'gold', id: 1, elo: 100 }]
     // setUser(aled)
@@ -51,31 +51,31 @@ function Home() {
         setActiveComponent(component)
     }
 
-    const updateToken = (token: string) => {
-        setToken(token)
+
+
+    const api = async () => {
+        const bear = 'Bearer ' + token
+        console.log('bear', bear)
+        const data = await fetch("http://localhost:5000/users/profile", { method: "GET", headers: { 'Authorization': bear } })
+        const jsonData = await data.json();
+        return jsonData;
     }
 
-    // const api = async () => {
-    //     const data = await fetch("http://localhost:5000/user", { method: "GET" })
-    //     const jsonData = await data.json();
-    //     return jsonData;
-    // }
+    useEffect(() => {
+        const getUser = async () => {
+            const userFromServer = await api()
+            setUser(userFromServer)
+        }
+        getUser()
+    }, [])
 
-    // useEffect(() => {
-    //     const getUser = async () => {
-    //         const userFromServer = await api()
-    //         setUser(userFromServer)
-    //     }
-    //     getUser()
-    // }, [])
 
     return (
         <div className="baground">
             <div className='containerFullPage'>
-                {activeComponent === "login" && <Login changeComponent={changeComponent}  />}
-                {activeComponent === "CreateAccount" && <CreateAccount changeComponent={changeComponent} updateToken={updateToken}/>}
+                {/* {activeComponent === "login" && <Login changeComponent={changeComponent} />} */}
 
-                {activeComponent !== "login" && activeComponent !== "CreateAccount" && <div className='containerRectangle'>
+                <div className='containerRectangle'>
                     <div className='rectangleLeft' />
                     <div className='rectangleRight' />
                     <div className='rectangleTop' />
@@ -83,7 +83,7 @@ function Home() {
                     <div className='rectangleBottomRight' />
                     {activeComponent !== "login" && <div className='containerHeader'>
                         <Name
-                            user={user[0]}
+                            user={user}
                             changeComponent={changeComponent}
                         />
                         <NavBar
@@ -95,21 +95,21 @@ function Home() {
 
                         {activeComponent === "play" && <Play changeComponent={changeComponent} />}
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent} />}
-                        {activeComponent === "settings" && <Settings user={user[0]} changeComponent={changeComponent} />}
+                        {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} />}
                         {activeComponent === "historic" && <History />}
-                        {activeComponent === "stat" && <Stats user={user[0]} changeComponent={changeComponent} />}
+                        {activeComponent === "stat" && <Stats user={user} changeComponent={changeComponent} />}
                         {activeComponent === "friend" && <Friend changeComponent={changeComponent} />}
 
-                        {activeComponent === "leader" && <Classement rank={user[0].rank} changeComponent={changeComponent} />}
+                        {activeComponent === "leader" && <Classement rank={'gold'} changeComponent={changeComponent} />}
                         {activeComponent === "bronzeLead" && <Classement rank={'bronze'} changeComponent={changeComponent} />}
                         {activeComponent === "silverLead" && <Classement rank={'silver'} changeComponent={changeComponent} />}
                         {activeComponent === "goldLead" && <Classement rank={'gold'} changeComponent={changeComponent} />}
                         {activeComponent === "crackLead" && <Classement rank={'crack'} changeComponent={changeComponent} />}
                         {activeComponent === "ultimeLead" && <Classement rank={'ultime'} changeComponent={changeComponent} />}
 
-                        {activeComponent === "rank" && <Rank user={{ name: 'gottie', rank: 'gold', id: 1, elo: 2561 }} changeComponent={changeComponent} />}
+                        {/* {activeComponent === "rank" && <Rank user={{ name: 'gottie', rank: 'gold', id: 1, elo: 2561 }} changeComponent={changeComponent} />} */}
                     </div>
-                </div>}
+                </div>
             </div>
         </div>
     );

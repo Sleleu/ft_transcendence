@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { CSSProperties } from 'react'
+import { useNavigate } from "react-router-dom"
 
 interface Props {
-    changeComponent: (component: string) => void;
     updateToken: (token: string) => void;
 }
 interface Account {
@@ -10,8 +10,11 @@ interface Account {
     password: string,
 }
 
-const CreateAccount: React.FC<Props> = ({ changeComponent, updateToken }) => {
+function CreateAccount(updateToken: Props) {
+    // const CreateAccount: React.FC<Props> = ({ updateToken}) => {
 
+
+    const navigate = useNavigate()
     const [inputLog, setInputLog] = useState<string>('');
     const [inputPass, setInputPass] = useState<string>('');
     const [confirmPass, setConfirmPass] = useState<string>('');
@@ -97,8 +100,8 @@ const CreateAccount: React.FC<Props> = ({ changeComponent, updateToken }) => {
         setInputLog('');
         setInputPass('');
         setConfirmPass('');
-        if (click === 'return')
-            changeComponent('login');
+        // if (click === 'return')
+        // changeComponent('login');
         if (click === '42')
             console.log('LOG WITH 42');
         if (click === 'create') {
@@ -107,7 +110,7 @@ const CreateAccount: React.FC<Props> = ({ changeComponent, updateToken }) => {
             const response = postAccount({ username: inputLog, password: inputPass });
             response.then((result: boolean) => {
                 if (result) {
-                    changeComponent('home');
+                    navigate('/home')
                     return;
                 }
                 else
@@ -121,7 +124,7 @@ const CreateAccount: React.FC<Props> = ({ changeComponent, updateToken }) => {
             const response = await fetch("http://localhost:5000/auth/signup", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
             if (response.status === 201) {
                 const jsonData = await response.json()
-                updateToken(jsonData.access_token)
+                updateToken.updateToken(jsonData.access_token)
                 return true;
             }
             console.log('FETCH ERROR');

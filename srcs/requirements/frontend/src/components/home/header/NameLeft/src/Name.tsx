@@ -1,19 +1,14 @@
 import React from 'react'
-import '../css/Name.css' 
+import '../css/Name.css'
 import RankBarUnderName from './RankBarUnderName'
+import { User } from '../../../../types'
 
-type User = {
-	name: string;
-	rank: string;
-	id : number;
-	elo: number;
-}
 
-const Name = ({user, changeComponent}: {user:User, changeComponent:(component: string) => void}) => {
+const Name = ({ user, changeComponent }: { user: User, changeComponent: (component: string) => void }) => {
 
   let size: number = 32
 
-  const calculSize = (size:string) => {
+  const calculSize = (size: string) => {
     if (size.length < 9)
       return 20
     if (size.length < 12)
@@ -24,7 +19,7 @@ const Name = ({user, changeComponent}: {user:User, changeComponent:(component: s
   }
 
   const nameSize = {
-    fontSize: `calc(${calculSize(user.name)}px + 1.5vh)`
+    fontSize: `calc(${calculSize(user.username)}px + 1.5vh)`
   }
 
   const NamePars = (name: string) => {
@@ -37,14 +32,14 @@ const Name = ({user, changeComponent}: {user:User, changeComponent:(component: s
     <div className='containerName'>
       <div className='containerRoseName'>
         <div className='containerTextName'
-        onClick={() => changeComponent('stat')}
+          onClick={() => changeComponent('stat')}
         >
-          <h1 className='nameText' style={nameSize}>{NamePars(user.name)}</h1>
+          <h1 className='nameText' style={nameSize}>{NamePars(user.username)}</h1>
         </div>
         <RankBarUnderName
-        elo={user.elo}
-        rank={user.rank}
-        changeComponent={changeComponent}
+          elo={user.elo}
+          rank={'gold'}
+          changeComponent={changeComponent}
         />
       </div>
     </div>
