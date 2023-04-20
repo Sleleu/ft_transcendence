@@ -112,8 +112,6 @@ const Login:React.FC<Props> = ({changeComponent}) => {
                     changeComponent('home');
                     return ;
                 }
-                else
-                    return ;
             })
         }
     };

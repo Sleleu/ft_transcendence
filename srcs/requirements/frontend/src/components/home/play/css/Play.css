@@ -11,13 +11,48 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap:10%
+    gap:10%;
+    /* animation: slideInRight 0.5s forwards; */
+}
+
+@keyframes slideInRight {
+    0% {
+      transform: translateX(71%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+}
+
+.containerPlay:active .playButton
+{
+    transform: scale(0.9);
+}
+
+.containerPlay:hover .playButton
+{
+    filter: drop-shadow(0px 0px 15px white);
+}
+
+.containerPlay:hover .playTxt
+{
+    text-shadow:
+    0 0 10px #fff,
+    0 0 20px #fff,
+    0 0 42px #fff;
+    transform: scale(1.1);
+}
+
+
+.containerPlay:hover
+{
+    cursor: pointer;
 }
 
 .playTxt
 {
     color:white;
-    font-size:12vh;
+    font-size: calc(30px + 7vh);
     font-weight: 700;
     text-shadow:
     0 0 10px #fff,
@@ -25,15 +60,7 @@
     transition: text-shadow 0.3s ease;
     cursor: pointer;
     margin-bottom: 0%;
-    margin-top: 0%;
-}
-
-.playTxt:hover
-{ 
-    text-shadow:
-    0 0 10px #fff,
-    0 0 20px #fff,
-    0 0 42px #fff;
+    margin-top: 4%;
 }
 
 .playButton
@@ -44,14 +71,8 @@
     padding-bottom: 10%;
     background-size: contain;
     background-repeat: no-repeat;
-    height: 8vh;
-    width: 8vh;
-    cursor: pointer;
+    height: 7vh;
+    width: 7vh;
     filter: drop-shadow(0px 0px 5px white);
     transition: box-shadow 0.3s ease;
-}
-
-.playButton:hover
-{
-    filter: drop-shadow(0px 0px 15px white);
 }

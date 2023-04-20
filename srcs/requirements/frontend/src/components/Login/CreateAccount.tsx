@@ -1,36 +1,40 @@
-import React, {useState, useEffect, useRef} from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { CSSProperties } from 'react'
+import { useNavigate } from "react-router-dom"
 
 interface Props {
-    changeComponent: (component: string) => void;
+    updateToken: (token: string) => void;
 }
 interface Account {
-    login: string,
+    username: string,
     password: string,
 }
 
-const CreateAccount:React.FC<Props> = ({changeComponent}) => {
+function CreateAccount(updateToken: Props) {
+    // const CreateAccount: React.FC<Props> = ({ updateToken}) => {
 
+
+    const navigate = useNavigate()
     const [inputLog, setInputLog] = useState<string>('');
     const [inputPass, setInputPass] = useState<string>('');
     const [confirmPass, setConfirmPass] = useState<string>('');
     const [hover, setHover] = useState<boolean>(false);
     const [click, setClick] = useState<string>('');
 
-    const Container : CSSProperties = {   
+    const Container: CSSProperties = {
         height: '70%', width: '30%',
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
         borderRadius: '30px',
 
-        display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignContent:'center', 
+        display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignContent: 'center',
 
         fontWeight: '800', fontFamily: 'Montserrat, sans-serif', color: '#FFFFFF',
     }
-    const Title : CSSProperties = {   
+    const Title: CSSProperties = {
         alignSelf: 'center', fontSize: '40px',
     }
-    const Input : CSSProperties = {   
-        display: 'flex', flexDirection: 'column' , justifyContent: 'space-around', 
+    const Input: CSSProperties = {
+        display: 'flex', flexDirection: 'column', justifyContent: 'space-around',
         paddingTop: '10%',
         paddingBottom: '10%',
         width: '100%',
@@ -38,7 +42,7 @@ const CreateAccount:React.FC<Props> = ({changeComponent}) => {
         position: 'relative',
         alignItems: 'center',
     }
-    const InputBox : CSSProperties = {   
+    const InputBox: CSSProperties = {
         width: '56%',
         height: '1%',
         borderRadius: '15px',
@@ -49,16 +53,16 @@ const CreateAccount:React.FC<Props> = ({changeComponent}) => {
         backgroundColor: 'rgba(255, 255, 255, 0.3)',
         zIndex: 1,
     }
-    const BoxCreate : CSSProperties = {   
+    const BoxCreate: CSSProperties = {
         backgroundColor: 'rgba(0, 255, 0, 0.8)',
         width: '65%', height: '7%', borderRadius: '5px',
         fontWeight: '800', fontFamily: 'Montserrat, sans-serif', color: '#fff', fontSize: '20px',
-        
+
         border: 'none',
         textAlign: 'center',
         zIndex: 1, cursor: hover ? 'pointer' : 'auto',
     }
-    const Box42 : CSSProperties = {   
+    const Box42: CSSProperties = {
         backgroundColor: 'rgba(255, 255, 255, 0.8)',
         width: '65%', height: '7%', borderRadius: '5px',
         textAlign: 'center',
@@ -66,7 +70,7 @@ const CreateAccount:React.FC<Props> = ({changeComponent}) => {
         fontSize: '20px', fontWeight: '600', fontFamily: 'Montserrat, sans-serif', color: '#000',
         zIndex: 1, cursor: hover ? 'pointer' : 'auto',
     }
-    const BoxReturn : CSSProperties = {   
+    const BoxReturn: CSSProperties = {
         backgroundColor: 'rgba(150, 150, 150, 0.8)',
         width: '65%', height: '7%', borderRadius: '5px',
         textAlign: 'center',
@@ -76,13 +80,13 @@ const CreateAccount:React.FC<Props> = ({changeComponent}) => {
     }
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const handleLog = (event:React.ChangeEvent<HTMLInputElement>) => {
+    const handleLog = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInputLog(event.target.value);
     };
-    const handlePass = (event:React.ChangeEvent<HTMLInputElement>) => {
+    const handlePass = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInputPass(event.target.value);
     };
-    const handleConfirm = (event:React.ChangeEvent<HTMLInputElement>) => {
+    const handleConfirm = (event: React.ChangeEvent<HTMLInputElement>) => {
         setConfirmPass(event.target.value);
     };
     const handleHover = () => {
@@ -91,15 +95,16 @@ const CreateAccount:React.FC<Props> = ({changeComponent}) => {
     const handleClick = (button: string) => {
         setClick(button);
     };
-    const handleSubmit = (e : React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setInputLog('');
         setInputPass('');
         setConfirmPass('');
-        if (click === 'return')
-            changeComponent('login');
+        // if (click === 'return')
+        // changeComponent('login');
         if (click === '42')
             console.log('LOG WITH 42');
+<<<<<<< HEAD
         if (click === 'create')
         {
             if (inputPass !== confirmPass)
@@ -112,24 +117,45 @@ const CreateAccount:React.FC<Props> = ({changeComponent}) => {
                 }
                 else
                     return ;
+=======
+        if (click === 'create') {
+            if (inputPass !== confirmPass)
+                return;
+            const response = postAccount({ username: inputLog, password: inputPass });
+            response.then((result: boolean) => {
+                if (result) {
+                    navigate('/home')
+                    return;
+                }
+                else
+                    return;
+>>>>>>> origin/main
             })
         }
     };
-    
+
     const postAccount = async (data: Account) => {
         try {
-            const response = await fetch("http://localhost:5000/auth/signup" , { method:"POST", headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
-            if (response.status === 200)
+            const response = await fetch("http://localhost:5000/auth/signup", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            if (response.status === 201) {
+                const jsonData = await response.json()
+                updateToken.updateToken(jsonData.access_token)
                 return true;
+<<<<<<< HEAD
+=======
+            }
+>>>>>>> origin/main
             console.log('FETCH ERROR');
             return false;
         }
-        catch(error) {
+        catch (error) {
+            console.log('Jason:', JSON.stringify(data))
             console.error('Failed to send data:', error);
             return false;
         }
     }
 
+<<<<<<< HEAD
   return (
     <div style={Container}>
         <form style={Input} onSubmit={handleSubmit}>
@@ -137,13 +163,22 @@ const CreateAccount:React.FC<Props> = ({changeComponent}) => {
             <input ref={inputRef} style={InputBox} type='input' placeholder='Select Username' value={inputLog} onChange={handleLog}/>
             <input style={InputBox} type='input' placeholder='Select Password' value={inputPass} onChange={handlePass}/>
             <input style={InputBox} type='input' placeholder='Confirm Password' value={confirmPass} onChange={handleConfirm}/>
+=======
+    return (
+        <div style={Container}>
+            <form style={Input} onSubmit={handleSubmit}>
+                <span style={Title}>King Pong</span>
+                <input ref={inputRef} style={InputBox} type='input' placeholder='Select Username' value={inputLog} onChange={handleLog} />
+                <input style={InputBox} type='input' placeholder='Select Password' value={inputPass} onChange={handlePass} />
+                <input style={InputBox} type='input' placeholder='Confirm Password' value={confirmPass} onChange={handleConfirm} />
+>>>>>>> origin/main
                 <button style={BoxCreate} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => handleClick('create')}>Create account</button>
-            <span>Or</span>
-            <button style={Box42} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => handleClick('42')}>Sign up with 42</button>            
-            <button style={BoxReturn} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => handleClick('return')}>Return</button>
-        </form>
-    </div>
-  )
+                <span>Or</span>
+                <button style={Box42} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => handleClick('42')}>Sign up with 42</button>
+                <button style={BoxReturn} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => handleClick('return')}>Return</button>
+            </form>
+        </div>
+    )
 }
 
 export default CreateAccount
