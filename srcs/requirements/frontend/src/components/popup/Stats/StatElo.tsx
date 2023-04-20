@@ -31,7 +31,7 @@ const StatElo:React.FC<Props> = ({user, changeComponent}) => {
       <span>GOLD</span>
       <div onClick={handleClick}><RankIcon user={user} /></div>
       <span style={Elo}>Elo</span>
-      <span style={Nbr}>2561</span>
+      <span style={Nbr}>{user.elo}</span>
     </div>
   )
 }

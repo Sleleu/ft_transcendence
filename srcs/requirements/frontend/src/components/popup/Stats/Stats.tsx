@@ -19,6 +19,8 @@ const Stats: React.FC<Props> = ({user, changeComponent}) => {
         display: 'flex', flexDirection: 'row', justifyContent: 'space-around',
     }
 
+    // const testUser:User = {username: 'gmansuy', id: 3, elo: 1678};
+
   return (
     <div style={Container}>
         <StatVictory user={user}/>

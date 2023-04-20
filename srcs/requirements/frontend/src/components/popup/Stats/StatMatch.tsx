@@ -41,6 +41,8 @@ const StatMatch:React.FC<Props> = ({user, changeComponent}) => {
         cursor: isHovered ? 'pointer' : 'auto',
     }
 
+    //No user Rank / no history in DB
+
     return (
     <div style={StatMatch}>
       <span>RANK</span>
