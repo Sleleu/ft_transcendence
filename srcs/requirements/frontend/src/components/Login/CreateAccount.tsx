@@ -4,15 +4,14 @@ import { useNavigate } from "react-router-dom"
 
 interface Props {
     updateToken: (token: string) => void;
+    setPage: React.Dispatch<React.SetStateAction<string>>;
 }
 interface Account {
     username: string,
     password: string,
 }
 
-function CreateAccount(updateToken: Props) {
-    // const CreateAccount: React.FC<Props> = ({ updateToken}) => {
-
+function CreateAccount(props: Props) {
 
     const navigate = useNavigate()
     const [inputLog, setInputLog] = useState<string>('');
@@ -100,36 +99,22 @@ function CreateAccount(updateToken: Props) {
         setInputLog('');
         setInputPass('');
         setConfirmPass('');
-        // if (click === 'return')
-        // changeComponent('login');
+        if (click === 'return')
+            props.setPage('log');
         if (click === '42')
             console.log('LOG WITH 42');
-<<<<<<< HEAD
-        if (click === 'create')
-        {
-            if (inputPass !== confirmPass)
-                return ;
-            const response = postAccount({login: inputLog, password: inputPass});
-            response.then((result:boolean) => {
-                if (result) {
-                    changeComponent('login');
-                    return ;
-                }
-                else
-                    return ;
-=======
         if (click === 'create') {
             if (inputPass !== confirmPass)
                 return;
             const response = postAccount({ username: inputLog, password: inputPass });
             response.then((result: boolean) => {
                 if (result) {
-                    navigate('/home')
+                    console.log('CreateAccount : to Home')
+                    navigate('/home');
                     return;
                 }
                 else
                     return;
->>>>>>> origin/main
             })
         }
     };
@@ -139,39 +124,26 @@ function CreateAccount(updateToken: Props) {
             const response = await fetch("http://localhost:5000/auth/signup", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
             if (response.status === 201) {
                 const jsonData = await response.json()
-                updateToken.updateToken(jsonData.access_token)
+                props.updateToken(jsonData.access_token)
                 return true;
-<<<<<<< HEAD
-=======
             }
->>>>>>> origin/main
-            console.log('FETCH ERROR');
+            console.log('CreateAccount : Status Error code : %d', response.status);
             return false;
         }
         catch (error) {
             console.log('Jason:', JSON.stringify(data))
-            console.error('Failed to send data:', error);
+            console.error('CreateAccount : Failed to send data:', error);
             return false;
         }
     }
 
-<<<<<<< HEAD
-  return (
-    <div style={Container}>
-        <form style={Input} onSubmit={handleSubmit}>
-            <span style={Title}>King Pong</span>
-            <input ref={inputRef} style={InputBox} type='input' placeholder='Select Username' value={inputLog} onChange={handleLog}/>
-            <input style={InputBox} type='input' placeholder='Select Password' value={inputPass} onChange={handlePass}/>
-            <input style={InputBox} type='input' placeholder='Confirm Password' value={confirmPass} onChange={handleConfirm}/>
-=======
     return (
         <div style={Container}>
             <form style={Input} onSubmit={handleSubmit}>
                 <span style={Title}>King Pong</span>
                 <input ref={inputRef} style={InputBox} type='input' placeholder='Select Username' value={inputLog} onChange={handleLog} />
-                <input style={InputBox} type='input' placeholder='Select Password' value={inputPass} onChange={handlePass} />
-                <input style={InputBox} type='input' placeholder='Confirm Password' value={confirmPass} onChange={handleConfirm} />
->>>>>>> origin/main
+                <input style={InputBox} type='password' placeholder='Select Password' value={inputPass} onChange={handlePass} />
+                <input style={InputBox} type='password' placeholder='Confirm Password' value={confirmPass} onChange={handleConfirm} />
                 <button style={BoxCreate} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => handleClick('create')}>Create account</button>
                 <span>Or</span>
                 <button style={Box42} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => handleClick('42')}>Sign up with 42</button>
