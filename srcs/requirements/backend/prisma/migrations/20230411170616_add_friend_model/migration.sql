@@ -14,6 +14,7 @@ CREATE TABLE "users" (
     "updateAt" TIMESTAMP(3) NOT NULL,
     "hash" TEXT,
     "username" TEXT NOT NULL,
+    "state" TEXT NOT NULL DEFAULT 'online',
     "elo" INTEGER NOT NULL DEFAULT 400,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")

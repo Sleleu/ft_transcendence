@@ -28,6 +28,19 @@ const Name = ({ user, changeComponent }: { user: User, changeComponent: (compone
     return name
   }
 
+  const calculRank = (elo: number) => {
+    if (elo < 1000)
+      return "bronze"
+    else if (elo < 2000)
+      return "silver"
+    else if (elo < 3000)
+      return "gold"
+    else if (elo < 4000)
+      return "crack"
+    else
+      return "ultimeCrack"
+  }
+
   return (
     <div className='containerName'>
       <div className='containerRoseName'>
@@ -38,7 +51,7 @@ const Name = ({ user, changeComponent }: { user: User, changeComponent: (compone
         </div>
         <RankBarUnderName
           elo={user.elo}
-          rank={'gold'}
+          rank={calculRank(user.elo)}
           changeComponent={changeComponent}
         />
       </div>

@@ -25,9 +25,6 @@ function Home(props: { token: string }) {
     const { token } = props
     const navigate = useNavigate()
 
-    // const aled: User[] = [{ name: 'gottie', rank: 'gold', id: 1, elo: 100 }]
-    // setUser(aled)
-
     const push = (item: string) => {
         setStack([...stack, item])
     }

@@ -12,7 +12,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwt: JwtService,
     private config: ConfigService,
-  ) {}
+  ) { }
 
   async signup(dto: AuthDto) {
     // generer le hash
@@ -53,8 +53,8 @@ export class AuthService {
     const passwordMatch = await argon.verify(user.hash, dto.password);
     if (!passwordMatch)
       throw new ForbiddenException('Incorrect username or password');
-    
-	return this.signToken(user.id, user.username);
+
+    return this.signToken(user.id, user.username);
   }
 
   async signToken(
