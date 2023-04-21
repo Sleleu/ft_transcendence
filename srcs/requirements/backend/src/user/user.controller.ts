@@ -16,14 +16,13 @@ interface AuthenticatedRequest extends Request {
 	user: AuthenticatedUser;
 }
 
-
-@UseGuards(JwtGuard) // cette route est protegee par le guard de JwtStrategy
+@UseGuards(JwtGuard)
 @Controller('users')
 export class UserController {
 	constructor(private userService: UserService) {}
 
 	@Get('profile')
-	getProfile(@Req() req: Request) {
+	getProfile(@Req() req: AuthenticatedRequest) {
 		if (!req.user) {
 			throw new NotFoundException('User not found');
 		}
