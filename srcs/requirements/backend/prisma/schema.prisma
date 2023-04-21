@@ -15,13 +15,14 @@ model User {
 	createAt DateTime @default(now()) // Time at creation
 	updateAt DateTime @updatedAt
 
-	state	String	@default("online")
-	hash String
-	username String @unique
-	elo Int @default(400)
- 	friends   Friend[] @relation("UserFriend")
-	friendRequestsSent FriendRequest[] @relation("FriendRequestSender")
-  	friendRequestsReceived FriendRequest[] @relation("FriendRequestRecipient")
+	state					String	@default("online")
+	hash 					String
+	username 				String @unique
+	elo 					Int @default(400)
+ 	friend					Friend[] @relation("UserFriend")
+	friendsOf				Friend[] @relation("FriendUser")
+	friendRequestsSent		FriendRequest[] @relation("FriendRequestSender")
+  	friendRequestsReceived	FriendRequest[] @relation("FriendRequestRecipient")
 	@@map("users")
 }
 
@@ -29,11 +30,10 @@ model Friend {
 
 	id          Int    @id @default(autoincrement())
 	createdAt   DateTime @default(now())
-	username	String	
-	state		String
-	elo			Int
-	user 		User @relation("UserFriend", fields:[userId], references: [id])
+	user        User   @relation("UserFriend", fields:[userId], references: [id])
 	userId		Int
+	friend		User @relation("FriendUser", fields:[friendId], references: [id])
+	friendId	Int @default(-1)
   	@@map("friends")
 }
 

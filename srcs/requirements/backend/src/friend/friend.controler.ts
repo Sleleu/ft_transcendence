@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Req, Post, Param, Put } from "@nestjs/common";
+import { Controller, Get, UseGuards, Req, Post, Param, Put, Delete } from "@nestjs/common";
 import { JwtGuard } from 'src/auth/guard';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
@@ -17,6 +17,12 @@ interface newReq extends Request {
 export class FriendController {
     constructor(private friendService: FriendService) { }
 
+    @Get('')
+    async getFriendsByUserId(@Req() req: newReq) {
+        const friends = await this.friendService.getFriendsByUserId(+req.user.id);
+        return { friends };
+    }
+
     @Post('send/:friendId')
     async sendFriendReq(@Req() req: newReq, @Param('friendId') friendId: number) {
         const request = await this.friendService.createFriendRequest(+req.user.id, +friendId)
@@ -31,5 +37,10 @@ export class FriendController {
     @Put('refuse/:friendId')
     async refuseFriendReq(@Req() req: newReq, @Param('friendId') friendId: number) {
         await this.friendService.refuseFriendRequest(+req.user.id, +friendId)
+    }
+
+    @Delete('delete/:friendId')
+    async deleteFriend(@Req() req: newReq, @Param('friendId') friendId: number) {
+        await this.friendService.deleteFriendById(+req.user.id, +friendId)
     }
 }
