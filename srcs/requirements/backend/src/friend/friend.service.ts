@@ -67,9 +67,13 @@ export class FriendService {
     }
 
     async getFriendsByUserId(userId: number) {
-        return await this.prisma.friend.findMany({
+        const friend = await this.prisma.friend.findMany({
             where: { userId },
             include: { friend: true },
+        })
+        return friend.map(friend => {
+            const { hash, ...rest } = friend.friend
+            return { ...friend, friend: rest }
         })
     }
 

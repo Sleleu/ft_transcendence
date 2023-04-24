@@ -19,7 +19,7 @@ import Friend from '../friend/list/src/friend';
 
 function Home(props: { token: string }) {
 
-    const [user, setUser] = useState<User>({ username: 'error', id: -1, elo: -1 })
+    const [user, setUser] = useState<User>({ username: 'error', id: -1, elo: -1, createAt: '', updateAt: '', state: 'inexistant' })
     const [activeComponent, setActiveComponent] = useState<string>('play')
     const [stack, setStack] = useState<string[]>([]);
     const { token } = props
@@ -100,7 +100,7 @@ function Home(props: { token: string }) {
                         {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} />}
                         {activeComponent === "historic" && <History />}
                         {activeComponent === "stat" && <Stats user={user} changeComponent={changeComponent} />}
-                        {activeComponent === "friend" && <Friend changeComponent={changeComponent} />}
+                        {activeComponent === "friend" && <Friend changeComponent={changeComponent} token={token} />}
 
                         {activeComponent === "leader" && <Classement rank={'gold'} changeComponent={changeComponent} />}
                         {activeComponent === "bronzeLead" && <Classement rank={'bronze'} changeComponent={changeComponent} />}

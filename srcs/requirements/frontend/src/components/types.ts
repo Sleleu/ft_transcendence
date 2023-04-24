@@ -2,6 +2,9 @@ export interface User {
   username: string;
   id: number;
   elo: number;
+  createAt: string;
+  updateAt: string;
+  state: string;
 }
 
 export interface rankData {

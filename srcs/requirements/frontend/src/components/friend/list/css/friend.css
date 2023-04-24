@@ -9,11 +9,10 @@
 }
 
 .containerLeft {
-    min-width: 775px;
     min-height: 457px;
     background-color: white;
     height: 83%;
-    width: 68%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -31,7 +30,7 @@
 }
 
 .containerSearch {
-    width: 80%;
+    width: 83%;
     height: 100%;
     background-color: brown;
     display: flex;
@@ -41,11 +40,25 @@
 }
 
 .containerAddFriend {
-    width: 15%;
+    width: 12%;
     height: 100%;
-    background-color: brown;
+    background-color: orange;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between
+}
+
+.containerFriendBody {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between
+}
+
+.containerFriendBodyLeft {
+    width: 70%;
+    background-color: blueviolet;
+    height: 100%;
 }
