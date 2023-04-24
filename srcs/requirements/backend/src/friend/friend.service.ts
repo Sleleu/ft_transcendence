@@ -7,6 +7,15 @@ export class FriendService {
     constructor(private prisma: PrismaService) { }
 
     async createFriendRequest(UserId: number, friendId: number): Promise<FriendRequest> {
+        const isAlreadyFriend = await this.prisma.friend.findMany({
+            where: { userId: UserId, friendId: friendId }
+        })
+
+        if (isAlreadyFriend.length) {
+            console.log('isFriend', isAlreadyFriend)
+            throw new Error(`user ${UserId} is already friend with ${friendId}`);
+        }
+
         const request = await this.prisma.friendRequest.create({
             data: {
                 sender: { connect: { id: UserId } },
@@ -28,15 +37,16 @@ export class FriendService {
             throw new Error(`No user found with id ${friendId}`);
         }
 
-        await this.prisma.friend.createMany({
-            data: [
-                { userId, friendId }, 
-                {userId: friendId, friendId: userId}, 
-            ]
-        });
+        await this.prisma.friend.create({
+            data: {
+                user: { connect: { id: friendId } },
+                friend: { connect: { id: userId } },
+            }
+        })
     }
 
     async acceptFriendRequest(UserId: number, friendId: number) {
+
         await this.prisma.friendRequest.deleteMany({
             where: {
                 senderId: friendId,
@@ -59,19 +69,19 @@ export class FriendService {
     async getFriendsByUserId(userId: number) {
         return await this.prisma.friend.findMany({
             where: { userId },
-            include: { user: true },
+            include: { friend: true },
         })
     }
 
     async deleteFriendById(userId: number, friendId: number) {
-        await this.prisma.friend.delete({
+        await this.prisma.friend.deleteMany({
             where: {
-                id: userId
+                userId: userId
             }
         })
-        await this.prisma.friend.delete({
+        await this.prisma.friend.deleteMany({
             where: {
-                id: friendId
+                userId: friendId
             }
         })
     }
