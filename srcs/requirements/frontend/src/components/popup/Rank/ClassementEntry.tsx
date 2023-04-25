@@ -52,8 +52,8 @@ const entryText: CSSProperties = {
       <span style={rank}>{leader.rank}</span>
       <span style={entryText}> {leader.username} </span>
       <span style={entryText}>{leader.elo}</span>
-      <span style={entryText}>{leader.victory}</span>
-      <span style={entryText}>{(leader.victory / (leader.victory + leader.defeat) * 100).toFixed(0)}%</span>
+      <span style={entryText}>{leader.win}</span>
+      <span style={entryText}>{leader.win + leader.loose === 0 ? 0 : (leader.win / (leader.win + leader.loose) * 100).toFixed(0)}%</span>
     </div>
   )
 }

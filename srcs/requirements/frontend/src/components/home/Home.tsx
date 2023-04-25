@@ -19,11 +19,14 @@ import Friend from '../friend/list/src/friend';
 
 function Home(props: { token: string }) {
 
-    const [user, setUser] = useState<User>({ username: 'error', id: -1, elo: -1, createAt: '', updateAt: '', state: 'inexistant' })
+    const [user, setUser] = useState<User>({ username: 'error', id: -1, elo: -1, win: -1, loose: -1, createAt: '', updateAt: '', state: 'inexistant' })
     const [activeComponent, setActiveComponent] = useState<string>('play')
     const [stack, setStack] = useState<string[]>([]);
     const { token } = props
     const navigate = useNavigate()
+
+    const existingRanks: string[] = ['bronze', 'silver', 'gold', 'crack', 'ultime']; 
+    const userRank: string =  user.elo > 5000 || user.elo < 0 ? 'ultime' : existingRanks[Math.floor(user.elo / 1000)];
 
     const push = (item: string) => {
         setStack([...stack, item])
@@ -102,14 +105,14 @@ function Home(props: { token: string }) {
                         {activeComponent === "stat" && <Stats user={user} changeComponent={changeComponent} />}
                         {activeComponent === "friend" && <Friend changeComponent={changeComponent} token={token} />}
 
-                        {activeComponent === "leader" && <Classement rank={'gold'} changeComponent={changeComponent} />}
+                        {activeComponent === "leader" && <Classement rank={userRank} changeComponent={changeComponent} />}
                         {activeComponent === "bronzeLead" && <Classement rank={'bronze'} changeComponent={changeComponent} />}
                         {activeComponent === "silverLead" && <Classement rank={'silver'} changeComponent={changeComponent} />}
                         {activeComponent === "goldLead" && <Classement rank={'gold'} changeComponent={changeComponent} />}
                         {activeComponent === "crackLead" && <Classement rank={'crack'} changeComponent={changeComponent} />}
                         {activeComponent === "ultimeLead" && <Classement rank={'ultime'} changeComponent={changeComponent} />}
 
-                        {/* {activeComponent === "rank" && <Rank user={{ name: 'gottie', rank: 'gold', id: 1, elo: 2561 }} changeComponent={changeComponent} />} */}
+                        {activeComponent === "rank" && <Rank user={user} changeComponent={changeComponent} />}
                     </div>
                 </div>
             </div>

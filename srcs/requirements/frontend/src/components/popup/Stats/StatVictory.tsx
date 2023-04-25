@@ -42,25 +42,23 @@ const StatVictory: React.FC<Props> = ({user}) => {
          width:'30px', height:'28px', marginTop:'3px', marginRight:'6px',
      }
 
-     // user.victory ?
-     // user.defeat ?
-     //  const ratio : number = (user.victory  / (user.victory + user.defeat) * 100).toFixed(0); 
+      const ratio : number = user.win + user.loose === 0 ? 0 : (user.win  / (user.win + user.loose) * 100); 
 
     return (
         <div style={StatVictory}>
             <span>Victories</span>
             <div style={Center}>
-                <span>25</span>
+                <span>{ratio}</span>
                 <span>%</span>
             </div>
             <div style={Bottom}>
                 <div style={textCrown}>
                     <img src={crown} alt='crown' style={Crown}/>
-                    <span>126 W</span>
+                    <span>{user.win} W</span>
                 </div>
                 <div style={textSkull}>
                     <img src={skull} alt='skull' style={Skull}/>
-                    <span>503 D</span>
+                    <span>{user.loose} D</span>
                 </div>
             </div>
         </div>

@@ -2,12 +2,21 @@ import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { JwtGuard } from 'src/auth/guard';
+import { UserService } from './user.service';
 
 // si on met un controller (), il catch la root /
 // Si on met une methode vide, elle catch la route du controller
 
 @Controller('users')
 export class UserController {
+	constructor(private userService: UserService) {}
+
+	@Get('')
+	async getAll() {
+		const users = await this.userService.getUsers();
+		console.log(users);
+		return users;
+	}
 
 	@UseGuards(JwtGuard) // cette route est protegee par le guard de JwtStrategy
 	@Get('profile')

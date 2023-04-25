@@ -150,15 +150,15 @@ const Header: CSSProperties = {
 
   const [leaders, setLeaders] = useState<rankData[]>([]);
 
-  const fetchHistory = async () => {
-    const data = await fetch("http://localhost:5000/leader" ,{ method:"GET" });
+  const fetchUsers = async () => {
+    const data = await fetch("http://localhost:5000/users/" ,{ method:"GET" });
     const jsonData = await data.json();
     return jsonData;
   }
 
   useEffect(() => {
     const getLeaders = async () => {
-        const leaderDatabase = await fetchHistory();
+        const leaderDatabase = await fetchUsers();
         setLeaders(leaderDatabase);
     }
     getLeaders();

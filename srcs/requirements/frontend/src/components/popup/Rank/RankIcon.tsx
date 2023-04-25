@@ -22,11 +22,13 @@ const RankIcon: React.FC<Props> = ({ user, icon, scale = 1, y = 0, x = 0, change
 
     const [isHovered, setIsHovered] = useState<boolean>(false);
 
+    const existingRanks: string[] = ['bronze', 'silver', 'gold', 'crack', 'ultime']; 
+
     let display: string;
     if (icon)
         display = icon;
-    // else if (user)
-    // display = user.rank;
+    else if (user)
+        display = user.elo > 5000 || user.elo < 0 ? 'ultime' : existingRanks[Math.floor(user.elo / 1000)];
     else
         return (null);
 
