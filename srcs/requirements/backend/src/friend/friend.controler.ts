@@ -20,7 +20,7 @@ export class FriendController {
     @Get('')
     async getFriendsByUserId(@Req() req: newReq) {
         const friends = await this.friendService.getFriendsByUserId(+req.user.id);
-        return { friends };
+        return friends;
     }
 
     @Post('send/:friendId')

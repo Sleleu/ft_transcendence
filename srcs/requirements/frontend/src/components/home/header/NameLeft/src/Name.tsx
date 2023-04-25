@@ -2,6 +2,7 @@ import React from 'react'
 import '../css/Name.css'
 import RankBarUnderName from './RankBarUnderName'
 import { User } from '../../../../types'
+import calculRank from '../../../../utils'
 
 
 const Name = ({ user, changeComponent }: { user: User, changeComponent: (component: string) => void }) => {
@@ -26,19 +27,6 @@ const Name = ({ user, changeComponent }: { user: User, changeComponent: (compone
     if (name.length > 13)
       return name.slice(0, 10) + '...'
     return name
-  }
-
-  const calculRank = (elo: number) => {
-    if (elo < 1000)
-      return "bronze"
-    else if (elo < 2000)
-      return "silver"
-    else if (elo < 3000)
-      return "gold"
-    else if (elo < 4000)
-      return "crack"
-    else
-      return "ultimeCrack"
   }
 
   return (

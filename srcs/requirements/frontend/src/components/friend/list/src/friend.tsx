@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import '../css/friend.css'
 import Play from '../../../home/play/src/Play'
 import { User } from '../../../types';
+import FriendOnglet from './FriendOnglet';
 
 interface FriendProps {
   changeComponent: (component: string) => void;
@@ -42,7 +43,9 @@ const Friend: FC<FriendProps> = ({ changeComponent, token }) => {
       <div className='containerLeft'>
         <div className='containerSearchHeader'>
           <div className='containerSearch'>
-
+            {/* <input type='text' value={searchText} onChange={handleSearch}/> */}
+            <input className='inputFriend' type='text' placeholder='FriendName' />
+            <div className='loopButton' />
           </div>
           <div className='containerAddFriend'>
 
@@ -50,7 +53,9 @@ const Friend: FC<FriendProps> = ({ changeComponent, token }) => {
         </div>
         <div className='containerFriendBody'>
           <div className='containerFriendBodyLeft'>
-            {/* <FriendOnglet /> */}
+            {friend.map((friend) =>
+              <FriendOnglet key={friend.id} friend={friend.friend} />
+            )}
           </div>
           <div className='containerFriendBodyRight'>
 
