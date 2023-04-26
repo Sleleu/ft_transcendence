@@ -1,18 +1,18 @@
 import { HttpService } from '@nestjs/axios';
-import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
-import { AxiosError, AxiosResponse } from 'axios';
-import { Observable, catchError, map } from 'rxjs';
-import { AuthDto } from 'src/auth/dto/auth.dto';
+import { Injectable } from '@nestjs/common';
+import axios from 'axios';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ApiData } from './intra.interface';
+import { ConfigService } from '@nestjs/config';
 
-interface Props {
-	fact: string;
-	length: number;
-}
+interface User42 {
+  
+  client_id : string;
+  redirect_uri : string;
+  scope : string;
+  state : string;
+  response_type : string;
 
-interface Test extends Observable<AxiosResponse<any, any>> {
-	fact: string;
-	length: number;
 }
 
 @Injectable()
@@ -20,19 +20,55 @@ export class IntraService {
   constructor(
     private prisma: PrismaService,
     private readonly httpService: HttpService,
+    private config: ConfigService,
   ) {}
 
-  async login() {
-    const request = this.httpService
-      .get('https://api.intra.42.fr/oauth/authorize')
-	  .pipe(map((res) => res.data))
-	  .pipe(
-        catchError((error: AxiosError) => {
-          console.log(error);
-          throw new ForbiddenException(error.status);
-        }),
-      );
-    console.log(request);
-    return request;
+  async getToken() : Promise<ApiData> {
+
+    const params = new URLSearchParams();
+    params.append('grant_type', 'client_credentials');
+    params.append('client_id', process.env.CLIENT_ID ? process.env.CLIENT_ID : 'null');
+    params.append('client_secret', process.env.CLIENT_SECRET ? process.env.CLIENT_SECRET : 'null');
+    params.append('response_type', 'code');
+    const config = {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    };
+  
+    return axios.post('https://api.intra.42.fr/oauth/token', params, config)
+    .then((response)=> {
+      console.log(response.data)
+      return (response.data);
+    })
+    .catch(error => {
+      console.error(error);
+    });
   }
+
+  async getUser() {
+
+    const params = new URLSearchParams();
+    params.append('client_id', process.env.CLIENT_ID ? process.env.CLIENT_ID : 'null');
+    params.append('client_secret', process.env.CLIENT_SECRET ? process.env.CLIENT_SECRET : 'null');
+    params.append('response_type', 'code');
+    params.append('redirect_uri', process.env.REDIRECT_URI ? process.env.REDIRECT_URI : 'null');
+    params.append('scope', 'public');
+    const config = {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      params : params,
+    };
+
+    axios.get('https://api.intra.42.fr/oauth/authorize')
+    .then((response)=> {
+      console.log(response.data)
+      return (response.data);
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  }
+
 }
