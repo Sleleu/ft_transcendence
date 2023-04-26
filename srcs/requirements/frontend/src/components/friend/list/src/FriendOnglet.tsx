@@ -18,6 +18,13 @@ const FriendOnglet = ({ key, friend }: { key: number, friend: User }) => {
             return '#D96161'
     }
 
+    const colorAvatar = (state: string) => {
+        if (state !== 'offline')
+            return '1'
+        else
+            return '0.3'
+    }
+
     const nameFriend = {
         fontSize: '40px',
     }
@@ -26,6 +33,9 @@ const FriendOnglet = ({ key, friend }: { key: number, friend: User }) => {
         color: `${colorStat(friend.state)}`,
     }
 
+    const avatarOpacity = {
+        opacity: `${colorAvatar(friend.state)}`
+    }
 
     return (
         <div className='containerFriendOnglet'>
@@ -34,7 +44,7 @@ const FriendOnglet = ({ key, friend }: { key: number, friend: User }) => {
                 <div style={nameFriend} className='nameText' >{friend.username}</div>
                 <div style={stateFriendTxt} className='stateFriend'>{friend.state}</div>
             </div>
-            <div className='containerAvatarFriend'>
+            <div style={avatarOpacity} className='containerAvatarFriend'>
                 <div className='avatar' />
             </div>
         </div>

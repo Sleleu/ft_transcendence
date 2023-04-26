@@ -41,13 +41,15 @@
 }
 
 .containerAddFriend {
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
     width: 12%;
     height: 100%;
-    background-color: orange;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
 }
 
 .containerFriendBody {
@@ -68,6 +70,15 @@
     overflow-y: scroll;
     overflow-x: visible;
     gap: 10px;
+}
+
+.containerFriendBodyRight {
+    height: 100%;
+    width: 29%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
 }
 
 .loopButton {
@@ -101,4 +112,26 @@
     box-shadow: inset 0 0 7px black;
     background-color: rgba(255, 255, 255, 0.9);
     text-indent: 3%;
+}
+
+.addFriendLogo {
+    min-height: 41px;
+    min-width: 44px;
+    height: 3.5vh;
+    width: 3.6vh;
+    background-size: cover;
+    filter: drop-shadow(0px 0px 5px white);
+    transition: filter 0.3s ease;
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+    background-image: url(../../../../img/addFriend.png);
+    margin-right: 6%;
+}
+
+.addFriendLogo:hover {
+    filter: drop-shadow(0px 0px 15px white);
+}
+
+.addFriendLogo:active {
+    transform: scale(0.9);
 }
