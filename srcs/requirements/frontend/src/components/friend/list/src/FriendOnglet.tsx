@@ -4,7 +4,7 @@ import { User } from '../../../types'
 import calculRank from '../../../utils'
 import { relative } from 'path'
 
-const FriendOnglet = ({ key, friend }: { key: number, friend: User }) => {
+const FriendOnglet = ({ friend }: { friend: User }) => {
 
     const rankLogo = {
         position: 'relative' as const,

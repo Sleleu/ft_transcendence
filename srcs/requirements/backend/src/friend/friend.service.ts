@@ -89,4 +89,23 @@ export class FriendService {
             }
         })
     }
+
+    async userByName(userId: number, name: string) {
+        const friend = await this.prisma.user.findMany({
+            where: {
+                username: {
+                    startsWith: name,
+                }
+            }
+        })
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+            include: { friend: true }
+        })
+        const filtered = friend.filter((friend) => friend.id !== userId && !user?.friend.some((f) => f.friendId === friend.id))
+        return filtered.map(friend => {
+            const { hash, ...rest } = friend
+            return friend
+        })
+    }
 }

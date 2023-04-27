@@ -43,4 +43,9 @@ export class FriendController {
     async deleteFriend(@Req() req: newReq, @Param('friendId') friendId: number) {
         await this.friendService.deleteFriendById(+req.user.id, +friendId)
     }
+
+    @Get('add/:name')
+    async getFriendByName(@Req() req: newReq, @Param('name') name: string) {
+        return await this.friendService.userByName(+req.user.id, name)
+    }
 }

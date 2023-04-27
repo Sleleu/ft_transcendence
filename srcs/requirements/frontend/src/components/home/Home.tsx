@@ -54,7 +54,6 @@ function Home(props: { token: string }) {
 
     const api = async () => {
         const bear = 'Bearer ' + token
-        console.log('bear', bear)
         const data = await fetch("http://localhost:5000/users/profile", { method: "GET", headers: { 'Authorization': bear } })
         if (data.status === 401) {
             navigate('/')

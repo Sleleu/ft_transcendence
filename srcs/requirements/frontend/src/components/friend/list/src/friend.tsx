@@ -28,7 +28,6 @@ const Friend: FC<FriendProps> = ({ changeComponent, token }) => {
 
   const api = async () => {
     const bear = 'Bearer ' + token
-    console.log('bear', bear)
     const data = await fetch("http://localhost:5000/friend", { method: "GET", headers: { 'Authorization': bear } })
     const jsonData = await data.json();
     return jsonData;
@@ -80,7 +79,7 @@ const Friend: FC<FriendProps> = ({ changeComponent, token }) => {
             )}
           </div>
           <div className='containerFriendBodyRight'>
-            <FriendAdd />
+            <FriendAdd token={token} />
           </div>
         </div>
       </div>
