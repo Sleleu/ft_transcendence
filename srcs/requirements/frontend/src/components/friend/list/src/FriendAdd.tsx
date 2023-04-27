@@ -2,6 +2,7 @@ import React, { FormEvent } from 'react'
 import { useState, useEffect } from 'react';
 import '../css/FriendAdd.css'
 import { User } from '../../../types';
+import FriendAddOnglet from './FriendAddOnglet';
 
 const FriendAdd = ({ token }: { token: string }) => {
 
@@ -22,16 +23,8 @@ const FriendAdd = ({ token }: { token: string }) => {
         outline: 'none',
     }
 
-    interface FriendInterface {
-        id: number;
-        createdAt: string;
-        userId: number
-        friendId: number
-        friend: User
-    }
-
     const [input, setInput] = useState<string>('')
-    const [friendList, setFriendList] = useState<FriendInterface[]>([])
+    const [friendList, setFriendList] = useState<User[]>([])
 
     const fetchFriendsList = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -59,7 +52,8 @@ const FriendAdd = ({ token }: { token: string }) => {
                 {friendList.length === 0 ? (
                     <p>oui egale a 0</p>
                 ) : (
-                    <p>non</p>
+                    friendList.map((friend) =>
+                        <FriendAddOnglet key={friend.id} friend={friend} token='token' />)
                 )}
             </div>
         </div>
