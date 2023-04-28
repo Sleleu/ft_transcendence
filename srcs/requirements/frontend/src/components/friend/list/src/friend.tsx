@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, CSSProperties } from 'react'
 import { useState, useEffect } from 'react';
 import '../css/friend.css'
 import Play from '../../../home/play/src/Play'
@@ -19,16 +19,31 @@ interface FriendInterface {
   friend: User
 }
 
+interface friendReq {
+  id: number;
+  senderId: number;
+  recipientId: number;
+  sender: User
+}
+
 const Friend: FC<FriendProps> = ({ changeComponent, token }) => {
 
   const [friend, setFriend] = useState<FriendInterface[]>([])
   const [searchText, setSearchText] = useState<string>('')
   const [searchFriend, setSearchFriend] = useState<FriendInterface[]>([])
   const [component, setComponent] = useState<string>('add')
+  const [friendReq, setFriendReq] = useState<friendReq[]>([])
 
   const api = async () => {
     const bear = 'Bearer ' + token
     const data = await fetch("http://localhost:5000/friend", { method: "GET", headers: { 'Authorization': bear } })
+    const jsonData = await data.json();
+    return jsonData;
+  }
+
+  const getFriendReq = async () => {
+    const bear = 'Bearer ' + token
+    const data = await fetch("http://localhost:5000/friend/request", { method: "GET", headers: { 'Authorization': bear } })
     const jsonData = await data.json();
     return jsonData;
   }
@@ -38,6 +53,8 @@ const Friend: FC<FriendProps> = ({ changeComponent, token }) => {
       const userFromServer = await api()
       setFriend(userFromServer)
       setSearchFriend(sortFriend(userFromServer))
+      const friendR = await getFriendReq()
+      setFriendReq(friendR)
     }
     getUser()
   }, [])
@@ -59,9 +76,15 @@ const Friend: FC<FriendProps> = ({ changeComponent, token }) => {
     setComponent(compo)
   }
 
+  const handleClick = () => {
+    if (component === 'add')
+      setComponent('friendRequest')
+    else
+      setComponent('add')
+  }
 
   return (
-    <div className='containerFriends'>
+    <div className='containerFriends' >
       <div className='containerLeft'>
         <div className='containerSearchHeader'>
           <div className='containerSearch'>
@@ -69,7 +92,9 @@ const Friend: FC<FriendProps> = ({ changeComponent, token }) => {
             <div className='loopButton' />
           </div>
           <div className='containerAddFriend'>
-            <div className='addFriendLogo' />
+            {component === 'friendRequest' && <div className='addFriendLogo' onClick={handleClick} />}
+            {component === 'add' && friendReq.length && <div className='mailLogo' onClick={handleClick} />}
+            {component === 'add' && !friendReq.length && <div className='mailLogo2' onClick={handleClick} />}
           </div>
         </div>
         <div className='containerFriendBody'>
@@ -79,11 +104,12 @@ const Friend: FC<FriendProps> = ({ changeComponent, token }) => {
             )}
           </div>
           <div className='containerFriendBodyRight'>
-            <FriendAdd token={token} />
+            {component === 'add' && <FriendAdd token={token} />}
+            {/* {component === 'friendRequest' && <FriendRequest token={token} />} */}
           </div>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 

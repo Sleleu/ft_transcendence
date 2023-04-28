@@ -108,4 +108,14 @@ export class FriendService {
             return friend
         })
     }
+    async getFriendReq(userId: number) {
+        const request = await this.prisma.friendRequest.findMany({
+            where: { recipientId: userId },
+            include: { sender: true }
+        })
+        return request.map(sender => {
+            const { hash, ...rest } = sender.sender
+            return { ...sender, sender: rest }
+        })
+    }
 }

@@ -25,6 +25,7 @@ const FriendAdd = ({ token }: { token: string }) => {
 
     const [input, setInput] = useState<string>('')
     const [friendList, setFriendList] = useState<User[]>([])
+    const [search, setSearch] = useState(false)
 
     const fetchFriendsList = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -35,6 +36,7 @@ const FriendAdd = ({ token }: { token: string }) => {
         const data = await fetch(req, { method: "GET", headers: { 'Authorization': bear } })
         const friend = await data.json()
         setFriendList(friend)
+        setSearch(true)
     }
 
     const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,10 +52,12 @@ const FriendAdd = ({ token }: { token: string }) => {
             </form>
             <div className='containerAddFriendBody'>
                 {friendList.length === 0 ? (
-                    <p>oui egale a 0</p>
+                    <div className='containerMsg'>
+                        {!search && <div className='nameText'>Find new friends above ! </div>}
+                    </div>
                 ) : (
                     friendList.map((friend) =>
-                        <FriendAddOnglet key={friend.id} friend={friend} token='token' />)
+                        <FriendAddOnglet key={friend.id} friend={friend} token={token} />)
                 )}
             </div>
         </div>

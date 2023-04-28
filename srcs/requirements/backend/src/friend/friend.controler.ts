@@ -1,8 +1,8 @@
-import { Controller, Get, UseGuards, Req, Post, Param, Put, Delete } from "@nestjs/common";
 import { JwtGuard } from 'src/auth/guard';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { FriendService } from "./friend.service";
+import { Controller, Get, UseGuards, Req, Post, Param, Put, Delete } from "@nestjs/common";
 
 interface reqUser {
     id: number
@@ -47,5 +47,10 @@ export class FriendController {
     @Get('add/:name')
     async getFriendByName(@Req() req: newReq, @Param('name') name: string) {
         return await this.friendService.userByName(+req.user.id, name)
+    }
+
+    @Get('request')
+    async getFriendReq(@Req() req: newReq) {
+        return this.friendService.getFriendReq(+req.user.id)
     }
 }

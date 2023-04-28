@@ -50,6 +50,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    position: relative;
 }
 
 .containerFriendBody {
@@ -128,10 +129,45 @@
     margin-right: 6%;
 }
 
-.addFriendLogo:hover {
+.mailLogo,
+.mailLogo2 {
+    min-height: 36px;
+    min-width: 40px;
+    height: 3.5vh;
+    width: 3.6vh;
+    background-size: cover;
+    filter: drop-shadow(0px 0px 5px white);
+    transition: filter 0.3s ease;
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+    background-image: url(../../../../img/mail.png);
+    margin-right: 6%;
+}
+
+.mailLogo::before {
+    content: "";
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: blueviolet;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+}
+
+.addFriendLogo:hover,
+.mailLogo:hover {
     filter: drop-shadow(0px 0px 15px white);
 }
 
-.addFriendLogo:active {
+.addFriendLogo:active,
+.mailLogo:active {
     transform: scale(0.9);
+}
+
+.containerMsg {
+    height: 20%;
+    display: flex;
+    font-size: 20px;
 }

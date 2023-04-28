@@ -5,9 +5,14 @@ import { useState, useEffect } from 'react';
 
 const FriendAddOnglet = ({ friend, token }: { friend: User, token: string }) => {
 
+
+    const [button, setButton] = useState<boolean>(false)
+
     const handleClick = async () => {
+        setButton(true)
         const bear = 'Bearer ' + token
-        const req = 'hhtp://localhost:5000/friend/send/' + friend.id
+        console.log('token', token)
+        const req = 'http://localhost:5000/friend/send/' + friend.id
         await fetch(req, { method: "POST", headers: { 'Authorization': bear } })
     }
 
@@ -16,14 +21,23 @@ const FriendAddOnglet = ({ friend, token }: { friend: User, token: string }) => 
         paddingLeft: '3%'
     }
 
+    const displayButtonOpacity = () => {
+        if (button)
+            return '0.4'
+        else
+            return '1'
+    }
+
     const friendLogomo = {
         minHeight: '30px',
         minWidth: '30px',
         textDecoration: 'none',
         backgroundColor: 'transparent',
         border: 'none',
-        outline: 'none'
+        outline: 'none',
+        opacity: `${displayButtonOpacity()}`
     }
+
 
     return (
         <div className='containerAddOnglet'>
