@@ -5,6 +5,7 @@ import Play from '../../../home/play/src/Play'
 import { User } from '../../../types';
 import FriendOnglet from './FriendOnglet';
 import FriendAdd from './FriendAdd';
+import FriendRequest from './FriendRequest';
 
 interface FriendProps {
   changeComponent: (component: string) => void;
@@ -105,7 +106,7 @@ const Friend: FC<FriendProps> = ({ changeComponent, token }) => {
           </div>
           <div className='containerFriendBodyRight'>
             {component === 'add' && <FriendAdd token={token} />}
-            {/* {component === 'friendRequest' && <FriendRequest token={token} />} */}
+            {component === 'friendRequest' && <FriendRequest sender={friendReq} />}
           </div>
         </div>
       </div>

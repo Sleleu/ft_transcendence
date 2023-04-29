@@ -1,0 +1,32 @@
+.containerFriendReqOnglet {
+    height: 10%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.containerCheck {
+    height: 100%;
+    width: 35%;
+    background-color: brown;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.noButton {
+    min-height: 22px;
+    min-width: 22px;
+    height: 3.5vh;
+    width: 3.6vh;
+    background-size: cover;
+    filter: drop-shadow(0px 0px 5px white);
+    transition: filter 0.3s ease;
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+    background-image: url(../../../../img/croix.png);
+    margin-right: 6%;
+}
