@@ -34,7 +34,7 @@ export class FriendController {
         await this.friendService.acceptFriendRequest(+req.user.id, +friendId)
     }
 
-    @Put('refuse/:friendId')
+    @Delete('refuse/:friendId')
     async refuseFriendReq(@Req() req: newReq, @Param('friendId') friendId: number) {
         await this.friendService.refuseFriendRequest(+req.user.id, +friendId)
     }

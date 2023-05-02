@@ -6,6 +6,7 @@ import { User } from '../../../types';
 import FriendOnglet from './FriendOnglet';
 import FriendAdd from './FriendAdd';
 import FriendRequest from './FriendRequest';
+import FriendOption from './FriendOption';
 
 interface FriendProps {
   changeComponent: (component: string) => void;
@@ -34,6 +35,8 @@ const Friend: FC<FriendProps> = ({ changeComponent, token }) => {
   const [searchFriend, setSearchFriend] = useState<FriendInterface[]>([])
   const [component, setComponent] = useState<string>('add')
   const [friendReq, setFriendReq] = useState<friendReq[]>([])
+  const [update, setUpadte] = useState(0)
+  const [option, setOption] = useState(0)
 
   const api = async () => {
     const bear = 'Bearer ' + token
@@ -58,7 +61,11 @@ const Friend: FC<FriendProps> = ({ changeComponent, token }) => {
       setFriendReq(friendR)
     }
     getUser()
-  }, [])
+  }, [update])
+
+  const updateFriend = () => {
+    setUpadte(+1)
+  }
 
   const sortFriend = (friend: FriendInterface[]) => {
     return friend.sort((a, b) => (a.friend.state !== 'offline' ? -1 : 1))
@@ -84,6 +91,11 @@ const Friend: FC<FriendProps> = ({ changeComponent, token }) => {
       setComponent('add')
   }
 
+  const switchComponent = (id: number) => {
+    setComponent('friend')
+    setOption(id)
+  }
+
   return (
     <div className='containerFriends' >
       <div className='containerLeft'>
@@ -93,20 +105,21 @@ const Friend: FC<FriendProps> = ({ changeComponent, token }) => {
             <div className='loopButton' />
           </div>
           <div className='containerAddFriend'>
-            {component === 'friendRequest' && <div className='addFriendLogo' onClick={handleClick} />}
-            {component === 'add' && friendReq.length && <div className='mailLogo' onClick={handleClick} />}
-            {component === 'add' && !friendReq.length && <div className='mailLogo2' onClick={handleClick} />}
+            {(component === 'friendRequest' || component === 'friend') && <div className='addFriendLogo' onClick={handleClick} title='add friend' />}
+            {component === 'add' && friendReq.length && <div className='mailLogo' onClick={handleClick} title='you get a friend request !' />}
+            {component === 'add' && !friendReq.length && <div className='mailLogo2' onClick={handleClick} title='friend request' />}
           </div>
         </div>
         <div className='containerFriendBody'>
           <div className='containerFriendBodyLeft'>
             {searchFriend.map((friend) =>
-              <FriendOnglet key={friend.id} friend={friend.friend} />
+              <FriendOnglet key={friend.id} friend={friend.friend} switchComponent={switchComponent} />
             )}
           </div>
           <div className='containerFriendBodyRight'>
             {component === 'add' && <FriendAdd token={token} />}
-            {component === 'friendRequest' && <FriendRequest sender={friendReq} />}
+            {component === 'friendRequest' && <FriendRequest sender={friendReq} token={token} update={updateFriend} />}
+            {component === 'friend' && <FriendOption token={token} friend={searchFriend[searchFriend.findIndex((friend) => friend.friendId === option)].friend} />}
           </div>
         </div>
       </div>

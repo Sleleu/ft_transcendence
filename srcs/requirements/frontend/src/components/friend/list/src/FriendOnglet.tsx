@@ -4,7 +4,12 @@ import { User } from '../../../types'
 import calculRank from '../../../utils'
 import { relative } from 'path'
 
-const FriendOnglet = ({ friend }: { friend: User }) => {
+type Interface = {
+    friend: User
+    switchComponent: (id: number) => void
+}
+
+const FriendOnglet = ({ friend, switchComponent }: Interface) => {
 
     const rankLogo = {
         position: 'relative' as const,
@@ -37,8 +42,12 @@ const FriendOnglet = ({ friend }: { friend: User }) => {
         opacity: `${colorAvatar(friend.state)}`
     }
 
+    const handleClick = () => {
+        switchComponent(friend.id)
+    }
+
     return (
-        <div className='containerFriendOnglet'>
+        <div className='containerFriendOnglet' onClick={handleClick}>
             <div style={rankLogo} className={calculRank(friend.elo)} />
             <div className='containerTextFriendName'>
                 <div style={nameFriend} className='nameText' >{friend.username}</div>

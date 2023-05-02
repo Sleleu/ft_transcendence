@@ -11,17 +11,28 @@ interface friendReq {
     sender: User
 }
 
+const FriendRequest = ({ sender, token, update }: { sender: friendReq[], token: string, update: () => void }) => {
 
-const FriendRequest = ({ sender }: { sender: friendReq[] }) => {
+    const [req, setReq] = useState<friendReq[]>(sender)
+
+    const handleRemoveFromReq = (senderId: number) => {
+        setReq(req.filter(request => request.senderId !== senderId))
+    }
+
+    const style = {
+        paddingLeft: '15%',
+        paddingRight: '15%',
+    }
+
     return (
         <div className='containerFriendReq'>
             {sender.length === 0 ? (
                 <div className='noFriendReq'>
-                    <div className='nameText'>Friends Requests will apear here !</div>
+                    <div style={style} className='nameText'>Friends Requests will apear here !</div>
                 </div>
             ) : (
-                sender.map((sender) =>
-                    <FriendReqOnglet key={sender.id} sender={sender.sender} />)
+                req.map((sender) =>
+                    <FriendReqOnglet key={sender.id} sender={sender.sender} token={token} onRemove={() => handleRemoveFromReq(sender.senderId)} update={update} />)
             )}
         </div>
     )
