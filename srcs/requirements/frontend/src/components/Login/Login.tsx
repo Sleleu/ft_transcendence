@@ -99,7 +99,12 @@ const Login:React.FC<Props> = ({changeComponent}) => {
         if (click === 'register')
             changeComponent('CreateAccount');
         if (click === '42')
-            console.log('LOG WITH 42');
+        {
+			if (process.env.REACT_APP_AUTH_URL)
+			window.location.href = process.env.REACT_APP_AUTH_URL;
+			else
+				console.log('AUTH_URL is undefined');
+		}
         if (click === 'log')
         {
             //ENVOYER AU BACK

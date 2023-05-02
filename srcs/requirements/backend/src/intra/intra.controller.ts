@@ -17,10 +17,14 @@ export class IntraController {
 				throw new HttpException('Invalid code or state', HttpStatus.FORBIDDEN);
 			}
 			const AccessToken : ApiToken = await this.intraService.getToken(code);
+			if (!AccessToken.access_token) {
+				throw new HttpException('Cannot get access token from 42 api', HttpStatus.FORBIDDEN);
+			}
 			const Profile = await this.intraService.getProfile(AccessToken);
 			if (!Profile){
 				throw new HttpException('Cannot get Profile from getProfile()', HttpStatus.FORBIDDEN);
 			}
-			return `Profile : ${Profile.login}`;
+			console.log("Profile intra after callback : ", Profile);
+			return console.log("Success !");
 	}
 }
