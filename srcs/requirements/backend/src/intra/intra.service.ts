@@ -4,12 +4,14 @@ import axios from 'axios';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ApiToken, User42 } from './intra.interface';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class IntraService {
   constructor(
     private prismaService: PrismaService,
     private readonly httpService: HttpService,
+	private jwtService : JwtService,
     private configService: ConfigService,
   ) {}
 	async getToken(code : string) {
@@ -86,8 +88,30 @@ export class IntraService {
 				avatar : profile.avatar,		
 			}
 		})
-		if (!newUser)
+		if (!newUser) {
 			console.log('Error on createUser()');
-		console.log('User created !');
+			return (false);
 		}
+		console.log('User created !');
+		return (true);
+	}
+
+	async getJwtToken(
+		userId: number,
+		username: string,
+	  ): Promise<{ access_token: string }> {
+		const payload = {
+		  sub: userId,
+		  username: username,
+		};
+		const secret = this.configService.get('JWT_SECRET');
+		const token = await this.jwtService.signAsync(payload, {
+		  expiresIn: '1days',
+		  secret: secret,
+		});
+	
+		return {
+		  access_token: token,
+		};
+	  }
 }

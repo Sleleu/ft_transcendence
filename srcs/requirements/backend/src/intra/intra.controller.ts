@@ -22,15 +22,33 @@ export class IntraController {
 			if (!AccessToken.access_token) {
 				throw new HttpException('Cannot get access token from 42 api', HttpStatus.FORBIDDEN);
 			}
-			const Profile = await this.intraService.getProfile(AccessToken);
-			if (!Profile){
+			const IntraProfile = await this.intraService.getProfile(AccessToken);
+			if (!IntraProfile) {
 				throw new HttpException('Cannot get Profile from getProfile()', HttpStatus.FORBIDDEN);
 			}
-			const NewUser : boolean = await this.intraService.newProfile(Profile);
-			if  (NewUser == true){
-				await this.intraService.createUser(Profile);
+			const NewUser : boolean = await this.intraService.newProfile(IntraProfile);
+			if  (NewUser == true) {
+				if (await this.intraService.createUser(IntraProfile) == false)
+					throw new HttpException('Cannot create new user from createUser()', HttpStatus.FORBIDDEN);
 			}
-			console.log("Profile intra after callback : ", Profile);
+			console.log("Profile intra after callback : ", IntraProfile);
+
+			// get jwt pour l'ajouter au profil
+
+			const User = await this.prismaService.user.findUnique({
+				where : {
+					username : IntraProfile.login,
+				}
+			})
+
+			if (!User)
+				throw new HttpException('Cannot create new user from createUser()', HttpStatus.FORBIDDEN);
+			const JwtToken = this.intraService.getJwtToken(User?.id, User?.username)
+			
+			console.log("jwt token : ", (await JwtToken).access_token);
+			// add le token au user
+
+			// redirect home
 			return console.log("Success !");
 	}
 }
