@@ -1,7 +1,7 @@
 import { Controller, Get, Query, Res, HttpException, HttpStatus } from '@nestjs/common';
 import { IntraService } from './intra.service';
 import { Response } from 'express';
-import { ApiToken, User42 } from './intra.interface';
+import { ApiToken } from './intra.interface';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -43,12 +43,23 @@ export class IntraController {
 
 			if (!User)
 				throw new HttpException('Cannot create new user from createUser()', HttpStatus.FORBIDDEN);
-			const JwtToken = this.intraService.getJwtToken(User?.id, User?.username)
-			
-			console.log("jwt token : ", (await JwtToken).access_token);
+			const JwtToken = await this.intraService.getJwtToken(User?.id, User?.username)
+			console.log("jwt token : ", JwtToken);
+			console.log("User : ", User.username);
 			// add le token au user
+			await this.prismaService.user.update({
+				where : {
+					username : User.username,
+				},
+				data : {
+					access_token : JwtToken,
+				}
+			})
 
 			// redirect home
-			return console.log("Success !");
+			res.cookie('Authorization', 'Bearer ' + JwtToken, {
+				httpOnly: true,
+			});
+			res.redirect('http://localhost:3000/home');
 	}
 }

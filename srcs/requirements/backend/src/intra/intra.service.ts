@@ -99,7 +99,7 @@ export class IntraService {
 	async getJwtToken(
 		userId: number,
 		username: string,
-	  ): Promise<{ access_token: string }> {
+	  ):  Promise<string>  {
 		const payload = {
 		  sub: userId,
 		  username: username,
@@ -110,8 +110,6 @@ export class IntraService {
 		  secret: secret,
 		});
 	
-		return {
-		  access_token: token,
-		};
+		return token;
 	  }
 }
