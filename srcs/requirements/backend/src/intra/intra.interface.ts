@@ -13,3 +13,10 @@ export interface ApiToken {
 	scope: string,
 	created_at: number,
 }
+
+export interface User42 {
+	email: string,
+	login: string,
+	avatar: string,
+	id: number,
+}

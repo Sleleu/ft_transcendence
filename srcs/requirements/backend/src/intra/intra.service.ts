@@ -1,19 +1,9 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ApiToken } from './intra.interface';
+import { ApiToken, User42 } from './intra.interface';
 import { ConfigService } from '@nestjs/config';
-
-interface User42 {
-  
-  client_id : string;
-  redirect_uri : string;
-  scope : string;
-  state : string;
-  response_type : string;
-
-}
 
 @Injectable()
 export class IntraService {
@@ -55,17 +45,30 @@ export class IntraService {
 		// console.log("TOKEN TEST", accessToken.access_token);
 		return axios.get('https://api.intra.42.fr/v2/me', config)
 		.then((response)=> {
-			const User = {
+			const User : User42 = {
 				email: response.data.email,
 				login: response.data.login,
 				avatar: response.data.image.link,
 				id: response.data.id}
 			//console.log('response.data : ', response.data);
 			// console.log('User : ', User);
+			if (!User){
+				throw new HttpException('Error', HttpStatus.FORBIDDEN);
+			}
 			return User;
 		})
 		.catch(error => {
 			console.log('An error occured : ', error);
 		});
+	}
+
+	async newProfile(profile : User42)
+	{
+		return (false);
+	}
+
+	async createUser(profile : User42)
+	{
+		
 	}
 }
