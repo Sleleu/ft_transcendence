@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Post, Query, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Res, HttpException, HttpStatus } from '@nestjs/common';
 import { IntraService } from './intra.service';
+import { Response } from 'express';
 import { ApiData } from './intra.interface';
 import { ConfigService } from '@nestjs/config';
 
@@ -12,15 +13,14 @@ export class IntraController {
 	async getCode(@Query('code') code : string,
 				  @Query('state') state : string,
 				  @Res() res : Response) {
-		try {
-			const token : ApiData = await this.intraService.getToken();
-			console.log("return de login : ", token);
-			const user = await this.intraService.getUser();
-			console.log("User : ", user);
-			return user;
-		} catch (error) {
-			console.log(error);
-			throw error;
-		}
+			if (state !== this.configService.get('STATE') || !code) {
+				throw new HttpException('Invalid code or state', HttpStatus.FORBIDDEN);
+			}
+			const AccessToken : ApiToken = await this.intraService.getProfile(AccessToken);
+			const Profile = await this.intraService.getProfile(AccessToken);
+			if (!Profile){
+				throw new HttpException('Cannot get Profile from getProfile()', HttpStatus.FORBIDDEN);
+			}
+			res.redirect(this.configService.get('RESPONSE_URI'));
 	}
 }
