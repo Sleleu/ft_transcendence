@@ -15,8 +15,10 @@ model User {
 	createAt DateTime @default(now()) // Time at creation
 	updateAt DateTime @updatedAt
 
-	hash String
 	username String @unique
+	avatar String?
+	hash String?
+	access_token String?
 	elo Int @default(400)
  	friends   Friend[]
 	

@@ -47,7 +47,8 @@ export class AuthService {
       },
     });
 
-    if (!user) throw new ForbiddenException('Incorrect username or password'); // ne pas preciser lequel des deux
+    if (!user || !user.hash) // Si user n'existe pas ou si il n'y a pas de hash (profil 42)
+		throw new ForbiddenException('Incorrect username or password');
 
     // compare password
     const passwordMatch = await argon.verify(user.hash, dto.password);

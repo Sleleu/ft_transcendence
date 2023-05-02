@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class IntraService {
   constructor(
-    private prisma: PrismaService,
+    private prismaService: PrismaService,
     private readonly httpService: HttpService,
     private configService: ConfigService,
   ) {}
@@ -64,11 +64,30 @@ export class IntraService {
 
 	async newProfile(profile : User42)
 	{
+		const userExists = await this.prismaService.user.findUnique({
+			where : {
+				username: profile.login
+			}
+		})
+		if (!userExists)
+		{
+			console.log("User do not exist")
+			return (true);
+		}
+		console.log("User already exist");
 		return (false);
 	}
 
 	async createUser(profile : User42)
 	{
-		
-	}
+		const newUser = await this.prismaService.user.create({
+			data: {
+				username : profile.login,
+				avatar : profile.avatar,		
+			}
+		})
+		if (!newUser)
+			console.log('Error on createUser()');
+		console.log('User created !');
+		}
 }
