@@ -1,13 +1,17 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Res } from '@nestjs/common';
 import { IntraService } from './intra.service';
 import { ApiData } from './intra.interface';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('intra')
 export class IntraController {
-	constructor (private intraService: IntraService) {}
+	constructor (private intraService: IntraService,
+				 private configService: ConfigService) {}
 
-	@Get('login')
-	async login() {
+	@Get('callback')
+	async getCode(@Query('code') code : string,
+				  @Query('state') state : string,
+				  @Res() res : Response) {
 		try {
 			const token : ApiData = await this.intraService.getToken();
 			console.log("return de login : ", token);
