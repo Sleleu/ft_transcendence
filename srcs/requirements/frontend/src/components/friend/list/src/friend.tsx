@@ -119,7 +119,7 @@ const Friend: FC<FriendProps> = ({ changeComponent, token }) => {
           <div className='containerFriendBodyRight'>
             {component === 'add' && <FriendAdd token={token} />}
             {component === 'friendRequest' && <FriendRequest sender={friendReq} token={token} update={updateFriend} />}
-            {component === 'friend' && <FriendOption token={token} friend={searchFriend[searchFriend.findIndex((friend) => friend.friendId === option)].friend} />}
+            {component === 'friend' && <FriendOption token={token} friend={searchFriend[searchFriend.findIndex((friend) => friend.friendId === option)].friend} changeComponent={changeComponent} />}
           </div>
         </div>
       </div>

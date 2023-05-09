@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import './Home.css'
 import { useNavigate } from "react-router-dom"
 import { useState, useEffect } from 'react';
@@ -70,6 +70,15 @@ function Home(props: { token: string }) {
         getUser()
     }, [])
 
+    const extractId = (str: string) => {
+        const regex = /\d+/g;
+        const numbers = str.match(regex)
+        if (numbers)
+            return numbers[0]
+        else
+            return -1
+    }
+
 
     return (
         <div className="baground">
@@ -107,6 +116,7 @@ function Home(props: { token: string }) {
                         {activeComponent === "goldLead" && <Classement rank={'gold'} changeComponent={changeComponent} />}
                         {activeComponent === "crackLead" && <Classement rank={'crack'} changeComponent={changeComponent} />}
                         {activeComponent === "ultimeLead" && <Classement rank={'ultime'} changeComponent={changeComponent} />}
+                        {activeComponent.startsWith("watch") && <div>{extractId(activeComponent)}</div>}
 
                         {/* {activeComponent === "rank" && <Rank user={{ name: 'gottie', rank: 'gold', id: 1, elo: 2561 }} changeComponent={changeComponent} />} */}
                     </div>
