@@ -16,6 +16,7 @@ import Login from '../Login/Login';
 import CreateAccount from '../Login/CreateAccount';
 import { User } from '../types'
 import Friend from '../friend/list/src/friend';
+import Cookies from 'js-cookie';
 
 function Home(props: { token: string }) {
 
@@ -56,9 +57,13 @@ function Home(props: { token: string }) {
 
 
     const api = async () => {
-        const bear = 'Bearer ' + token
-        console.log('bear', bear)
-        const data = await fetch("http://localhost:5000/users/profile", { method: "GET", headers: { 'Authorization': bear } })
+		const access_token = Cookies.get('Authorization')
+		console.log("test access token ici : ", Cookies.get('Authorization'))
+        const bear = 'Bearer ' + access_token
+        console.log('bear', access_token)
+        const data = await fetch("http://localhost:5000/users/profile", { 
+			method: "GET",
+			headers: { 'Authorization': bear } })
         if (data.status === 401) {
             navigate('/')
         }

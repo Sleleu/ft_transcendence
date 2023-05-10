@@ -109,7 +109,7 @@ export class IntraService {
 		  expiresIn: '1days',
 		  secret: secret,
 		});
-	
+		console.log("passage dans getJwtToken()")
 		return token;
 	  }
 }
