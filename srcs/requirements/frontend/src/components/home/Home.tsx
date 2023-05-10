@@ -20,7 +20,7 @@ import Cookies from 'js-cookie';
 
 function Home() {
 
-    const [user, setUser] = useState<User>({ username: 'error', id: -1, elo: -1 })
+    const [user, setUser] = useState<User>({ username: '', id: 0, elo: 0 })
     const [activeComponent, setActiveComponent] = useState<string>('play')
     const [stack, setStack] = useState<string[]>([]);
     const navigate = useNavigate()
@@ -51,17 +51,15 @@ function Home() {
     }
 
     const api = async () => {
-		const access_token = Cookies.get('Authorization')
         const data = await fetch("http://localhost:5000/users/profile", { 
 			method: "GET",
-			headers: { 'Authorization': "Bearer " + access_token } })
+			credentials: 'include'})
         if (data.status === 401) {
             navigate('/')
         }
         const userProfile = await data.json();
         return userProfile;
     }
-
 
     useEffect(() => {
         const getUser = async () => {
@@ -71,6 +69,18 @@ function Home() {
         getUser()
     }, [])
 
+	const handleLogout = async () => {
+		try {
+		  await fetch("http://localhost:5000/users/logout", {
+			method: "GET",
+			credentials: "include",
+		  });
+		  Cookies.remove("Authorization");
+		  navigate('/');
+		} catch (error) {
+		  console.error("Error while disconnect :", error);
+		}
+	  };
 
     return (
         <div className="baground">
@@ -91,6 +101,7 @@ function Home() {
                         <NavBar
                             changeComponent={changeComponent}
                             front={front}
+							handleLogout={handleLogout}
                         />
                     </div>}
                     <div className='containerCenter'>

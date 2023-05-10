@@ -58,7 +58,8 @@ export class IntraController {
 
 			// redirect home
 			res.cookie('Authorization', JwtToken, {
-			}); // add http only at the end
+				httpOnly: true
+			});
 			res.redirect('http://localhost:3000/home');
 	}
 }

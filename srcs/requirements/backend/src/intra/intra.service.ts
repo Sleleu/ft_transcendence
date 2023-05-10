@@ -10,7 +10,6 @@ import { JwtService } from '@nestjs/jwt';
 export class IntraService {
   constructor(
     private prismaService: PrismaService,
-    private readonly httpService: HttpService,
 	private jwtService : JwtService,
     private configService: ConfigService,
   ) {}
@@ -109,7 +108,7 @@ export class IntraService {
 		  expiresIn: '1days',
 		  secret: secret,
 		});
-		console.log("passage dans getJwtToken()")
+		//console.log("passage dans getJwtToken()")
 		return token;
 	  }
 }
