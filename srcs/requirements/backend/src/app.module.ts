@@ -5,6 +5,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { FriendModule } from './friend/friend.module';
 import { HistoryModule } from './history/history.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
   imports: [ConfigModule.forRoot({isGlobal: true}),
@@ -12,6 +13,7 @@ import { HistoryModule } from './history/history.module';
 			UserModule,
 			PrismaModule,
 			FriendModule,
-			HistoryModule],
+			HistoryModule,
+			MessagesModule],
 })
 export class AppModule {}

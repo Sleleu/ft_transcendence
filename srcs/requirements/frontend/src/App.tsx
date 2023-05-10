@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import Home from './components/home/Home';
 import CreateAccount from './components/Login/CreateAccount';
 import Login from './components/Login/Login';
+import Chat from './components/chat/Chat';
 
 function App() {
 
@@ -18,8 +19,9 @@ function App() {
     <Router>
       <div>
         <Routes>
-          <Route path="/" Component={(props) => <Login {...props} updateToken={updateToken} />} />
-          <Route path="/home" Component={(props) => <Home {...props} token={token} />} />
+        <Route path="/" Component={(props) => <Chat {...props}/>} />
+        {/* <Route path="/" Component={(props) => <Login {...props} updateToken={updateToken} />} />
+          <Route path="/home" Component={(props) => <Home {...props} token={token} />} /> */}
         </Routes>
       </div>
     </Router>

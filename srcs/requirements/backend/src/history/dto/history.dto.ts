@@ -25,3 +25,7 @@ export class HistoryDto {
 	@IsNotEmpty()
 	elo: string;
 }
+
+export class HistoryID {
+    id: number;
+}

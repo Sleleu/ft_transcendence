@@ -62,5 +62,4 @@ model History {
 	pointsWon	Int
 	pointsLost	Int
 	elo			Int
-	@@map("history")
 }
