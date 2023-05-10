@@ -4,20 +4,20 @@ import { User } from '../../../types';
 
 
 type PropsOnglet = {
-    pathImg: string;
     txt: string;
     context: string;
     changeComponent: (component: string) => void;
     friend: User
+    token: string
+    update: () => void;
+    change: (compo: string) => void
 }
 
-const FriendOptionOnglet = ({ changeComponent, context, txt, pathImg, friend }: PropsOnglet) => {
+const FriendOptionOnglet = ({ changeComponent, context, txt, friend, token, update, change }: PropsOnglet) => {
 
     const handleClick = () => {
         if (context === 'watchGame')
             watchGame()
-        else if (context === 'seeProfile')
-            seeProfile()
         else if (context === 'sendMessage')
             sendMessage()
         else if (context === 'block')
@@ -28,7 +28,12 @@ const FriendOptionOnglet = ({ changeComponent, context, txt, pathImg, friend }: 
             removeFriend()
     }
 
-    const removeFriend = () => {
+    const removeFriend = async () => {
+        const bear = 'Bearer ' + token
+        const req = 'http://localhost:5000/friend/delete/' + friend.id
+        await fetch(req, { method: "DELETE", headers: { 'Authorization': bear } })
+        update()
+        change('add')
     }
 
     const invitePlay = () => {
@@ -40,18 +45,33 @@ const FriendOptionOnglet = ({ changeComponent, context, txt, pathImg, friend }: 
     const sendMessage = () => {
     }
 
-    const seeProfile = () => {
-    }
-
     const watchGame = () => {
         const compo = "watch" + friend.id
         changeComponent(compo)
     }
 
+    let imageUrl = require('../../../../img/yes.png')
+    if (context === 'watchGame')
+        imageUrl = require('../../../../img/watch.png')
+    else if (context === 'sendMessage')
+        imageUrl = require('../../../../img/menue/chat.png')
+    else if (context === 'block')
+        imageUrl = require('../../../../img/bloque.png')
+    else if (context === 'invitePlay')
+        imageUrl = require('../../../../img/invite.png')
+    else if (context === 'removeFriend')
+        imageUrl = require('../../../../img/remove.png')
+
     const style = {
-        backgroundImage: `url(${require('../../../../img/yes.png')})`,
+        backgroundImage: `url(${imageUrl})`,
         minHeight: '36px',
-        minWidth: '32px',
+        minWidth: '36px',
+    }
+
+    const styleImage = {
+        backgroundImage: `url(${imageUrl})`,
+        minHeight: '30px',
+        minWidth: '30px',
     }
 
     const padding = {
@@ -61,7 +81,10 @@ const FriendOptionOnglet = ({ changeComponent, context, txt, pathImg, friend }: 
     return (
         <div className='containerFriendOptionOnglet' onClick={handleClick}>
             <div className='nameText' style={padding}>{txt}</div>
-            <div className='image' style={style}></div>
+            {context === 'sendMessage' ?
+                (<div className='image' style={styleImage} />) :
+                (<div className='image' style={style} />)
+            }
         </div>
     )
 }

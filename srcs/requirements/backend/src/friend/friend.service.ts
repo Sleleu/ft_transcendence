@@ -80,12 +80,14 @@ export class FriendService {
     async deleteFriendById(userId: number, friendId: number) {
         await this.prisma.friend.deleteMany({
             where: {
-                userId: userId
+                userId: userId,
+                friendId: friendId
             }
         })
         await this.prisma.friend.deleteMany({
             where: {
-                userId: friendId
+                userId: friendId,
+                friendId: userId
             }
         })
     }

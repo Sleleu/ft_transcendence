@@ -3,6 +3,7 @@ import '../css/FriendOnlget.css'
 import { User } from '../../../types'
 import calculRank from '../../../utils'
 import { relative } from 'path'
+import { CSSProperties } from 'react';
 
 type Interface = {
     friend: User
@@ -30,8 +31,11 @@ const FriendOnglet = ({ friend, switchComponent }: Interface) => {
             return '0.3'
     }
 
-    const nameFriend = {
+    const nameFriend: CSSProperties = {
         fontSize: '40px',
+        textShadow: 'none',
+        overflowX: 'scroll',
+        width: '120%'
     }
 
     const stateFriendTxt = {

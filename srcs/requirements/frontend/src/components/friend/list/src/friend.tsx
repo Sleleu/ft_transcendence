@@ -112,14 +112,17 @@ const Friend: FC<FriendProps> = ({ changeComponent, token }) => {
         </div>
         <div className='containerFriendBody'>
           <div className='containerFriendBodyLeft'>
-            {searchFriend.map((friend) =>
-              <FriendOnglet key={friend.id} friend={friend.friend} switchComponent={switchComponent} />
-            )}
+            {!searchFriend.length ?
+              (<div className='noFriend'><p className='pFriend'>Your friends will appear here !</p></div>) :
+              (searchFriend.map((friend) =>
+                <FriendOnglet key={friend.id} friend={friend.friend} switchComponent={switchComponent} />
+              ))
+            }
           </div>
           <div className='containerFriendBodyRight'>
             {component === 'add' && <FriendAdd token={token} />}
             {component === 'friendRequest' && <FriendRequest sender={friendReq} token={token} update={updateFriend} />}
-            {component === 'friend' && <FriendOption token={token} friend={searchFriend[searchFriend.findIndex((friend) => friend.friendId === option)].friend} changeComponent={changeComponent} />}
+            {component === 'friend' && <FriendOption token={token} friend={searchFriend[searchFriend.findIndex((friend) => friend.friendId === option)].friend} changeComponent={changeComponent} update={updateFriend} change={changeComponentFriend} />}
           </div>
         </div>
       </div>

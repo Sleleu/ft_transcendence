@@ -22,6 +22,7 @@ const FriendRequest = ({ sender, token, update }: { sender: friendReq[], token: 
     const style = {
         paddingLeft: '15%',
         paddingRight: '15%',
+        textShadow: 'none',
     }
 
     return (

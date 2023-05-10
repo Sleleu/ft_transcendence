@@ -2,6 +2,7 @@ import React from 'react'
 import { User } from '../../../types';
 import '../css/FriendReqOnglet.css'
 import { useState, useEffect } from 'react';
+import { CSSProperties } from 'react';
 
 type propsRem = {
 	onRemove: () => void;
@@ -12,13 +13,14 @@ type propsRem = {
 
 const FriendReqOnglet = ({ sender, token, onRemove, update }: propsRem) => {
 
-	const padd = {
+	const padd: CSSProperties = {
 		paddingLeft: '7%',
+		overflowX: 'scroll',
+		textShadow: 'none'
 	}
 
 	const handleYes = async () => {
 		const bear = 'Bearer ' + token
-		console.log('token', token)
 		const req = 'http://localhost:5000/friend/accept/' + sender.id
 		await fetch(req, { method: "PUT", headers: { 'Authorization': bear } })
 		onRemove()

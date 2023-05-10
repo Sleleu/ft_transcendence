@@ -43,6 +43,10 @@ const FriendAdd = ({ token }: { token: string }) => {
         setInput(event.target.value)
     }
 
+    const style = {
+        textShadow: 'none',
+    }
+
     return (
 
         <div className='containerAddFriendInside'>
@@ -53,7 +57,7 @@ const FriendAdd = ({ token }: { token: string }) => {
             <div className='containerAddFriendBody'>
                 {friendList.length === 0 ? (
                     <div className='containerMsg'>
-                        {!search && <div className='nameText'>Find new friends above ! </div>}
+                        {!search && <div className='nameText' style={style}>Find new friends above ! </div>}
                     </div>
                 ) : (
                     friendList.map((friend) =>
