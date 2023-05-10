@@ -18,16 +18,12 @@ import { User } from '../types'
 import Friend from '../friend/list/src/friend';
 import Cookies from 'js-cookie';
 
-function Home(props: { token: string }) {
+function Home() {
 
     const [user, setUser] = useState<User>({ username: 'error', id: -1, elo: -1 })
     const [activeComponent, setActiveComponent] = useState<string>('play')
     const [stack, setStack] = useState<string[]>([]);
-    const { token } = props
     const navigate = useNavigate()
-
-    // const aled: User[] = [{ name: 'gottie', rank: 'gold', id: 1, elo: 100 }]
-    // setUser(aled)
 
     const push = (item: string) => {
         setStack([...stack, item])
@@ -54,22 +50,18 @@ function Home(props: { token: string }) {
         setActiveComponent(component)
     }
 
-
-
     const api = async () => {
 		const access_token = Cookies.get('Authorization')
-		console.log("test access token ici : ", Cookies.get('Authorization'))
-        const bear = 'Bearer ' + access_token
-        console.log('bear', access_token)
         const data = await fetch("http://localhost:5000/users/profile", { 
 			method: "GET",
-			headers: { 'Authorization': bear } })
+			headers: { 'Authorization': "Bearer " + access_token } })
         if (data.status === 401) {
             navigate('/')
         }
-        const jsonData = await data.json();
-        return jsonData;
+        const userProfile = await data.json();
+        return userProfile;
     }
+
 
     useEffect(() => {
         const getUser = async () => {

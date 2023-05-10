@@ -100,8 +100,6 @@ function CreateAccount(updateToken: Props) {
         setInputLog('');
         setInputPass('');
         setConfirmPass('');
-        // if (click === 'return')
-        // changeComponent('login');
         if (click === '42')
         {
 			if (process.env.REACT_APP_AUTH_URL)
@@ -136,7 +134,7 @@ function CreateAccount(updateToken: Props) {
             return false;
         }
         catch (error) {
-            console.log('Jason:', JSON.stringify(data))
+            console.log('Json:', JSON.stringify(data))
             console.error('Failed to send data:', error);
             return false;
         }

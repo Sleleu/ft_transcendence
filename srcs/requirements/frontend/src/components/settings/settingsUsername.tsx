@@ -2,6 +2,7 @@ import { useState, ChangeEvent, useEffect } from 'react';
 
 import { Cont } from '../container/container'
 import { User } from '../types'
+import Cookies from 'js-cookie';
 
 interface SettingsUsernameProps {
 	user: User;
@@ -16,9 +17,11 @@ const SettingsUsername = ({ user}: SettingsUsernameProps) => {
 	}
 
 	const handleSubmit = async () => {
+		const access_token = Cookies.get('Authorization')
 		const response = await fetch('http://localhost:5000/users/update-username', {
 		method: 'PUT',
-		headers: { 'Content-Type': 'application/json', 'Authorization': 'TOKEN ICI'},
+		headers: { 'Content-Type': 'application/json',
+					'Authorization': 'bearer ' + access_token},
 			body: JSON.stringify({ newUsername }),
 		  });
 			const data = await response.json();

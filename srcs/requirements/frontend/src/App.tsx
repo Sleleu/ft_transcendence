@@ -19,7 +19,7 @@ function App() {
       <div>
         <Routes>
           <Route path="/" Component={(props) => <CreateAccount {...props} updateToken={updateToken} />} />
-          <Route path="/home" Component={(props) => <Home {...props} token={token} />} />
+          <Route path="/home" Component={() => <Home/>} />
         </Routes>
       </div>
     </Router>
