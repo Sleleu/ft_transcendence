@@ -4,7 +4,7 @@ import '../css/FriendAdd.css'
 import { User } from '../../../types';
 import FriendAddOnglet from './FriendAddOnglet';
 
-const FriendAdd = ({ token }: { token: string }) => {
+const FriendAdd = () => {
 
     const inputStyle = {
         width: '70%',
@@ -60,7 +60,7 @@ const FriendAdd = ({ token }: { token: string }) => {
                     </div>
                 ) : (
                     friendList.map((friend) =>
-                        <FriendAddOnglet key={friend.id} friend={friend} token={token} />)
+                        <FriendAddOnglet key={friend.id} friend={friend} />)
                 )}
             </div>
         </div>

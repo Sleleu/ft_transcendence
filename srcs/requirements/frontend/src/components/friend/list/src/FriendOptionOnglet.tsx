@@ -8,12 +8,11 @@ type PropsOnglet = {
     context: string;
     changeComponent: (component: string) => void;
     friend: User
-    token: string
     update: () => void;
     change: (compo: string) => void
 }
 
-const FriendOptionOnglet = ({ changeComponent, context, txt, friend, token, update, change }: PropsOnglet) => {
+const FriendOptionOnglet = ({ changeComponent, context, txt, friend, update, change }: PropsOnglet) => {
 
     const handleClick = () => {
         if (context === 'watchGame')

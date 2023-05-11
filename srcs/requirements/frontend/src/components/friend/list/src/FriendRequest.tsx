@@ -11,7 +11,7 @@ interface friendReq {
     sender: User
 }
 
-const FriendRequest = ({ sender, token, update }: { sender: friendReq[], token: string, update: () => void }) => {
+const FriendRequest = ({ sender, update }: { sender: friendReq[], update: () => void }) => {
 
     const [req, setReq] = useState<friendReq[]>(sender)
 
@@ -33,7 +33,7 @@ const FriendRequest = ({ sender, token, update }: { sender: friendReq[], token: 
                 </div>
             ) : (
                 req.map((sender) =>
-                    <FriendReqOnglet key={sender.id} sender={sender.sender} token={token} onRemove={() => handleRemoveFromReq(sender.senderId)} update={update} />)
+                    <FriendReqOnglet key={sender.id} sender={sender.sender} onRemove={() => handleRemoveFromReq(sender.senderId)} update={update} />)
             )}
         </div>
     )

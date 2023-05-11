@@ -1,9 +1,9 @@
 import React from 'react'
 import '../css/FriendAddOnglet.css'
 import { User } from '../../../types';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
-const FriendAddOnglet = ({ friend, token }: { friend: User, token: string }) => {
+const FriendAddOnglet = ({ friend }: { friend: User} ) => {
 
 
     const [button, setButton] = useState<boolean>(false)

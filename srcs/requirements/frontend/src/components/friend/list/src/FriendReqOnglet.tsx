@@ -7,11 +7,10 @@ import { CSSProperties } from 'react';
 type propsRem = {
 	onRemove: () => void;
 	sender: User;
-	token: string
 	update: () => void;
 }
 
-const FriendReqOnglet = ({ sender, token, onRemove, update }: propsRem) => {
+const FriendReqOnglet = ({ sender, onRemove, update }: propsRem) => {
 
 	const padd: CSSProperties = {
 		paddingLeft: '7%',

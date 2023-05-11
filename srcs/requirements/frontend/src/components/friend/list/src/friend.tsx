@@ -10,7 +10,6 @@ import FriendOption from './FriendOption';
 
 interface FriendProps {
   changeComponent: (component: string) => void;
-  token: string;
 }
 
 interface FriendInterface {
@@ -28,7 +27,7 @@ interface friendReq {
   sender: User
 }
 
-const Friend: FC<FriendProps> = ({ changeComponent, token }) => {
+const Friend: FC<FriendProps> = ({ changeComponent }) => {
 
   const [friend, setFriend] = useState<FriendInterface[]>([])
   const [searchText, setSearchText] = useState<string>('')
@@ -128,9 +127,9 @@ const Friend: FC<FriendProps> = ({ changeComponent, token }) => {
             }
           </div>
           <div className='containerFriendBodyRight'>
-            {component === 'add' && <FriendAdd token={token} />}
-            {component === 'friendRequest' && <FriendRequest sender={friendReq} token={token} update={updateFriend} />}
-            {component === 'friend' && <FriendOption token={token} friend={searchFriend[searchFriend.findIndex((friend) => friend.friendId === option)].friend} changeComponent={changeComponent} update={updateFriend} change={changeComponentFriend} />}
+            {component === 'add' && <FriendAdd  />}
+            {component === 'friendRequest' && <FriendRequest sender={friendReq} update={updateFriend} />}
+            {component === 'friend' && <FriendOption friend={searchFriend[searchFriend.findIndex((friend) => friend.friendId === option)].friend} changeComponent={changeComponent} update={updateFriend} change={changeComponentFriend} />}
           </div>
         </div>
       </div>

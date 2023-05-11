@@ -27,7 +27,6 @@ function Home() {
     const navigate = useNavigate()
     const existingRanks: string[] = ['bronze', 'silver', 'gold', 'crack', 'ultime']; 
     const userRank: string =  user.elo > 5000 || user.elo < 0 ? 'ultime' : existingRanks[Math.floor(user.elo / 1000)];
-	const token = ""
 
     const push = (item: string) => {
         setStack([...stack, item])
@@ -125,7 +124,7 @@ function Home() {
                         {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} />}
                         {activeComponent === "historic" && <History />}
                         {activeComponent === "stat" && <Stats user={user} changeComponent={changeComponent} />}
-                        {activeComponent === "friend" && <Friend changeComponent={changeComponent} token={token} />}
+                        {activeComponent === "friend" && <Friend changeComponent={changeComponent} />}
 
                         {activeComponent === "leader" && <Classement rank={userRank} changeComponent={changeComponent} />}
                         {activeComponent === "bronzeLead" && <Classement rank={'bronze'} changeComponent={changeComponent} />}
