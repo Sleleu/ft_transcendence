@@ -20,18 +20,15 @@ const FriendReqOnglet = ({ sender, token, onRemove, update }: propsRem) => {
 	}
 
 	const handleYes = async () => {
-		const bear = 'Bearer ' + token
 		const req = 'http://localhost:5000/friend/accept/' + sender.id
-		await fetch(req, { method: "PUT", headers: { 'Authorization': bear } })
+		await fetch(req, { method: "PUT", credentials: "include"})
 		onRemove()
 		update()
 	}
 
 	const handleNo = async () => {
-		const bear = 'Bearer ' + token
-		console.log('token', token)
 		const req = 'http://localhost:5000/friend/refuse/' + sender.id
-		await fetch(req, { method: "DELETE", headers: { 'Authorization': bear } })
+		await fetch(req, { method: "DELETE", credentials: "include"})
 		onRemove()
 	}
 

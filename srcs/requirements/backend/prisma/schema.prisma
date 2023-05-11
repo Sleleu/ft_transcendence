@@ -16,8 +16,10 @@ model User {
 	updateAt DateTime @updatedAt
 
 	state					String	@default("online")
-	hash 					String
+	hash 					String?
 	username 				String @unique
+	avatar					String?
+	access_token			String?
 	elo 					Int @default(400)
 	win 					Int @default(0)
 	loose 					Int @default(0)

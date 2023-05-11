@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { CSSProperties } from 'react'
 import { useNavigate } from "react-router-dom"
+import Cookies from 'js-cookie'
 
 interface Props {
     updateToken: (token: string) => void;
@@ -99,42 +100,36 @@ function CreateAccount(props: Props) {
         setInputLog('');
         setInputPass('');
         setConfirmPass('');
-        if (click === 'return')
-            props.setPage('log');
         if (click === '42')
-            console.log('LOG WITH 42');
+        {
+			if (process.env.REACT_APP_AUTH_URL)
+			window.location.href = process.env.REACT_APP_AUTH_URL;
+			else
+				console.log('AUTH_URL is undefined');
+		}
         if (click === 'create') {
             if (inputPass !== confirmPass)
                 return;
-            const response = postAccount({ username: inputLog, password: inputPass });
-            response.then((result: boolean) => {
-                if (result) {
-                    console.log('CreateAccount : to Home')
-                    navigate('/home');
-                    return;
-                }
-                else
-                    return;
-            })
+            postAccount({ username: inputLog, password: inputPass });
+           	navigate('/home')
         }
     };
 
     const postAccount = async (data: Account) => {
-        try {
-            const response = await fetch("http://localhost:5000/auth/signup", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-            if (response.status === 201) {
-                const jsonData = await response.json()
-                props.updateToken(jsonData.access_token)
-                return true;
-            }
-            console.log('CreateAccount : Status Error code : %d', response.status);
-            return false;
-        }
-        catch (error) {
-            console.log('Jason:', JSON.stringify(data))
-            console.error('CreateAccount : Failed to send data:', error);
-            return false;
-        }
+			console.log("data : ", data)
+            const response = await fetch("http://localhost:5000/auth/signup", {
+				method: "POST",
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data) });
+				if (response.ok) {
+					const Token = await response.text()
+					console.log ("response text : ", Token)
+					
+					// Save the token in the local storage
+					Cookies.set('Authorization', Token);
+				  } else {
+					console.log('Error during signup:', response.status, response.statusText);
+				  }
     }
 
     return (

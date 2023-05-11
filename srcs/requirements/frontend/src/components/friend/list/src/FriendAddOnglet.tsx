@@ -10,10 +10,8 @@ const FriendAddOnglet = ({ friend, token }: { friend: User, token: string }) => 
 
     const handleClick = async () => {
         setButton(true)
-        const bear = 'Bearer ' + token
-        console.log('token', token)
         const req = 'http://localhost:5000/friend/send/' + friend.id
-        await fetch(req, { method: "POST", headers: { 'Authorization': bear } })
+        await fetch(req, { method: "POST", credentials: "include"})
     }
 
     const nameFriend = {

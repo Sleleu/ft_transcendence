@@ -21,7 +21,7 @@ function App() {
         <Routes>
         {/* <Route path="/" Component={(props) => <Chat {...props}/>} /> */}
         <Route path="/" Component={(props) => <Login {...props} updateToken={updateToken} />} />
-          <Route path="/home" Component={(props) => <Home {...props} token={token} />} />
+          <Route path="/home" Component={() => <Home/>} />
         </Routes>
       </div>
     </Router>
