@@ -58,7 +58,8 @@ function Home() {
             navigate('/')
         }
         const userProfile = await data.json();
-        return userProfile;
+        console.log('user in api', userProfile)
+		return userProfile;
     }
 
     useEffect(() => {

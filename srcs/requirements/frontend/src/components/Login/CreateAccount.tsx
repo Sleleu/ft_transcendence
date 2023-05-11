@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { CSSProperties } from 'react'
 import { useNavigate } from "react-router-dom"
+import Cookies from 'js-cookie'
 
 interface Props {
     updateToken: (token: string) => void;
@@ -8,6 +9,10 @@ interface Props {
 interface Account {
     username: string,
     password: string,
+}
+
+interface TokenProps {
+	access_token: string,
 }
 
 function CreateAccount(updateToken: Props) {
@@ -110,34 +115,26 @@ function CreateAccount(updateToken: Props) {
         if (click === 'create') {
             if (inputPass !== confirmPass)
                 return;
-            const response = postAccount({ username: inputLog, password: inputPass });
-            response.then((result: boolean) => {
-                if (result) {
-                    navigate('/home')
-                    return;
-                }
-                else
-                    return;
-            })
+            postAccount({ username: inputLog, password: inputPass });
+           	navigate('/home')
         }
     };
 
     const postAccount = async (data: Account) => {
-        try {
-            const response = await fetch("http://localhost:5000/auth/signup", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-            if (response.status === 201) {
-                const jsonData = await response.json()
-                updateToken.updateToken(jsonData.access_token)
-                return true;
-            }
-            console.log('FETCH ERROR');
-            return false;
-        }
-        catch (error) {
-            console.log('Json:', JSON.stringify(data))
-            console.error('Failed to send data:', error);
-            return false;
-        }
+			console.log("data : ", data)
+            const response = await fetch("http://localhost:5000/auth/signup", {
+				method: "POST",
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data) });
+				if (response.ok) {
+					const Token = await response.text()
+					console.log ("response text : ", Token)
+					
+					// Save the token in the local storage
+					Cookies.set('Authorization', Token);
+				  } else {
+					console.log('Error during signup:', response.status, response.statusText);
+				  }
     }
 
     return (
