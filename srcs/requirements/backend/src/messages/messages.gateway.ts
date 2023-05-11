@@ -12,8 +12,21 @@ export class MessagesGateway {
 
   constructor(private readonly messagesService: MessagesService) {}
 
+  afterInit() {
+    console.log('WebSocket Gateway initialized');
+  }
+
+  handleConnection(client: Socket) {
+    console.log('Client connected:', client.id);
+  }
+
+  handleDisconnect(client: Socket) {
+    console.log('Client disconnected:', client.id);
+  }
+
   @SubscribeMessage('createMessage')
   async create(@MessageBody() createMessageDto: CreateMessageDto) {
+    console.log("Message Received by server : ", createMessageDto);
     const message = await this.messagesService.create(createMessageDto);
 
     this.server.emit('message', message);
@@ -22,8 +35,9 @@ export class MessagesGateway {
   }
 
   @SubscribeMessage('findAllMessages')
-  findAll() {
-    return this.messagesService.findAll();
+    findAll() {
+    const messages = this.messagesService.findAll();
+    return messages;
   }
 
   @SubscribeMessage('join')

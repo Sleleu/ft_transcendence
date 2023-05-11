@@ -7,7 +7,8 @@ interface MessageObj {
 
 interface Props {
     message: MessageObj;
-  }  
+    key: number;
+  }
 
 const Message:React.FC<Props> = ({message}) => {
   return (
