@@ -5,7 +5,7 @@ import { UpdateMessageDto } from './dto/update-message.dto';
 import {Server, Socket} from 'socket.io';
 
 
-@WebSocketGateway()
+@WebSocketGateway({cors : true})
 export class MessagesGateway {
   @WebSocketServer()
   server: Server;
@@ -17,7 +17,7 @@ export class MessagesGateway {
     const message = await this.messagesService.create(createMessageDto);
 
     this.server.emit('message', message);
-    
+
     return message;
   }
 
@@ -36,7 +36,7 @@ export class MessagesGateway {
     const name = await this.messagesService.getClientName(client.id);
     client.broadcast.emit('typing', { name, isTyping });
   }
-  
+
 }
 
 // @SubscribeMessage('updateMessage')
