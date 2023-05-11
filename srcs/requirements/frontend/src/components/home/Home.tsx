@@ -16,17 +16,18 @@ import Login from '../Login/Login';
 import CreateAccount from '../Login/CreateAccount';
 import { User } from '../types'
 import Friend from '../friend/list/src/friend';
+import Cookies from 'js-cookie';
 
-function Home(props: { token: string }) {
+function Home() {
 
-    const [user, setUser] = useState<User>({ username: 'error', id: -1, elo: -1, win: -1, loose: -1, createAt: '', updateAt: '', state: 'inexistant' })
+
+    const [user, setUser] = useState<User>({ username: '', id: -1, elo: -1, win: -1, loose: -1, createAt: '', updateAt: '', state: 'inexistant' })
     const [activeComponent, setActiveComponent] = useState<string>('play')
     const [stack, setStack] = useState<string[]>([]);
-    const { token } = props
     const navigate = useNavigate()
-
     const existingRanks: string[] = ['bronze', 'silver', 'gold', 'crack', 'ultime']; 
     const userRank: string =  user.elo > 5000 || user.elo < 0 ? 'ultime' : existingRanks[Math.floor(user.elo / 1000)];
+	const token = ""
 
     const push = (item: string) => {
         setStack([...stack, item])
@@ -53,16 +54,16 @@ function Home(props: { token: string }) {
         setActiveComponent(component)
     }
 
-
-
     const api = async () => {
-        const bear = 'Bearer ' + token
-        const data = await fetch("http://localhost:5000/users/profile", { method: "GET", headers: { 'Authorization': bear } })
+        const data = await fetch("http://localhost:5000/users/profile", { 
+			method: "GET",
+			credentials: 'include'})
         if (data.status === 401) {
             navigate('/')
         }
-        const jsonData = await data.json();
-        return jsonData;
+        const userProfile = await data.json();
+        console.log('user in api', userProfile)
+		return userProfile;
     }
 
     useEffect(() => {
@@ -82,6 +83,18 @@ function Home(props: { token: string }) {
             return -1
     }
 
+	const handleLogout = async () => {
+		try {
+		  await fetch("http://localhost:5000/users/logout", {
+			method: "GET",
+			credentials: "include",
+		  });
+		  Cookies.remove("Authorization");
+		  navigate('/');
+		} catch (error) {
+		  console.error("Error while disconnect :", error);
+		}
+	  };
 
     return (
         <div className="baground">
@@ -102,6 +115,7 @@ function Home(props: { token: string }) {
                         <NavBar
                             changeComponent={changeComponent}
                             front={front}
+							handleLogout={handleLogout}
                         />
                     </div>}
                     <div className='containerCenter'>

@@ -31,9 +31,8 @@ const FriendAdd = ({ token }: { token: string }) => {
         event.preventDefault()
         if (!input)
             return;
-        const bear = 'Bearer ' + token
         const req = 'http://localhost:5000/friend/add/' + input
-        const data = await fetch(req, { method: "GET", headers: { 'Authorization': bear } })
+        const data = await fetch(req, { method: "GET", credentials: "include" })
         const friend = await data.json()
         setFriendList(friend)
         setSearch(true)

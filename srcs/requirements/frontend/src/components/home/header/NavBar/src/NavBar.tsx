@@ -4,9 +4,10 @@ import '../css/NavBar.css'
 interface NavBarProps {
     changeComponent: (component: string) => void;
     front: () => void;
+	handleLogout: () => void;
 }
 
-const NavBar: FC<NavBarProps> = ({changeComponent, front}) => {
+const NavBar: FC<NavBarProps> = ({changeComponent, front, handleLogout }) => {
   return (
     <div className='containerNavBar'>
         <div
@@ -18,7 +19,7 @@ const NavBar: FC<NavBarProps> = ({changeComponent, front}) => {
         className='menueLogo'
         />
          <div
-        onClick={() => changeComponent("login")} 
+        onClick={handleLogout} 
         className='logoutLogo'
         />
         <div

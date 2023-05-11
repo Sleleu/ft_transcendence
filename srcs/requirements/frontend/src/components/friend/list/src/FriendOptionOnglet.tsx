@@ -29,9 +29,8 @@ const FriendOptionOnglet = ({ changeComponent, context, txt, friend, token, upda
     }
 
     const removeFriend = async () => {
-        const bear = 'Bearer ' + token
         const req = 'http://localhost:5000/friend/delete/' + friend.id
-        await fetch(req, { method: "DELETE", headers: { 'Authorization': bear } })
+        await fetch(req, { method: "DELETE", credentials: "include" })
         update()
         change('add')
     }

@@ -39,15 +39,18 @@ const Friend: FC<FriendProps> = ({ changeComponent, token }) => {
   const [option, setOption] = useState(0)
 
   const api = async () => {
-    const bear = 'Bearer ' + token
-    const data = await fetch("http://localhost:5000/friend", { method: "GET", headers: { 'Authorization': bear } })
+    const data = await fetch("http://localhost:5000/friend", { 
+		method: "GET",
+		credentials: "include",
+	});
     const jsonData = await data.json();
     return jsonData;
   }
 
   const getFriendReq = async () => {
-    const bear = 'Bearer ' + token
-    const data = await fetch("http://localhost:5000/friend/request", { method: "GET", headers: { 'Authorization': bear } })
+    const data = await fetch("http://localhost:5000/friend/request", {
+		method: "GET",
+		credentials: "include",})
     const jsonData = await data.json();
     return jsonData;
   }

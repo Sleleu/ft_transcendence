@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { FriendModule } from './friend/friend.module';
 import { HistoryModule } from './history/history.module';
 import { MessagesModule } from './messages/messages.module';
+import { IntraModule } from './intra/intra.module';
 
 @Module({
   imports: [ConfigModule.forRoot({isGlobal: true}),
@@ -14,6 +15,7 @@ import { MessagesModule } from './messages/messages.module';
 			PrismaModule,
 			FriendModule,
 			HistoryModule,
-			MessagesModule],
+			MessagesModule,
+			IntraModule,]
 })
 export class AppModule {}
