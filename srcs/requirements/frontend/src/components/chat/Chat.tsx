@@ -23,20 +23,20 @@ const Chat:React.FC<Props> = () => {
     const [socket, setSocket] = useState<Socket>();
 
     useEffect(() => {
-    const sock = io('http://localhost:5000');
-    setSocket(sock);
-    sock.emit('findAllMessages', {}, (response: MessageObj[]) => {
-      setMessages(response);
-    });
+        const sock = io('http://localhost:5000');
+        setSocket(sock);
+        sock.emit('findAllMessages', {}, (response: MessageObj[]) => {
+        setMessages(response);
+        });
 
-    sock.on('message', (message: MessageObj) => {
-        console.log("messageSet : ", message.id);
-      setMessages((prevMessages) => [...prevMessages, message]);
-    });
+        sock.on('message', (message: MessageObj) => {
+            console.log("messageSet : ", message.id);
+        setMessages((prevMessages) => [...prevMessages, message]);
+        });
 
-    return () => {
-      sock.disconnect();
-    };
+        return () => {
+        sock.disconnect();
+        };
   }, []);
 
 //   socket.on('connect', () => {

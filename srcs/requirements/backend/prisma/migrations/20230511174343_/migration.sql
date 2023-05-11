@@ -49,6 +49,16 @@ CREATE TABLE "History" (
     CONSTRAINT "History_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Message" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "name" TEXT NOT NULL,
+    "text" TEXT NOT NULL,
+
+    CONSTRAINT "Message_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 

@@ -6,7 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Message } from '@prisma/client';
 
 @Injectable()
-export class MessagesService {
+export class SocketsService {
   messages: MessageObj[] = [{id: 1, name: 'gmansuy', text: 'heyooo'}, {id: 2, name: 'Sleleu', text: 'yooo'}];
   private clientToUser: { [clientId: string]: string } = {};
 

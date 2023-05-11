@@ -1,16 +1,16 @@
 import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer, ConnectedSocket } from '@nestjs/websockets';
-import { MessagesService } from './messages.service';
+import { SocketsService } from './sockets.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import {Server, Socket} from 'socket.io';
 
 
 @WebSocketGateway({cors : true})
-export class MessagesGateway {
+export class SocketsGateway {
   @WebSocketServer()
   server: Server;
 
-  constructor(private readonly messagesService: MessagesService) {}
+  constructor(private readonly messagesService: SocketsService) {}
 
   afterInit() {
     console.log('WebSocket Gateway initialized');
