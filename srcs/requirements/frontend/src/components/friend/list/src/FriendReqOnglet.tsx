@@ -15,7 +15,7 @@ const FriendReqOnglet = ({ sender, token, onRemove, update }: propsRem) => {
 
 	const padd: CSSProperties = {
 		paddingLeft: '7%',
-		overflowX: 'scroll',
+		overflowX: 'auto',
 		textShadow: 'none'
 	}
 

@@ -34,7 +34,7 @@ const FriendOnglet = ({ friend, switchComponent }: Interface) => {
     const nameFriend: CSSProperties = {
         fontSize: '40px',
         textShadow: 'none',
-        overflowX: 'scroll',
+        overflowX: 'auto',
         width: '120%'
     }
 

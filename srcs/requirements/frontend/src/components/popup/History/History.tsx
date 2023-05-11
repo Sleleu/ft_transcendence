@@ -30,7 +30,7 @@ const History:React.FC = () => {
     flexDirection: 'column',
     justifyContent: 'flex-start',
     
-    overflowY: 'scroll'
+    overflowY: 'auto'
   }
 
   const [entryData, setEntryData] = useState<historyData[]>([]);

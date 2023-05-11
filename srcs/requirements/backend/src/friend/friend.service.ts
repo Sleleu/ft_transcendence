@@ -104,12 +104,18 @@ export class FriendService {
             where: { id: userId },
             include: { friend: true }
         })
-        const filtered = friend.filter((friend) => friend.id !== userId && !user?.friend.some((f) => f.friendId === friend.id))
+        const alreadyReq = await this.prisma.friendRequest.findMany({
+            where : {senderId : userId },
+            include : {recipient: true}
+        })
+
+        const filtered = friend.filter((friend) => friend.id !== userId && !user?.friend.some((f) => f.friendId === friend.id) && !alreadyReq?.some((req) => req.recipientId === friend.id))
         return filtered.map(friend => {
             const { hash, ...rest } = friend
             return friend
         })
     }
+
     async getFriendReq(userId: number) {
         const request = await this.prisma.friendRequest.findMany({
             where: { recipientId: userId },

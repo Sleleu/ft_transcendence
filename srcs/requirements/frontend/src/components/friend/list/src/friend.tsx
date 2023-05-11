@@ -71,10 +71,15 @@ const Friend: FC<FriendProps> = ({ changeComponent, token }) => {
     return friend.sort((a, b) => (a.friend.state !== 'offline' ? -1 : 1))
   }
 
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value.toLowerCase()
     console.log('value = ', value)
     setSearchText(value)
+    if (!friend)
+    {
+      const friendR = await getFriendReq()
+      setFriendReq(friendR)
+    }
     const filteredFriends = friend.filter((friend) => friend.friend.username.toLowerCase().startsWith(value))
     const sortedFriend = filteredFriends.sort((a, b) => (a.friend.state !== 'offline' ? -1 : 1))
     setSearchFriend(sortedFriend)
