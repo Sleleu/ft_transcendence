@@ -1,7 +1,5 @@
-.containerName
-{
+.containerName {
     position: relative;
-    /* background-color: blue; */
     min-height: 110px;
     min-width: 285px;
     height: 80%;
@@ -14,15 +12,14 @@
     align-items: center;
 }
 
-.brushBot, .brushTop
-{
-    position:absolute;
+.brushBot,
+.brushTop {
+    position: absolute;
     min-height: 46px;
     min-width: 280px;
 }
 
-.containerRoseName
-{
+.containerRoseName {
     min-width: 275.28px;
     min-height: 100px;
     /* background: linear-gradient(90.94deg, rgba(213, 61, 156, 0.72) -2.85%, #71DFFF 113.66%); */
@@ -36,11 +33,10 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    padding:0px;
+    padding: 0px;
 }
 
-.containerTextName
-{
+.containerTextName {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -55,27 +51,25 @@
     margin-left: 15px;
 }
 
-.nameText
-{
+.nameText {
     font-weight: 700;
-    color:white;
-    display:flex;
+    color: white;
+    display: flex;
     align-items: center;
     text-align: center;
 
     text-shadow:
-    0 0 10px #fff,
-    0 0 42px white;
+        0 0 10px #fff,
+        0 0 42px white;
     /* font-size:calc(32px + 1.5vh); */
     transition: text-shadow 0.3s ease;
     cursor: pointer;
 }
 
-.nameText:hover
-{ 
+.nameText:hover {
     text-shadow:
-    0 0 10px #fff,
-    0 0 20px #fff,
-    0 0 42px #fff,
-    0 0 70px white;
+        0 0 10px #fff,
+        0 0 20px #fff,
+        0 0 42px #fff,
+        0 0 70px white;
 }

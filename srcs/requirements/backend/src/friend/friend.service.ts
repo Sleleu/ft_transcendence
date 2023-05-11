@@ -80,13 +80,44 @@ export class FriendService {
     async deleteFriendById(userId: number, friendId: number) {
         await this.prisma.friend.deleteMany({
             where: {
-                userId: userId
+                userId: userId,
+                friendId: friendId
             }
         })
         await this.prisma.friend.deleteMany({
             where: {
-                userId: friendId
+                userId: friendId,
+                friendId: userId
             }
+        })
+    }
+
+    async userByName(userId: number, name: string) {
+        const friend = await this.prisma.user.findMany({
+            where: {
+                username: {
+                    startsWith: name,
+                }
+            }
+        })
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+            include: { friend: true }
+        })
+        const filtered = friend.filter((friend) => friend.id !== userId && !user?.friend.some((f) => f.friendId === friend.id))
+        return filtered.map(friend => {
+            const { hash, ...rest } = friend
+            return friend
+        })
+    }
+    async getFriendReq(userId: number) {
+        const request = await this.prisma.friendRequest.findMany({
+            where: { recipientId: userId },
+            include: { sender: true }
+        })
+        return request.map(sender => {
+            const { hash, ...rest } = sender.sender
+            return { ...sender, sender: rest }
         })
     }
 }

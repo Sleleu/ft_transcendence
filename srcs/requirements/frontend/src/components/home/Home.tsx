@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import './Home.css'
 import { useNavigate } from "react-router-dom"
 import { useState, useEffect } from 'react';
@@ -57,7 +57,6 @@ function Home(props: { token: string }) {
 
     const api = async () => {
         const bear = 'Bearer ' + token
-        console.log('bear', bear)
         const data = await fetch("http://localhost:5000/users/profile", { method: "GET", headers: { 'Authorization': bear } })
         if (data.status === 401) {
             navigate('/')
@@ -73,6 +72,15 @@ function Home(props: { token: string }) {
         }
         getUser()
     }, [])
+
+    const extractId = (str: string) => {
+        const regex = /\d+/g;
+        const numbers = str.match(regex)
+        if (numbers)
+            return numbers[0]
+        else
+            return -1
+    }
 
 
     return (
@@ -111,6 +119,7 @@ function Home(props: { token: string }) {
                         {activeComponent === "goldLead" && <Classement rank={'gold'} changeComponent={changeComponent} />}
                         {activeComponent === "crackLead" && <Classement rank={'crack'} changeComponent={changeComponent} />}
                         {activeComponent === "ultimeLead" && <Classement rank={'ultime'} changeComponent={changeComponent} />}
+                        {activeComponent.startsWith("watch") && <div>{extractId(activeComponent)}</div>}
 
                         {activeComponent === "rank" && <Rank user={user} changeComponent={changeComponent} />}
                     </div>
