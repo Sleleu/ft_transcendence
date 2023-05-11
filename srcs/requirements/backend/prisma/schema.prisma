@@ -63,3 +63,11 @@ model History {
 	pointsLost	Int
 	elo			Int
 }
+
+model Message {
+	id          Int    @id @default(autoincrement())
+	createdAt   DateTime @default(now())
+
+	name		String
+	text		String
+}
