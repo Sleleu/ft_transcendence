@@ -24,9 +24,10 @@ export class SocketsGateway {
     console.log('Client disconnected:', client.id);
   }
 
+
+  // CHAT
   @SubscribeMessage('createMessage')
   async create(@MessageBody() createMessageDto: CreateMessageDto) {
-    console.log("Message Received by server : ", createMessageDto);
     const message = await this.messagesService.create(createMessageDto);
 
     this.server.emit('message', message);
@@ -52,16 +53,3 @@ export class SocketsGateway {
   }
 
 }
-
-// @SubscribeMessage('updateMessage')
-// update(@MessageBody() updateMessageDto: UpdateMessageDto) {
-//   return this.messagesService.update(updateMessageDto.id, updateMessageDto);
-// }
-// @SubscribeMessage('removeMessage')
-// remove(@MessageBody() id: number) {
-//   return this.messagesService.remove(id);
-// }
-// @SubscribeMessage('findOneMessage')
-// findOne(@MessageBody() id: number) {
-//   return this.messagesService.findOne(id);
-// }

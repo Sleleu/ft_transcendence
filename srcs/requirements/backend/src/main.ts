@@ -32,8 +32,6 @@ async function bootstrap() {
   app.useWebSocketAdapter(new CustomSocketIoAdapter(app));
   app.use(cookieParser());
   await app.listen(5000);
-
-
 }
 
 bootstrap();
