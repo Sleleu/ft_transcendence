@@ -7,7 +7,7 @@ import { Message } from '@prisma/client';
 
 @Injectable()
 export class SocketsService {
-  messages: MessageObj[] = [{id: 1, name: 'gmansuy', text: 'heyooo'}, {id: 2, name: 'Sleleu', text: 'yooo'}];
+  messages: MessageObj[] = [{ id: 1, name: 'gmansuy', text: 'heyooo' }, { id: 2, name: 'Sleleu', text: 'yooo' }];
   private clientToUser: { [clientId: string]: string } = {};
 
   constructor(private prisma: PrismaService) { }
@@ -24,7 +24,7 @@ export class SocketsService {
 
   async create(createMessageDto: CreateMessageDto) {
     const message = await this.prisma.message.create({
-      data : {
+      data: {
         name: createMessageDto.name,
         text: createMessageDto.text,
       }
