@@ -126,7 +126,7 @@ function Home() {
                         {activeComponent === "historic" && <History />}
                         {activeComponent === "stat" && <Stats user={user} changeComponent={changeComponent} />}
                         {activeComponent === "friend" && <Friend changeComponent={changeComponent} />}
-                        {activeComponent === "chat" && <Chat name={user.username} />}
+                        {/* {activeComponent === "chat" && <Chat name={user.username} />} */}
 
                         {activeComponent === "leader" && <Classement rank={userRank} changeComponent={changeComponent} />}
                         {activeComponent === "bronzeLead" && <Classement rank={'bronze'} changeComponent={changeComponent} />}

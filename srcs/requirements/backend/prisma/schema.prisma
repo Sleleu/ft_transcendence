@@ -66,10 +66,20 @@ model History {
 	elo			Int
 }
 
+model Room {
+	id       	Int       @id @default(autoincrement())
+	createdAt   DateTime @default(now())
+	name     	String
+	messages	Message[]
+}
+
 model Message {
 	id          Int    @id @default(autoincrement())
 	createdAt   DateTime @default(now())
 
 	name		String
 	text		String
+	
+	room      	Room     @relation(fields: [roomId], references: [id])
+  	roomId    	Int
 }

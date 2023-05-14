@@ -21,16 +21,37 @@ export class SocketsService {
     return this.clientToUser[clientId];
   }
 
-  async create(createMessageDto: CreateMessageDto) {
+  async createRoom(roomName: string) {
+    const room = await this.prisma.room.create({
+      data : {
+        name: roomName,
+      }
+    })
+    return room;
+  }
+  findAllRooms() {
+    const rooms = this.prisma.room.findMany();
+    return rooms;
+  }
+
+  async createMessage(createMessageDto: CreateMessageDto,) {
     const message = await this.prisma.message.create({
       data : {
         name: createMessageDto.name,
         text: createMessageDto.text,
+        room: {connect: {id:createMessageDto.room}},
       }
     })
     return message;
   }
 
+  async getMessagesByRoom(roomId: number): Promise<Message[]> {
+    return this.prisma.message.findMany({
+      where: { roomId },
+      orderBy: { createdAt: 'asc' },
+    });
+  }
+  
   findAll() {
     const messages = this.prisma.message.findMany();
     return messages;

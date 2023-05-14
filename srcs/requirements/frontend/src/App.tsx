@@ -6,6 +6,7 @@ import Home from './components/home/Home';
 import CreateAccount from './components/Login/CreateAccount';
 import Login from './components/Login/Login';
 import Chat from './components/chat/Chat';
+import RoomSelect from './components/chat/RoomSelect';
 
 function App() {
 
@@ -19,9 +20,9 @@ function App() {
     <Router>
       <div>
         <Routes>
-        {/* <Route path="/" Component={(props) => <Chat {...props} name="gmansuy"/>} /> */}
-        <Route path="/" Component={(props) => <Login {...props} updateToken={updateToken} />} />
-          <Route path="/home" Component={() => <Home/>} />
+        <Route path="/" Component={(props) => <RoomSelect {...props} username="gmansuy"/>} />
+        {/* <Route path="/" Component={(props) => <Login {...props} updateToken={updateToken} />} /> */}
+          {/* <Route path="/home" Component={() => <Home/>} /> */}
         </Routes>
       </div>
     </Router>

@@ -8,20 +8,25 @@ interface MessageObj {
     id: number;
     name: string;
     text: string;
+    roomId: number;
 }
 
 interface Props {
     name: string;
+    roomId: number;
+    roomName: string;
+    socket: Socket | undefined;
+    leaveRoom: (roomName:string) => void;
 }
 
-const Chat:React.FC<Props> = ({name}) => {
+const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom}) => {
 
     const [messages, setMessages] = useState<MessageObj []>([]);
     const [messageText, setMessageText] = useState<string>("");
 
-    const [joined, setJoined] = useState<boolean>(true);
+    // const [joined, setJoined] = useState<boolean>(true);
     const [typing, setTyping] = useState<string>("");
-    const [socket, setSocket] = useState<Socket>();
+    // const [socket, setSocket] = useState<Socket>();
 
     const [hover, setHover] = useState<boolean>(false);
     
@@ -116,37 +121,26 @@ const Chat:React.FC<Props> = ({name}) => {
         fontSize: '20px', fontWeight: '500', color: '#fff',
         cursor: hover ? 'pointer' : 'auto',
     }
-    
+    const leaveButton: CSSProperties = {
+        borderRadius: '30px', width: '15%',
+        border: '2px solid #fff', backgroundColor: '#000',
+        fontSize: '20px', fontWeight: '500', color: '#fff', textAlign: 'center',
+        cursor: hover ? 'pointer' : 'auto',
+    }
     
     useEffect(() => {
-        const sock = io('http://localhost:5000');
-        setSocket(sock);
-        sock.emit('findAllMessages', {}, (response: MessageObj[]) => {
+        socket?.emit('findRoomMessages', {roomId: roomId}, (response: MessageObj[]) => {
         setMessages(response);
         });
 
-        sock.on('message', (message: MessageObj) => {
-            console.log("messageSet : ", message.id);
+        socket?.on('message', (message: MessageObj) => {
         setMessages((prevMessages) => [...prevMessages, message]);
         });
-
         return () => {
-        sock.disconnect();
-        };
-  }, []);
-
-  socket?.on('connect', () => {
-    join();
-    console.log('Connected to Socket.IO server');
-  });
-
-  socket?.on('disconnect', () => {
-    console.log('Disconnected from Socket.IO server');
-  });
-
-  socket?.on('connect_error', (error) => {
-    console.log('Connection error:', error);
-  });
+            socket?.off('message');
+          };
+        }, []);
+        
 
 socket?.on('typing', ({name, isTyping}) => {
    if (isTyping) {
@@ -156,12 +150,6 @@ socket?.on('typing', ({name, isTyping}) => {
    }
 })
 
-const join = () => {
-    socket?.emit('join', {name: name}, () => {
-        setJoined(true);
-    })
-}
-
 const emitTyping = () => {
     if (!typing)
         socket?.emit('typing', { isTyping: true });
@@ -169,7 +157,8 @@ const emitTyping = () => {
 }
 
 const sendMessage = async () => {
-    socket?.emit('createMessage', { name: name, text: messageText},
+    console.log(messageText);
+    socket?.emit('createMessage', { name: name, text: messageText, room: roomId, roomName: roomName},
     (response: MessageObj) => {
         setMessageText("");
     })
@@ -197,6 +186,7 @@ const handleHover = () => {
         <div style={Container}>
             <div style={topBar}>
                 {/* NAVBAR DU CHAT */}
+                <div style={leaveButton} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => leaveRoom(roomName)}>LEAVE ROOM</div>
             </div>    
             <div style={middleBlock}>
                 <div style={leftBlock}>
