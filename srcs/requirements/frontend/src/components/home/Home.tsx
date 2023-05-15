@@ -18,6 +18,7 @@ import Chat from '../chat/Chat';
 import Friend from '../friend/list/src/friend';
 import { User } from '../types'
 import Cookies from 'js-cookie';
+import RoomSelect from '../chat/RoomSelect';
 
 function Home() {
 
@@ -126,7 +127,7 @@ function Home() {
                         {activeComponent === "historic" && <History />}
                         {activeComponent === "stat" && <Stats user={user} changeComponent={changeComponent} />}
                         {activeComponent === "friend" && <Friend changeComponent={changeComponent} />}
-                        {/* {activeComponent === "chat" && <Chat name={user.username} />} */}
+                        {activeComponent === "chat" && <RoomSelect username={user.username} />}
 
                         {activeComponent === "leader" && <Classement rank={userRank} changeComponent={changeComponent} />}
                         {activeComponent === "bronzeLead" && <Classement rank={'bronze'} changeComponent={changeComponent} />}

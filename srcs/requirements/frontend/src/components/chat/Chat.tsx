@@ -31,13 +31,8 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom}) => {
     const [hover, setHover] = useState<boolean>(false);
     
     const Container: CSSProperties = {
-        width: '90%',
-        height:'95%',
-        margin: '5px',
-
-        background: 'rgba(0, 0, 0, 0.6)',
-        border: '4px solid',
-        borderRadius: '15px',
+        width: '100%',
+        height:'100%',
         
         display: 'flex',
         flexDirection: 'column',

@@ -6,6 +6,12 @@ export class MessageObj {
     roomName: string;
 }
 
+export class CreateRoomDto {
+    name: string;
+    type: string;
+    password: string;
+}
+
 export class RoomObj {
     id: number;
     name: string;

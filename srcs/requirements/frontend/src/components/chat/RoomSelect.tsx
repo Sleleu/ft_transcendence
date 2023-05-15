@@ -2,6 +2,7 @@ import React, {useState, useEffect, useRef} from 'react'
 import { CSSProperties } from 'react'
 import Chat from './Chat';
 import { io, Socket } from 'socket.io-client';
+import CreateRoom from './CreateRoom';
 
 interface Room {
     name: string;
@@ -15,12 +16,14 @@ interface Props {
 const RoomSelect:React.FC<Props> = ({username}) => {
 
     const [rooms, setRooms] = useState<Room[]>([]);
-    const [roomText, setRoomText] = useState<string>("");
+    // const [roomText, setRoomText] = useState<string>("");
     const [socket, setSocket] = useState<Socket>();
     const [hover, setHover] = useState<boolean>(false);
 
     const [currentRoom, setCurrentRoom] = useState<number>(-1);
     const [roomName, setRoomName] = useState<string>("");
+
+    const [createRoom, setCreateRoom] = useState<boolean>(false);
 
     useEffect(() => {
         const sock = io('http://localhost:5000');
@@ -100,20 +103,20 @@ const RoomSelect:React.FC<Props> = ({username}) => {
         cursor: hover ? 'pointer':'auto',
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!roomText)
-            return ;
-        socket?.emit('createRoom', { name:roomText },
-        (response: Room) => {
-            setRooms((prevRooms) => [...prevRooms, response]);
-            setRoomText("");
-        })
-    }
+    // const handleSubmit = (e: React.FormEvent) => {
+    //     e.preventDefault();
+    //     if (!roomText)
+    //         return ;
+    //     socket?.emit('createRoom', { name:roomText },
+    //     (response: Room) => {
+    //         setRooms((prevRooms) => [...prevRooms, response]);
+    //         setRoomText("");
+    //     })
+    // }
 
-    const handleTyping = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setRoomText(event.target.value);
-    };
+    // const handleTyping = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     setRoomText(event.target.value);
+    // };
    
     const handleSelect = (id: number, roomName: string) => {
         socket?.emit('join', {name: username, roomName:roomName}, () => {
@@ -138,12 +141,10 @@ const RoomSelect:React.FC<Props> = ({username}) => {
   return (
         <div style={Container}>
             { currentRoom < 0 ?
+                createRoom ? <CreateRoom socket={socket} setRooms={setRooms} setCreateRoom={setCreateRoom}/> :
             <div style={middleBlock}>
                 <div style={leftBlock}>
-                    <form onSubmit={handleSubmit}>
-                        <input value={roomText} onChange={handleTyping}></input>
-                        <button>CREATE ROOM</button>
-                    </form>
+                    <button onClick={() => setCreateRoom(true)}>CREATE ROOM</button>
                     <div style={displayBox}>
                         {rooms.map((room) => <div
                             style={RoomsStyle}

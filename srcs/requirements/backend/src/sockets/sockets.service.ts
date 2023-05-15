@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
-import { MessageObj } from './entities/message.entity';
+import { CreateRoomDto, MessageObj } from './entities/message.entity';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Message } from '@prisma/client';
 
@@ -21,10 +21,12 @@ export class SocketsService {
     return this.clientToUser[clientId];
   }
 
-  async createRoom(roomName: string) {
+  async createRoom(dto: CreateRoomDto) {
     const room = await this.prisma.room.create({
       data : {
-        name: roomName,
+        name: dto.name,
+        type: dto.type,
+        password: dto.password, //DEVRAIT ETRE UN HASH
       }
     })
     return room;

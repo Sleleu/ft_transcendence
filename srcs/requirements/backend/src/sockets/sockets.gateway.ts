@@ -3,7 +3,7 @@ import { SocketsService } from './sockets.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import {Server, Socket} from 'socket.io';
-import { JoinRoomDto, RoomObj, TypingDto } from './entities/message.entity';
+import { CreateRoomDto, JoinRoomDto, RoomObj, TypingDto } from './entities/message.entity';
 
 
 @WebSocketGateway({cors : true})
@@ -27,8 +27,8 @@ export class SocketsGateway {
 
   // CHAT
   @SubscribeMessage('createRoom')
-  async createRoom(@MessageBody('name') name:string) {
-    const room = await this.messagesService.createRoom(name);
+  async createRoom(@MessageBody() dto: CreateRoomDto) {
+    const room = await this.messagesService.createRoom(dto);
     return room;
   }
   @SubscribeMessage('findAllRooms')
