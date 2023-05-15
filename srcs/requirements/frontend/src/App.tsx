@@ -19,9 +19,9 @@ function App() {
     <Router>
       <div>
         <Routes>
-        <Route path="/" Component={(props) => <Chat {...props}/>} />
-        {/* <Route path="/" Component={(props) => <Login {...props} updateToken={updateToken} />} /> */}
-          {/* <Route path="/home" Component={() => <Home/>} /> */}
+          {/* <Route path="/" Component={(props) => <Chat {...props} />} /> */}
+          <Route path="/" Component={(props) => <Login {...props} updateToken={updateToken} />} />
+          <Route path="/home" Component={() => <Home />} />
         </Routes>
       </div>
     </Router>
