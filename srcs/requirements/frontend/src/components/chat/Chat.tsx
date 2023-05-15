@@ -23,11 +23,7 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom}) => {
 
     const [messages, setMessages] = useState<MessageObj []>([]);
     const [messageText, setMessageText] = useState<string>("");
-
-    // const [joined, setJoined] = useState<boolean>(true);
     const [typing, setTyping] = useState<string>("");
-    // const [socket, setSocket] = useState<Socket>();
-
     const [hover, setHover] = useState<boolean>(false);
     
     const Container: CSSProperties = {

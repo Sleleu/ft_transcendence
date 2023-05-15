@@ -27,6 +27,7 @@ export class SocketsService {
         name: dto.name,
         type: dto.type,
         password: dto.password, //DEVRAIT ETRE UN HASH
+        owner: {connect: {id: dto.userId}},
       }
     })
     return room;
@@ -34,6 +35,13 @@ export class SocketsService {
   findAllRooms() {
     const rooms = this.prisma.room.findMany();
     return rooms;
+  }
+
+  async addWhitelistUser(roomId: number, userId: number) {
+    return this.prisma.room.update({
+      where: { id: roomId },
+      data: { whitelist: { connect: { id: userId } } },
+    });
   }
 
   async createMessage(createMessageDto: CreateMessageDto,) {

@@ -10,6 +10,7 @@ export class CreateRoomDto {
     name: string;
     type: string;
     password: string;
+    userId: number;
 }
 
 export class RoomObj {

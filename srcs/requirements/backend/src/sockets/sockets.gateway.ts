@@ -36,11 +36,15 @@ export class SocketsGateway {
     const rooms = this.messagesService.findAllRooms();
     return rooms;
   }
+  @SubscribeMessage('addWhiteList')
+  async addWhiteList(@MessageBody('roomId') roomId: number, @MessageBody('userId') userId: number) {
+    const room = await this.messagesService.addWhitelistUser(roomId, userId);
+    return room;
+  }
 
   @SubscribeMessage('createMessage')
   async create(@MessageBody() createMessageDto: CreateMessageDto) {
     const message = await this.messagesService.createMessage(createMessageDto);
-    // this.server.emit('message', message);
     this.server.to(createMessageDto.roomName).emit('message', message);
 
     return message;
@@ -66,6 +70,9 @@ export class SocketsGateway {
 
   @SubscribeMessage('join')
   joinRoom(@MessageBody() joinDto:JoinRoomDto, @ConnectedSocket() client: Socket) {
+    //Check le type de la room
+    //Si la room est privée : user sur la whitelist ?
+    //Si la room est protected : password valide ?
     client.join(joinDto.roomName);
     console.log(joinDto.name, 'joined room :', joinDto.roomName);
   }

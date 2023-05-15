@@ -1,18 +1,21 @@
 import React, { CSSProperties, useState } from 'react'
 import { Socket } from 'socket.io-client';
+import { User } from '../types';
 
 interface Room {
     name: string;
     id: number;
+    type: string;
 }
 
 interface Props {
     socket: Socket | undefined;
     setRooms: React.Dispatch<React.SetStateAction<Room[]>>;
     setCreateRoom: React.Dispatch<React.SetStateAction<boolean>>;
+    user: User;
 }
 
-const CreateRoom:React.FC<Props> = ({socket, setRooms, setCreateRoom}) => {
+const CreateRoom:React.FC<Props> = ({socket, setRooms, setCreateRoom, user}) => {
 
     const CreateRoomStyle: CSSProperties = {
         display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignContent: 'center',
@@ -38,7 +41,7 @@ const CreateRoom:React.FC<Props> = ({socket, setRooms, setCreateRoom}) => {
             return ;
         if (checkbox === 'protected' && !password)
             return ;
-        socket?.emit('createRoom', { name:roomText, type:checkbox, password:password},
+        socket?.emit('createRoom', { name:roomText, type:checkbox, password:password, userId: user.id},
         (response: Room) => {
             setRooms((prevRooms) => [...prevRooms, response]);
             setRoomText("");
