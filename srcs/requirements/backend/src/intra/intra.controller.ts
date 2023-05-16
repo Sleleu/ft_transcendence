@@ -31,7 +31,7 @@ export class IntraController {
 				if (await this.intraService.createUser(IntraProfile) == false)
 					throw new HttpException('Cannot create new user from createUser()', HttpStatus.FORBIDDEN);
 			}
-			console.log("Profile intra after callback : ", IntraProfile);
+			// console.log("Profile intra after callback : ", IntraProfile);
 
 			// get jwt pour l'ajouter au profil
 
@@ -40,7 +40,6 @@ export class IntraController {
 					username : IntraProfile.login,
 				}
 			})
-
 			if (!User)
 				throw new HttpException('Cannot create new user from createUser()', HttpStatus.FORBIDDEN);
 			const JwtToken = await this.intraService.getJwtToken(User?.id, User?.username)
@@ -55,7 +54,7 @@ export class IntraController {
 					access_token : JwtToken,
 				}
 			})
-
+			
 			// redirect home
 			res.cookie('Authorization', JwtToken, {
 				httpOnly: true

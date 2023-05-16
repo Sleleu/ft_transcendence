@@ -20,6 +20,7 @@ model User {
 	username 				String @unique
 	avatar					String?
 	access_token			String?
+	TwoFASecret				String?
 	elo 					Int @default(400)
 	win 					Int @default(0)
 	loose 					Int @default(0)

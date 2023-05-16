@@ -8,6 +8,7 @@ CREATE TABLE "users" (
     "username" TEXT NOT NULL,
     "avatar" TEXT,
     "access_token" TEXT,
+    "TwoFASecret" TEXT,
     "elo" INTEGER NOT NULL DEFAULT 400,
     "win" INTEGER NOT NULL DEFAULT 0,
     "loose" INTEGER NOT NULL DEFAULT 0,

@@ -1,10 +1,11 @@
-import { HttpService } from '@nestjs/axios';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ApiToken, User42 } from './intra.interface';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { authenticator } from 'otplib';
+import * as QRCode from 'qrcode';
 
 @Injectable()
 export class IntraService {
@@ -50,7 +51,9 @@ export class IntraService {
 				email: response.data.email,
 				login: response.data.login,
 				avatar: response.data.image.link,
-				id: response.data.id}
+				id: response.data.id,
+				twoFactorAuthenticationSecret: '',
+			}
 			//console.log('response.data : ', response.data);
 			// console.log('User : ', User);
 			if (!User){
@@ -110,5 +113,27 @@ export class IntraService {
 		});
 		//console.log("passage dans getJwtToken()")
 		return token;
+	  }
+
+	  async setTwoFASecret(secret: string, userId: number) {
+    	const user = await this.prismaService.user.update({
+      	where: { id: userId },
+      	data: { twoFASecret: secret },
+		});
+	}
+
+	  async generateTwoFactorAuthenticationSecret(user: User42) {
+		const secret = authenticator.generateSecret()
+	
+		const otpauthUrl = authenticator.keyuri(user.email, 'ft_transcendence', secret);
+	
+		await this.setTwoFASecret(secret, user.id);
+
+		const qrCodeImage = await QRCode.toDataURL(otpauthUrl);
+		
+		return {
+		  secret,
+		  qrCodeImage,
+		}
 	  }
 }
