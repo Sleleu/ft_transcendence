@@ -6,13 +6,14 @@ import { useNavigate } from "react-router-dom"
 interface Props {
     updateToken: (token: string) => void;
     setPage: React.Dispatch<React.SetStateAction<string>>;
+	login: () => void;
 }
 interface Account {
     username: string,
     password: string,
 }
 
-const LogPage: React.FC<Props> = ({ updateToken, setPage }) => {
+const LogPage: React.FC<Props> = ({ updateToken, setPage, login }) => {
 
     const navigate = useNavigate()
     const [inputLog, setInputLog] = useState<string>('');
@@ -99,6 +100,7 @@ const LogPage: React.FC<Props> = ({ updateToken, setPage }) => {
     const handleClick = (button: string) => {
         setClick(button);
     };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setInputLog('');
@@ -111,6 +113,8 @@ const LogPage: React.FC<Props> = ({ updateToken, setPage }) => {
 			window.location.href = process.env.REACT_APP_AUTH_URL;
 			else
 				console.log('AUTH_URL is undefined');
+			console.log("yoyoyoyo");
+			login();
 		}
         if (click === 'log') {
             const response = logAccount({ username: inputLog, password: inputPass });
