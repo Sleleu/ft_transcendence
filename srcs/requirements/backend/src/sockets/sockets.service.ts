@@ -37,4 +37,25 @@ export class SocketsService {
     return messages;
   }
 
+  async getFriendsByUserId(userId: number) {
+    const friend = await this.prisma.friend.findMany({
+      where: { userId },
+      include: { friend: true },
+    })
+    return friend.map(friend => {
+      const { hash, ...rest } = friend.friend
+      return { ...friend, friend: rest }
+    })
+  }
+
+  async getFriendReq(userId: number) {
+    const request = await this.prisma.friendRequest.findMany({
+      where: { recipientId: userId },
+      include: { sender: true }
+    })
+    return request.map(sender => {
+      const { hash, ...rest } = sender.sender
+      return { ...sender, sender: rest }
+    })
+  }
 }

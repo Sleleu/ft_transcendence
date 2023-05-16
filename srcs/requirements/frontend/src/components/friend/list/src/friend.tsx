@@ -7,6 +7,7 @@ import FriendOnglet from './FriendOnglet';
 import FriendAdd from './FriendAdd';
 import FriendRequest from './FriendRequest';
 import FriendOption from './FriendOption';
+import { io, Socket } from 'socket.io-client';
 
 interface FriendProps {
   changeComponent: (component: string) => void;
@@ -36,34 +37,50 @@ const Friend: FC<FriendProps> = ({ changeComponent }) => {
   const [friendReq, setFriendReq] = useState<friendReq[]>([])
   const [update, setUpadte] = useState(0)
   const [option, setOption] = useState(0)
+  const [socket, setSocket] = useState<Socket>();
+
+
+  useEffect(() => {
+    const sock = io('http://localhost:5000', { withCredentials: true, });
+    setSocket(sock);
+    socket?.emit('getFriend', {}, (response: FriendInterface[]) => {
+      setFriend(response)
+      setSearchFriend(sortFriend(response))
+      console.log(response)
+    })
+    socket?.emit('getFriendReq', {}, (response: friendReq[]) => {
+      setFriendReq(response)
+    })
+  }, [])
 
   const api = async () => {
-    const data = await fetch("http://localhost:5000/friend", { 
-		method: "GET",
-		credentials: "include",
-	});
+    const data = await fetch("http://localhost:5000/friend", {
+      method: "GET",
+      credentials: "include",
+    });
     const jsonData = await data.json();
     return jsonData;
   }
 
   const getFriendReq = async () => {
     const data = await fetch("http://localhost:5000/friend/request", {
-		method: "GET",
-		credentials: "include",})
+      method: "GET",
+      credentials: "include",
+    })
     const jsonData = await data.json();
     return jsonData;
   }
 
-  useEffect(() => {
-    const getUser = async () => {
-      const userFromServer = await api()
-      setFriend(userFromServer)
-      setSearchFriend(sortFriend(userFromServer))
-      const friendR = await getFriendReq()
-      setFriendReq(friendR)
-    }
-    getUser()
-  }, [update])
+  // useEffect(() => {
+  //   const getUser = async () => {
+  //     const userFromServer = await api()
+  //     setFriend(userFromServer)
+  //     setSearchFriend(sortFriend(userFromServer))
+  //     const friendR = await getFriendReq()
+  //     setFriendReq(friendR)
+  //   }
+  //   getUser()
+  // }, [update])
 
   const updateFriend = () => {
     setUpadte(+1)
@@ -77,8 +94,7 @@ const Friend: FC<FriendProps> = ({ changeComponent }) => {
     const value = event.target.value.toLowerCase()
     console.log('value = ', value)
     setSearchText(value)
-    if (!friend)
-    {
+    if (!friend) {
       const friendR = await getFriendReq()
       setFriendReq(friendR)
     }
@@ -127,7 +143,7 @@ const Friend: FC<FriendProps> = ({ changeComponent }) => {
             }
           </div>
           <div className='containerFriendBodyRight'>
-            {component === 'add' && <FriendAdd  />}
+            {component === 'add' && <FriendAdd />}
             {component === 'friendRequest' && <FriendRequest sender={friendReq} update={updateFriend} />}
             {component === 'friend' && <FriendOption friend={searchFriend[searchFriend.findIndex((friend) => friend.friendId === option)].friend} changeComponent={changeComponent} update={updateFriend} change={changeComponentFriend} />}
           </div>
