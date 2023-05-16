@@ -4,11 +4,15 @@ import Chat from './Chat';
 import { io, Socket } from 'socket.io-client';
 import CreateRoom from './CreateRoom';
 import { User } from '../types';
+import Room from './RoomEntry';
+import RoomEntry from './RoomEntry';
 
 interface Room {
     name: string;
     id: number;
     type: string;
+    owner?: string;
+    inSalon?: string;
 }
 
 interface Props {
@@ -46,11 +50,11 @@ const RoomSelect:React.FC<Props> = ({user}) => {
         handleConnect();
         console.log('Connected to Socket.IO server');
     });
-    
+
     socket?.on('disconnect', () => {
         console.log('Disconnected from Socket.IO server');
     });
-    
+
     socket?.on('connect_error', (error) => {
         console.log('Connection error:', error);
     });
@@ -63,7 +67,7 @@ const RoomSelect:React.FC<Props> = ({user}) => {
         background: 'rgba(0, 0, 0, 0.6)',
         border: '4px solid',
         borderRadius: '15px',
-        
+
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-around',
@@ -72,7 +76,7 @@ const RoomSelect:React.FC<Props> = ({user}) => {
         width: '98%',
         height:'90%',
         margin: '5px',
-        
+
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-around',
@@ -96,7 +100,7 @@ const RoomSelect:React.FC<Props> = ({user}) => {
         display: 'flex',
         flexDirection: 'column', justifyContent: 'center',
         wordWrap: 'break-word',
-    }    
+    }
     const RoomsStyle: CSSProperties = {
         alignSelf: 'center', margin : '5px', padding: '10px',
         color: '#fff',
@@ -104,7 +108,14 @@ const RoomSelect:React.FC<Props> = ({user}) => {
         borderRadius: '30px',
         cursor: hover ? 'pointer':'auto',
     }
-   
+    const buttonCreateRoom: CSSProperties = {
+        width: '20%', height : '10%',
+        borderRadius: '30px', alignSelf: 'center',
+        border: '2px solid #fff', backgroundColor: '#000',
+        color: '#fff', fontWeight: '800', fontSize: '18px',
+        cursor: hover ? 'pointer':'auto',
+    }
+
     const handleSelect = (id: number, roomName: string, type: string) => {
         //Si type === protected, demande un password !
         socket?.emit('join', {name: username, roomName:roomName}, () => {
@@ -125,28 +136,30 @@ const RoomSelect:React.FC<Props> = ({user}) => {
         setRoomName("");
         setCurrentRoom(-1);
     }
-    
+
   return (
         <div style={Container}>
             { currentRoom < 0 ?
                 createRoom ? <CreateRoom socket={socket} setRooms={setRooms} setCreateRoom={setCreateRoom} user={user}/> :
             <div style={middleBlock}>
                 <div style={leftBlock}>
-                    <button onClick={() => setCreateRoom(true)}>CREATE ROOM</button>
+                    <button style={buttonCreateRoom} onMouseEnter={handleHover} onMouseLeave={handleHover}
+                        onClick={() => setCreateRoom(true)}>CREATE ROOM</button>
                     <div style={displayBox}>
-                        {rooms.map((room) => <div
+                        {/* {rooms.map((room) => <div
                             style={RoomsStyle}
                             key={room.id}
                             onClick={() => handleSelect(room.id, room.name, room.type)}
                             onMouseEnter={handleHover}
                             onMouseLeave={handleHover}
-                            >{room.name}</div>)}
+                            >{room.name}</div>)} */}
+                        {rooms.map((room) => <RoomEntry room={room} key={room.id} handleSelect={handleSelect}/>)}
                     </div>
                 </div>
             </div>
             :
             <Chat name={username} roomId={currentRoom} roomName={roomName} socket={socket} leaveRoom={leaveRoom}/>
-            } 
+            }
         </div>
   )
 }
