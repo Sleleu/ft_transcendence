@@ -1,6 +1,6 @@
-import { Controller, Get, Query, Res, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Query, Res, HttpException, HttpStatus, Req } from '@nestjs/common';
 import { IntraService } from './intra.service';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { ApiToken } from './intra.interface';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -61,5 +61,20 @@ export class IntraController {
 				httpOnly: true
 			});
 			res.redirect('http://localhost:3000/home');
+	}
+	@Get('verify-session')
+	async verifySession(@Req() req : Request) {
+	  const sessionId = req.cookies.Authorization
+		console.log("verify session cookie :", req.cookies.Authorization)
+	  const session = await this.prismaService.user.findFirst({
+		where: {
+			access_token: sessionId
+		},
+	  });
+	  if (session) {
+		return true;
+	  } else {
+		throw new HttpException('Invalid session', HttpStatus.UNAUTHORIZED);
+	  }
 	}
 }
