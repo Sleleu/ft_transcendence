@@ -7,17 +7,15 @@ import * as cookieParser from 'cookie-parser'
 
 class CustomSocketIoAdapter extends IoAdapter {
 	createIOServer(port: number, options?: ServerOptions): any {
-		const server = super.createIOServer(port, options);
-
-		server.use((socket: any, next: any) => {
-			const allowedOrigins = ['http://localhost:3000'];
-			const origin = socket.handshake.headers.origin;
-			if (allowedOrigins.includes(origin)) {
-				return next();
+		const server = super.createIOServer(port, {
+			...options,
+			cors: {
+				origin: "http://localhost:3000",
+				methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+				allowedHeaders: ["Access-Control-Allow-Origin", "Content-Type", "Accept", "Authorization"],
+				credentials: true
 			}
-			return next(new Error('Not allowed by CORS'));
 		});
-
 		return server;
 	}
 }
@@ -27,7 +25,7 @@ async function bootstrap() {
 	app.enableCors({
 		origin: "http://localhost:3000",
 		methods: 'GET, POST, PUT, PATCH, DELETE',
-		allowedHeaders: "Content-Type, Accept, Authorization",
+		allowedHeaders: "Access-Control-Allow-Origin, Content-Type, Accept, Authorization",
 		credentials: true
 	})
 	app.useGlobalPipes(new ValidationPipe({ whitelist: true })); // protect against data not set in the DTO

@@ -17,7 +17,7 @@ interface newReq extends Request {
 }
 
 @UseGuards(JwtGuard)
-@WebSocketGateway({ cors: true })
+@WebSocketGateway()
 export class SocketsGateway {
   @WebSocketServer()
   server: Server;
