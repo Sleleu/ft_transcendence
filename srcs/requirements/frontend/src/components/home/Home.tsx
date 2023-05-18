@@ -3,7 +3,6 @@ import './Home.css'
 import { useNavigate } from "react-router-dom"
 import { useState, useEffect } from 'react';
 import Name from './header/NameLeft/src/Name';
-import { AgnosticNonIndexRouteObject } from '@remix-run/router';
 import NavBar from './header/NavBar/src/NavBar';
 import Play from './play/src/Play';
 import Menue from './menue/src/Menue';
@@ -12,16 +11,16 @@ import Rank from '../popup/Rank/Rank';
 import Classement from '../popup/Rank/Classement';
 import Settings from '../settings/Settings';
 import Stats from '../popup/Stats/Stats';
-import Login from '../Login/Login';
-import CreateAccount from '../Login/CreateAccount';
 import { User } from '../types'
 import Friend from '../friend/list/src/friend';
 import Cookies from 'js-cookie';
 
-function Home() {
+interface HomeProps {
+	user: User;
+  }
+  
+  const Home: React.FC<HomeProps> = ({ user }) => {
 
-
-    const [user, setUser] = useState<User>({ username: '', id: -1, elo: -1, win: -1, loose: -1, createAt: '', updateAt: '', state: 'inexistant' })
     const [activeComponent, setActiveComponent] = useState<string>('play')
     const [stack, setStack] = useState<string[]>([]);
     const navigate = useNavigate()
@@ -52,27 +51,7 @@ function Home() {
             push(activeComponent)
         setActiveComponent(component)
     }
-
-    const api = async () => {
-        const data = await fetch("http://localhost:5000/users/profile", { 
-			method: "GET",
-			credentials: 'include'})
-        if (data.status === 401) {
-            navigate('/')
-        }
-        const userProfile = await data.json();
-        console.log('user in api', userProfile)
-		return userProfile;
-    }
-
-    useEffect(() => {
-        const getUser = async () => {
-            const userFromServer = await api()
-            setUser(userFromServer)
-        }
-        getUser()
-    }, [])
-
+	
     const extractId = (str: string) => {
         const regex = /\d+/g;
         const numbers = str.match(regex)
