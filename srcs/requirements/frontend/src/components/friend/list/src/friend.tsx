@@ -43,13 +43,15 @@ const Friend: FC<FriendProps> = ({ changeComponent }) => {
   useEffect(() => {
     const sock = io('http://localhost:5000', { withCredentials: true, });
     setSocket(sock);
-    socket?.emit('getFriend', {}, (response: FriendInterface[]) => {
+    sock.emit('getFriend', {}, (response: FriendInterface[]) => {
       setFriend(response)
       setSearchFriend(sortFriend(response))
-      console.log(response)
+      console.log("friend: ", response)
     })
-    socket?.emit('getFriendReq', {}, (response: friendReq[]) => {
+    sock.emit('getFriendReq', {}, (response: friendReq[]) => {
       setFriendReq(response)
+      console.log('requete: ', response)
+
     })
   }, [])
 
@@ -92,7 +94,6 @@ const Friend: FC<FriendProps> = ({ changeComponent }) => {
 
   const handleSearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value.toLowerCase()
-    console.log('value = ', value)
     setSearchText(value)
     if (!friend) {
       const friendR = await getFriendReq()

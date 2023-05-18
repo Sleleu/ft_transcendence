@@ -17,7 +17,7 @@ interface newReq extends Request {
 }
 
 @UseGuards(JwtGuard)
-@WebSocketGateway()
+@WebSocketGateway({ cors: true })
 export class SocketsGateway {
   @WebSocketServer()
   server: Server;
@@ -39,6 +39,7 @@ export class SocketsGateway {
   @SubscribeMessage('getFriend')
   async getFriendsByUserId(@Req() req: newReq) {
     const friends = await this.messagesService.getFriendsByUserId(+req.user.id);
+    console.log('friend', friends)
     return friends;
   }
 
