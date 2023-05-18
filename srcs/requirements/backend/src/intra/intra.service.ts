@@ -118,7 +118,7 @@ export class IntraService {
 	  async setTwoFASecret(secret: string, userId: number) {
     	const user = await this.prismaService.user.update({
       	where: { id: userId },
-      	data: { twoFASecret: secret },
+      	data: { TwoFASecret : secret },
 		});
 	}
 
@@ -135,5 +135,22 @@ export class IntraService {
 		  secret,
 		  qrCodeImage,
 		}
+	  }
+	  
+	  async verifyTwoFactorAuthenticationToken(userId: number, token: string) {
+		const user = await this.prismaService.user.findUnique({
+		  where: { id: userId },
+		});
+	
+		const secret = user?.TwoFASecret;
+
+		if (!secret){
+			console.log("Error while finding 2FA secret");
+			return null;
+		}
+		return authenticator.verify({
+		token,
+		secret,
+		});
 	  }
 }
