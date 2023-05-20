@@ -19,7 +19,7 @@ export class IntraController {
 				throw new HttpException('Invalid code or state', HttpStatus.FORBIDDEN);
 			}
 			const AccessToken : ApiToken = await this.intraService.getToken(code);
-			if (!AccessToken.access_token) {
+			if (!AccessToken || !AccessToken.access_token) {
 				throw new HttpException('Cannot get access token from 42 api', HttpStatus.FORBIDDEN);
 			}
 			const IntraProfile = await this.intraService.getProfile(AccessToken);
