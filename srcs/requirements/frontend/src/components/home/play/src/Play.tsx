@@ -7,22 +7,21 @@ interface PlayProps {
 }
 
 const Play:FC<PlayProps> = ({changeComponent}) => {
+  const [showGame, setShowGame] = useState(false);
 
-  const [isGameVisible, setIsGameVisible] = useState(false);
-
-  const handlePlayClick = () => {
-    setIsGameVisible(true);
-    changeComponent("Game");
+  const handleClick = () => {
+    setShowGame(true);
   };
+
   return (
     <div className="containerPlay">
-          {!isGameVisible && (
-            <>
-              <h2 className="playTxt">PLAY</h2>
-              <div className="playButton" onClick={handlePlayClick} />
-            </>
-          )}
-          {isGameVisible && <Game />}
+      {!showGame && (
+        <div onClick={handleClick}>
+          <h2 className="playTxt">PLAY</h2>
+          <div className="playButton" />
+        </div>
+      )}
+      {showGame && <Game changeComponent={changeComponent} />}
     </div>
   )
 }
