@@ -27,7 +27,7 @@ function Home() {
     const [activeComponent, setActiveComponent] = useState<string>('play')
     const [stack, setStack] = useState<string[]>([]);
     const navigate = useNavigate()
-    const existingRanks: string[] = ['bronze', 'silver', 'gold', 'crack', 'ultime']; 
+    const existingRanks: string[] = ['bronze', 'silver', 'gold', 'crack', 'ultime'];
     const userRank: string =  user.elo > 5000 || user.elo < 0 ? 'ultime' : existingRanks[Math.floor(user.elo / 1000)];
 
     const push = (item: string) => {
@@ -56,7 +56,7 @@ function Home() {
     }
 
     const api = async () => {
-        const data = await fetch("http://localhost:5000/users/profile", { 
+        const data = await fetch("http://localhost:5000/users/profile", {
 			method: "GET",
 			credentials: 'include'})
         if (data.status === 401) {
@@ -124,7 +124,7 @@ function Home() {
                         {activeComponent === "play" && <Play changeComponent={changeComponent} />}
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent} />}
                         {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} />}
-                        {activeComponent === "historic" && <History />}
+                        {activeComponent === "history" && <History />}
                         {activeComponent === "stat" && <Stats user={user} changeComponent={changeComponent} />}
                         {activeComponent === "friend" && <Friend changeComponent={changeComponent} />}
                         {activeComponent === "chat" && <RoomSelect user={user} />}

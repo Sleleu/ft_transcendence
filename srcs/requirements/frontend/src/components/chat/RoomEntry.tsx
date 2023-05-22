@@ -18,14 +18,15 @@ interface Props {
 const RoomEntry:React.FC<Props> = ({room, handleSelect}) => {
 
 const RoomsContainer: CSSProperties = {
+  height:'100px',
   margin: '7px',
-  color: '#fff', fontSize:'18px',
+  color: '#fff', fontSize:'24px',
   border: '1px solid white', borderRadius: '30px',
   cursor: 'pointer',
   display: 'flex', justifyContent: 'space-around',
 }
 const legend: CSSProperties = {
-  fontSize: '14px', fontStyle: 'italic',
+  fontSize: '18px', fontStyle: 'italic',
 }
 const Owner: CSSProperties = {
   color:'#ee3388',

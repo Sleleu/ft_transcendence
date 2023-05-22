@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { historyData } from './typeHistory'
 import { CSSProperties } from 'react'
 import crown from '../../../img/history/crown.png';
@@ -9,17 +9,22 @@ interface Props {
 }
 
 const HistoryEntry:React.FC<Props> = ({entry}) => {
-  
-    const win =  entry.victory === 'VICTORY';
+
+    const win =  entry.result === 'victory';
+
+    useEffect(() => {
+            console.log(entry);
+      }, [])
+
 
     const history: CSSProperties = {
         backgroundColor: 'rgba(0, 0, 0, 0.7)',
-        borderRadius: '15px',      
+        borderRadius: '15px',
         flexBasis: '100px',
         margin: '10px',
         marginBottom: '0px',
         marginTop: '5px',
-        
+
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -116,7 +121,7 @@ const HistoryEntry:React.FC<Props> = ({entry}) => {
             const elo: CSSProperties = {
                 textAlign:'right',
                 display: 'flex',
-                justifyContent: 'flex-end',            
+                justifyContent: 'flex-end',
                 paddingTop: '5px',
                 fontWeight : '800',
                 color : win ? 'lightgreen' : 'coral',
@@ -132,17 +137,17 @@ const HistoryEntry:React.FC<Props> = ({entry}) => {
         <div style={history}>
             <div style={histo1}>
                 <div style={divVictory}>
-                    <span style={victory}> {entry.victory} </span>
+                    <span style={victory}> {entry.result.toUpperCase()} </span>
                    {win ? <img src={crown} alt='crown' style={pic} />
-                    : <img src={skull} alt='skull' style={pic} />} 
+                    : <img src={skull} alt='skull' style={pic} />}
                 </div>
                 <div style={modeDate}>
                     <span> Mode {entry.mode} </span>
-                    <span> {entry.date} </span>
+                    <span> {entry.createdAt.substring(0, 10)} </span>
                 </div>
             </div>
 
-            <div style={histo2}> {entry.userPoints} - {entry.advPoints} </div>
+            <div style={histo2}> {entry.pointsWon} - {entry.pointsLost} </div>
 
             {/* <div style={histo3}> VS </div> */}
 
@@ -150,7 +155,7 @@ const HistoryEntry:React.FC<Props> = ({entry}) => {
                 <span style={adversary}> {entry.adversary} </span>
                 <div style={elo}>
                     {entry.elo >= 0 ?
-                    <span style={nbr}> +{entry.elo}</span> 
+                    <span style={nbr}> +{entry.elo}</span>
                     : <span style={nbr}> {entry.elo}</span>}
                     <span style={icon}>ELO</span>
                 </div>

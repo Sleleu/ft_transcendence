@@ -1,5 +1,4 @@
 import React, {useState, useEffect, useRef} from 'react'
-import './Chat.css'
 import { io, Socket } from 'socket.io-client';
 import Message from './Message';
 import { CSSProperties } from 'styled-components';
@@ -25,11 +24,11 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom}) => {
     const [messageText, setMessageText] = useState<string>("");
     const [typing, setTyping] = useState<string>("");
     const [hover, setHover] = useState<boolean>(false);
-    
+
     const Container: CSSProperties = {
         width: '100%',
         height:'100%',
-        
+
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-around',
@@ -38,7 +37,7 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom}) => {
         width: '98%',
         height:'90%',
         margin: '5px',
-        
+
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-around',
@@ -47,7 +46,7 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom}) => {
         width: '90%',
         height:'5%',
         margin: '5px',
-        
+
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-around',
@@ -60,7 +59,7 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom}) => {
         background: 'rgba(0, 0, 0, 0.6)',
         border: '2px solid #fff',
         borderRadius: '15px',
-        
+
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-around',
@@ -118,7 +117,10 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom}) => {
         fontSize: '20px', fontWeight: '500', color: '#fff', textAlign: 'center',
         cursor: hover ? 'pointer' : 'auto',
     }
-    
+    const RoomName: CSSProperties = {
+        fontSize: '48px', fontWeight:'800', color: '#ee55ff',
+    }
+
     useEffect(() => {
         socket?.emit('findRoomMessages', {roomId: roomId}, (response: MessageObj[]) => {
         setMessages(response);
@@ -131,7 +133,7 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom}) => {
             socket?.off('message');
           };
         }, []);
-        
+
 
 socket?.on('typing', ({name, isTyping}) => {
    if (isTyping) {
@@ -166,7 +168,7 @@ const handleSubmit = (e: React.FormEvent) => {
 
 const handleTyping = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMessageText(event.target.value);
-    emitTyping();    
+    emitTyping();
 };
 
 const handleHover = () => {
@@ -177,8 +179,9 @@ const handleHover = () => {
         <div style={Container}>
             <div style={topBar}>
                 {/* NAVBAR DU CHAT */}
+                <span style={RoomName}>{roomName}</span>
                 <div style={leaveButton} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => leaveRoom(roomName)}>LEAVE ROOM</div>
-            </div>    
+            </div>
             <div style={middleBlock}>
                 <div style={leftBlock}>
                     <div style={displayBox}>
@@ -196,7 +199,7 @@ const handleHover = () => {
                     {/* AMIS */}
                 </div>
             </div>
-        </div>  
+        </div>
     );
 }
 

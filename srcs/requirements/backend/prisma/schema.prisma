@@ -71,11 +71,11 @@ model History {
 model Room {
 	id       	Int       @id @default(autoincrement())
 	createdAt   DateTime @default(now())
-	
+
 	name     	String
 	type		String
 	password	String?
-	
+
 	ownerId     Int?
   	owner       User?    @relation("RoomOwner", fields: [ownerId], references: [id])
 	whitelist   User[]   @relation("RoomWhitelist")
@@ -89,7 +89,7 @@ model Message {
 
 	name		String
 	text		String
-	
+
 	room      	Room     @relation(fields: [roomId], references: [id])
   	roomId    	Int
 }

@@ -1,10 +1,10 @@
 export interface historyData {
     id : number;
-    victory : string;
+    result : string;
     mode : string;
-    date : string;
-    userPoints : number;
-    advPoints : number;
+    createdAt : string;
+    pointsWon : number;
+    pointsLost : number;
     adversary : string;
     elo : number;
   }

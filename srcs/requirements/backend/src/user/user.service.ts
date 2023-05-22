@@ -7,19 +7,19 @@ export class UserService {
     constructor(private prismaService: PrismaService,
 				private jwtService: JwtService) {}
 
-				// async getUsers() {
-				// 	const users = await this.prisma.user.findMany({
-				// 		select: {
-				// 			id: true,
-				// 			state: true,
-				// 			username: true,
-				// 			elo: true,
-				// 			win: true,
-				// 			loose: true,
-				// 		}
-				// 	});
-				// 	return users;
-				// }
+    async getAllUsers() {
+        const users = await this.prismaService.user.findMany({
+            select: {
+                id: true,
+                state: true,
+                username: true,
+                elo: true,
+                win: true,
+                loose: true,
+            }
+        });
+        return users;
+    }
 
 	async getUserFromToken(token : string) {
 		console.log("Passage dans getProfile()")
