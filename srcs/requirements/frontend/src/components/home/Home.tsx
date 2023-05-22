@@ -17,6 +17,7 @@ import CreateAccount from '../Login/CreateAccount';
 import { User } from '../types'
 import Friend from '../friend/list/src/friend';
 import Cookies from 'js-cookie';
+import Game from './play/src/Game';
 
 function Home() {
 
@@ -120,6 +121,7 @@ function Home() {
                     <div className='containerCenter'>
 
                         {activeComponent === "play" && <Play changeComponent={changeComponent} />}
+                        {activeComponent === "game" && <Game changeComponent={changeComponent} />}
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent} />}
                         {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} />}
                         {activeComponent === "historic" && <History />}

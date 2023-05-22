@@ -10,12 +10,13 @@ const PADDLE_BOARD_SIZE = 3;
 const PADDLE_EDGE_SPACE = 1;
 
 /* buttons */
-const PLAYER_UP = 38; // up arrow
-const PLAYER_DOWN = 40; // down arrow
+
 const PAUSE = 32; // space
 const PLAY = 13; // ENTER
-const OPPONENT_UP = 90;
-const OPPONENT_DOWN = 98;
+
+const TextStyle: CSSProperties = {
+  color: "purple",
+};
 
 const inner: CSSProperties = {
   display: "flex",
@@ -25,29 +26,30 @@ const inner: CSSProperties = {
 };
 
 const outer: CSSProperties = {
+  height: '100%',
+  width: '100%',
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
-  margin: "0 auto",
-  // marginTop: "9em",
-  // marginLeft: "25em",
+  marginBottom: "9em",
+  marginRight: "35em",
   padding: "10px",
 };
 
-const dividerStyle = {
+const dividerStyle: CSSProperties  = {
   marginLeft: "50px",
   fontSize: "50px",
   color: "white",
 };
 
-const score = {
+const score: CSSProperties  = {
   marginLeft: "100px",
   fontSize: "50px",
   color: "white",
 };
 
-const style = {
+const style: CSSProperties  = {
   width: "250px",
   height: "250px",
   display: "grid",
@@ -73,9 +75,9 @@ const InitialState = (): GameState => {
   return {
     player: board.map((x) => x * COL_SIZE + PADDLE_EDGE_SPACE),
     opponent: board.map((x) => (x + 1) * COL_SIZE - (PADDLE_EDGE_SPACE + 1)),
-    ball: Math.round((ROW_SIZE * COL_SIZE) / 2) + ROW_SIZE,
-    ballSpeed: 400,
-    deltaY: -COL_SIZE,
+    ball: Math.round((ROW_SIZE * COL_SIZE) / 2) + ROW_SIZE,//look into this
+    ballSpeed: 200,
+    deltaY: -COL_SIZE,//buggie
     deltaX: -1,
     opponentDir: false,
     opponentSpeed: 300,
@@ -92,7 +94,7 @@ interface GameProps {
 const Game: React.FC<GameProps> = ({ changeComponent }) => {
   const [state, setState] = useState<GameState>(InitialState());
 
-  const handleMouseMove = (event: React.MouseEvent) => {
+  const handleMouseMove = (event: MouseEvent) => {
     const container = document.getElementById("root");
     let movedPlayer: number[] | null = null;
     if (container) {
@@ -111,7 +113,11 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
     }
   };
 
-  const resetGame = () => setState((prevState) => ({ ...prevState, ball: Math.round((ROW_SIZE * COL_SIZE) / 2) + ROW_SIZE }));
+  const resetGame = () =>
+    setState((prevState) => ({
+      ...prevState,
+      ball: Math.round((ROW_SIZE * COL_SIZE) / 2) + (ROW_SIZE * COL_SIZE),
+    }));
 
   const moveBoard = (playerBoard: number[], isUp: boolean) => {
     const playerEdge = isUp ? playerBoard[0] : playerBoard[PADDLE_BOARD_SIZE - 1];
@@ -139,7 +145,7 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
     state.opponent[PADDLE_BOARD_SIZE - 1] === pos;
 
   const isScore = (pos: number) =>
-    (state.deltaX === -1 && pos % COL_SIZE === 0) ||
+    (state.deltaX === -1 && (pos + 1) % COL_SIZE === 0) ||
     (state.deltaX === 1 && (pos + 1) % COL_SIZE === 0);
 
   const moveOpponent = () => {
@@ -151,13 +157,12 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
     const newState = state.ball + state.deltaY + state.deltaX;
 
     console.log("bounceball");
+    console.log(newState);
     console.log(state.pause);
     console.log(state.deltaY);
     console.log(state.deltaX);
     console.log(state.ball);
     console.log(newState);
-
-
 
     if (touchingEdge(newState)) {
       console.log("touchingedge");
@@ -174,7 +179,10 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
       setState((prevState) => ({ ...prevState, deltaX: -prevState.deltaX }));
     }
 
-    setState((prevState) => ({ ...prevState, ball: newState }));
+    setState((prevState) => ({
+      ...prevState,
+      ball: prevState.ball + prevState.deltaY + prevState.deltaX,
+    }));
 
     if (isScore(newState)) {
       if (state.deltaX !== -1) {
@@ -227,10 +235,19 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
     }, state.opponentSpeed);
 
     document.addEventListener("keydown", keyInput);
+
+    // const container = document.getElementById("root");
+    // if (container) {
+    //   container.addEventListener("mousemove", handleMouseMove);
+    // }
+
     return () => {
       clearInterval(ballInterval);
       clearInterval(opponentInterval);
       document.removeEventListener("keydown", keyInput);
+      // if (container) {
+      //   container.removeEventListener("mousemove", handleMouseMove);
+      // }
     };
   }, [state.pause, state.ballSpeed, state.opponentSpeed]);
 
@@ -251,14 +268,14 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
 
   return (
     <div style={outer}>
-      <h1>{"PING-PONG"}</h1>
-      <div style={inner}>
+      {/* <h1 style={TextStyle}>{"PING-PONG"}</h1> */}
+      <div style={style}>
         <div style={style}>{board}</div>
         <div style={score}>{state.playerScore}</div>
         <div style={dividerStyle}>{divider} </div>
         <div style={dividerStyle}>{state.opponentScore}</div>
       </div>
-      <h3>{"press any key to start/pause"}</h3>
+      {/* <h3 >{"press any key to start/pause"}</h3> */}
     </div>
   );
 };
