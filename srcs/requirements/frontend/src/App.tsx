@@ -1,41 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React from 'react';
+import './App.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import Home from './components/home/Home';
+import CreateAccount from './components/Login/CreateAccount';
 import Login from './components/Login/Login';
+import Chat from './components/chat/Chat';
+import PrivateRoute from './PrivateRoute';
 
 function App() {
-  const [user, setUser] = useState(null);
 
-  const updateToken = async () => {
-    const user = await getUser();
-    setUser(user);
-  }
+  const [token, setToken] = useState<string>('')
 
-  const getUser = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/users/profile", { 
-        method: "GET",
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      
-      const data = await response.json();
-      
-      return data;
-    } catch (error) {
-      console.error('There has been a problem with your fetch operation:', error);
-    }
+  const updateToken = (token: string) => {
+    setToken(token)
   }
 
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Login updateToken={updateToken} />} />
-        <Route path="/home" element={user ? <Home user={user} /> : <Navigate to="/" />} />
-      </Routes>
+      <div>
+        <Routes>
+          {/* <Route path="/" Component={(props) => <Chat {...props} />} /> */}
+          <Route path="/" Component={(props) => <Login {...props} updateToken={updateToken} />} />
+          <Route path='/home'
+          element={
+          <PrivateRoute>
+           <Home />
+          </PrivateRoute>}/>
+        </Routes>
+      </div>
     </Router>
   );
 }
