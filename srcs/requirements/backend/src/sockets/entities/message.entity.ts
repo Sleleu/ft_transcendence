@@ -1,3 +1,14 @@
+export class UserDto {
+    username: string;
+    id: number;
+    elo: number;
+    win: number;
+    loose: number;
+    createAt: string;
+    updateAt: string;
+    state: string;
+}
+
 export class MessageObj {
     id: number;
     name: string;
@@ -10,7 +21,6 @@ export class CreateRoomDto {
     name: string;
     type: string;
     password: string;
-    userId: number;
 }
 
 export class RoomObj {

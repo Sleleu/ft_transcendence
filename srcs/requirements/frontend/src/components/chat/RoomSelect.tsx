@@ -34,7 +34,7 @@ const RoomSelect:React.FC<Props> = ({user}) => {
     const [createRoom, setCreateRoom] = useState<boolean>(false);
 
     useEffect(() => {
-        const sock = io('http://localhost:5000');
+        const sock = io('http://localhost:5000', {withCredentials: true});
         setSocket(sock);
 
         sock.emit('findAllRooms', {}, (response: Room[]) => setRooms(response));
@@ -48,10 +48,10 @@ const RoomSelect:React.FC<Props> = ({user}) => {
         socket?.emit('connectToChat', {name: username}, () => {})
     }
 
-    socket?.on('connect', () => {
-        handleConnect();
-        console.log('Connected to Socket.IO server');
-    });
+    // socket?.on('connect', () => {
+    //     handleConnect();
+    //     console.log('Connected to Socket.IO server');
+    // });
 
     socket?.on('disconnect', () => {
         console.log('Disconnected from Socket.IO server');

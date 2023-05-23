@@ -41,7 +41,7 @@ const CreateRoom:React.FC<Props> = ({socket, setRooms, setCreateRoom, user}) => 
             return ;
         if (checkbox === 'protected' && !password)
             return ;
-        socket?.emit('createRoom', { name:roomText, type:checkbox, password:password, userId: user.id},
+        socket?.emit('createRoom', { name:roomText, type:checkbox, password:password,},
         (response: Room) => {
             setRooms((prevRooms) => [...prevRooms, response]);
             setRoomText("");

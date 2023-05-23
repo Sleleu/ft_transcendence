@@ -7,19 +7,17 @@ import * as cookieParser from 'cookie-parser'
 
 class CustomSocketIoAdapter extends IoAdapter {
 	createIOServer(port: number, options?: ServerOptions): any {
-	  const server = super.createIOServer(port, options);
-
-	  server.use((socket: any, next: any) => {
-		const allowedOrigins = ['http://localhost:3000'];
-		const origin = socket.handshake.headers.origin;
-		if (allowedOrigins.includes(origin)) {
-		  return next();
-		}
-		return next(new Error('Not allowed by CORS'));
-	  });
-
-	  return server;
-	}
+        const server = super.createIOServer(port, {
+            ...options,
+            cors: {
+                origin: "http://localhost:3000",
+                methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+                allowedHeaders: ["Access-Control-Allow-Origin", "Content-Type", "Accept", "Authorization"],
+                credentials: true
+            }
+        });
+        return server;
+    }
   }
 
 async function bootstrap() {
