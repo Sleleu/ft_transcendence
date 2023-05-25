@@ -28,6 +28,8 @@ model User {
 	friendRequestsSent		FriendRequest[] @relation("FriendRequestSender")
   	friendRequestsReceived	FriendRequest[] @relation("FriendRequestRecipient")
 	history					History[]
+	rooms                   Room[]               @relation("RoomOwner")
+	whitelistedRooms         Room[]               @relation("RoomWhitelist")
 	@@map("users")
 }
 
@@ -66,10 +68,28 @@ model History {
 	elo			Int
 }
 
+model Room {
+	id       	Int       @id @default(autoincrement())
+	createdAt   DateTime @default(now())
+
+	name     	String
+	type		String
+	password	String?
+
+	ownerId     Int?
+  	owner       User?    @relation("RoomOwner", fields: [ownerId], references: [id])
+	whitelist   User[]   @relation("RoomWhitelist")
+
+	messages	Message[]
+}
+
 model Message {
 	id          Int    @id @default(autoincrement())
 	createdAt   DateTime @default(now())
 
 	name		String
 	text		String
+
+	room      	Room     @relation(fields: [roomId], references: [id])
+  	roomId    	Int
 }

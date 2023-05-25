@@ -26,6 +26,14 @@ export class UserController {
 		return (req.user);
 	}
 
+	@Get('leaderboard')
+	async getAll(@Req() req: AuthenticatedRequest) {
+		if (!req.user) {
+			throw new NotFoundException('User not found');
+		}
+		return this.userService.getAllUsers();
+	}
+
 	@Get('logout')
 	logout(@Res() res: Response) {
 	  res.clearCookie('Authorization');

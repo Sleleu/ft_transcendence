@@ -1,4 +1,5 @@
 import React from 'react'
+import { CSSProperties } from 'styled-components';
 
 interface MessageObj {
     name: string;
@@ -11,9 +12,14 @@ interface Props {
   }
 
 const Message:React.FC<Props> = ({message}) => {
+
+  const text: CSSProperties = {
+    color:'white', fontSize: '20px',
+}
+
   return (
     <div>
-      <span> [{message.name}] : {message.text} </span>
+      <span style={text}> [{message.name}] : {message.text} </span>
     </div>
   )
 }

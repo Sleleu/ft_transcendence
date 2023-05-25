@@ -46,7 +46,7 @@ const Classement:React.FC<Props> = ({rank, changeComponent}) => {
     flexBasis: '100%',
     height:'100%',
     margin: '5px',
-    
+
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-start',
@@ -62,7 +62,7 @@ const Classement:React.FC<Props> = ({rank, changeComponent}) => {
     border: '4px solid',
     borderImage: gradient,
     borderRadius: '15px',
-    
+
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',
@@ -74,7 +74,7 @@ const Header: CSSProperties = {
 
   background: 'rgba(0, 0, 0, 0.9)',
   borderRadius: '15px',
-  
+
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-around',
@@ -134,9 +134,9 @@ const Header: CSSProperties = {
   const Entries: CSSProperties = {
     flexBasis: '58%',
     margin: '5px',
-  
+
     borderRadius: '15px',
-    
+
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',
@@ -151,7 +151,9 @@ const Header: CSSProperties = {
   const [leaders, setLeaders] = useState<rankData[]>([]);
 
   const fetchUsers = async () => {
-    const data = await fetch("http://localhost:5000/users/" ,{ method:"GET" });
+    const data = await fetch("http://localhost:5000/users/leaderboard/" ,{ method:"GET", credentials: "include",
+  });
+    console.log(data);
     const jsonData = await data.json();
     return jsonData;
   }
@@ -177,7 +179,7 @@ const Header: CSSProperties = {
   const ranksChoices: choices[] = [
     {rank:'bronze', x:18, y:0}, {rank:'silver', x:26, y:-5}, {rank:'gold', x:10, y:0}, {rank:'crack', x:20, y:0}, {rank:'ultime', x:4, y:0}
   ].filter((choice) => choice.rank !== rank);
-  
+
   const [leftBar, setLeftBar] = useState<boolean>(false);
   const handleLeftBar = () => {
     setLeftBar(!leftBar);
