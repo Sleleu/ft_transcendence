@@ -6,7 +6,7 @@ import { FriendRequest } from '@prisma/client'
 export class FriendService {
     constructor(private prisma: PrismaService) { }
 
-    async createFriendRequest(UserId: number, friendId: number): Promise<FriendRequest> {
+    async createFriendRequest(UserId: number, friendId: number) {
         const isAlreadyFriend = await this.prisma.friend.findMany({
             where: { userId: UserId, friendId: friendId }
         })
@@ -15,7 +15,12 @@ export class FriendService {
             console.log('isFriend', isAlreadyFriend)
             throw new Error(`user ${UserId} is already friend with ${friendId}`);
         }
-
+        const isAlreadyRequest = await this.prisma.friendRequest.findMany({
+            where: { senderId: UserId, recipientId: friendId },
+        })
+        if (isAlreadyRequest.length) {
+            return undefined;
+        }
         const request = await this.prisma.friendRequest.create({
             data: {
                 sender: { connect: { id: UserId } },

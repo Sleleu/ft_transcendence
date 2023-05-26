@@ -36,7 +36,6 @@ const Friend: FC<FriendProps> = ({ changeComponent }) => {
   const [searchFriend, setSearchFriend] = useState<FriendInterface[]>([])
   const [component, setComponent] = useState<string>('add')
   const [friendReq, setFriendReq] = useState<friendReq[]>([])
-  const [update, setUpadte] = useState(0)
   const [option, setOption] = useState(0)
   const [socket, setSocket] = useState<Socket | undefined>();
 
@@ -51,19 +50,27 @@ const Friend: FC<FriendProps> = ({ changeComponent }) => {
     sock.emit('getFriendReq', {}, (response: friendReq[]) => {
       setFriendReq(response)
     })
+    sock.on('friendRequestNotification', ({ req }: { req: friendReq }) => {
+      setFriendReq((prevFriendReq) => [...prevFriendReq, req])
+      console.log("Request from on", req)
+    })
+    sock.on('receiveFriend', ({ friends }: { friends: FriendInterface[] }) => {
+      setFriend(friends)
+      setSearchFriend(sortFriend(friends))
+    })
+    sock.on('receiveReq', ({ req }: { req: friendReq[] }) => {
+      if (Array.isArray(req))
+        setFriendReq(req)
+      else
+        setFriendReq([])
+    })
     return () => {
       sock.disconnect()
+      sock.off('friendRequestNotification')
+      sock.off('receiveFriend')
+      sock.off('receiveReq')
     }
   }, [])
-  
-  const updateFriend = () => {
-    setUpadte(+1)
-  }
-  
-  socket?.on('friendRequestNotification', ({ req }: { req: friendReq }) => {
-    setFriendReq((prevFriendReq) => [...prevFriendReq, req])
-    console.log("Request from on", req)
-  })
 
   const sortFriend = (friend: FriendInterface[]) => {
     return friend.sort((a, b) => (a.friend.state !== 'offline' ? -1 : 1))
@@ -118,8 +125,8 @@ const Friend: FC<FriendProps> = ({ changeComponent }) => {
           </div>
           <div className='containerFriendBodyRight'>
             {component === 'add' && <FriendAdd socket={socket} />}
-            {component === 'friendRequest' && <FriendRequest sender={friendReq} update={updateFriend} />}
-            {component === 'friend' && <FriendOption friend={searchFriend[searchFriend.findIndex((friend) => friend.friendId === option)].friend} changeComponent={changeComponent} update={updateFriend} change={changeComponentFriend} />}
+            {component === 'friendRequest' && <FriendRequest sender={friendReq} socket={socket} />}
+            {component === 'friend' && <FriendOption friend={searchFriend[searchFriend.findIndex((friend) => friend.friendId === option)].friend} changeComponent={changeComponent} change={changeComponentFriend} />}
           </div>
         </div>
       </div>

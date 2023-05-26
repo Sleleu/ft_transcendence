@@ -10,11 +10,10 @@ type PropsOnglet = {
     context: string;
     changeComponent: (component: string) => void;
     friend: User
-    update: () => void;
     change: (compo: string) => void
 }
 
-const FriendOptionOnglet = ({ changeComponent, context, txt, friend, update, change }: PropsOnglet) => {
+const FriendOptionOnglet = ({ changeComponent, context, txt, friend,  change }: PropsOnglet) => {
 
     const [visible, setVisible] = useState(false)
     let stop = false
@@ -55,7 +54,6 @@ const FriendOptionOnglet = ({ changeComponent, context, txt, friend, update, cha
     const actionRemove = async () => {
         const req = 'http://localhost:5000/friend/delete/' + friend.id
         await fetch(req, { method: "DELETE", credentials: "include" })
-        update()
         change('add')
     }
 

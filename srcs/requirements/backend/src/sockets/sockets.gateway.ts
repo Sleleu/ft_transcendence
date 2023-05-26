@@ -65,14 +65,41 @@ export class SocketsGateway {
   async sendFriendReq(@ConnectedSocket() client: Socket, @MessageBody() body: { id: number }) {
     const user = this.messagesService.getUser(client.id);
     const request = await this.friendService.createFriendRequest(user.id, +body.id)
+    if (!request)
+      return;
     const friendSocketId = this.messagesService.findSocketById(+body.id)
     if (friendSocketId) {
       const friendSocket = this.server.sockets.sockets.get(friendSocketId)
       if (friendSocket) {
-        console.log("emit to", friendSocketId, "\nreq: ", request)
-        friendSocket.emit('friendRequestNotification', { req : request });
+        friendSocket.emit('friendRequestNotification', { req: request });
       }
     }
+  }
+
+  @SubscribeMessage('acceptFriend')
+  async acceptFriendReq(@ConnectedSocket() client: Socket, @MessageBody() body: { id: number }) {
+    const user = this.messagesService.getUser(client.id);
+    await this.friendService.acceptFriendRequest(+user.id, +body.id)
+    const friendSocketId = this.messagesService.findSocketById(+body.id)
+    const friendFriend = await this.friendService.getFriendsByUserId(+body.id)
+    const friendUser = await this.friendService.getFriendsByUserId(+user.id)
+    const request = this.friendService.getFriendReq(user.id)
+    client.emit('receiveFriend', { friends: friendUser })
+    client.emit('receiveReq', { req: request })
+    if (friendSocketId) {
+      const friendSocket = this.server.sockets.sockets.get(friendSocketId)
+      if (friendSocket) {
+        friendSocket.emit('receiveFriend', { friends: friendFriend });
+      }
+    }
+  }
+
+  @SubscribeMessage('refuseFriend')
+  async refuseFriendReq(@ConnectedSocket() client: Socket, @MessageBody() body: { id: number }) {
+    const user = this.messagesService.getUser(client.id);
+    await this.friendService.refuseFriendRequest(+user.id, +body.id)
+    const request = this.friendService.getFriendReq(user.id)
+    client.emit('receiveReq', { req: request })
   }
 
   // @SubscribeMessage('createMessage')
