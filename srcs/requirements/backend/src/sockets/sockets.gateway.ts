@@ -76,10 +76,6 @@ export class SocketsGateway {
     }
   }
 
-  // @SubscribeMessage('createMessage')
-  // async create(@MessageBody() createMessageDto: CreateMessageDto) {
-  //   console.log("Message Received by server : ", createMessageDto);
-  //   const message = await this.messagesService.create(createMessageDto);
   // CHAT -------------------------------------------
 
   // @SubscribeMessage('addWhiteList')
