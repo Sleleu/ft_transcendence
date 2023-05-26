@@ -128,4 +128,19 @@ export class IntraController {
 		await this.intraService.enableTwoFA(user.id);
 		return { message: "2FA enabled successfully" };
 	}
+
+	@Post('disable-2fa')
+	async disableTwoFA(@Req() req : Request) {
+		const sessionId = req.cookies.Authorization;
+		const user = await this.prismaService.user.findFirst({
+			where: {
+				access_token: sessionId
+			},
+		});
+		if (!user) {
+			throw new HttpException('Invalid session', HttpStatus.UNAUTHORIZED);
+		}
+		await this.intraService.disableTwoFA(user.id);
+		return { message: "2FA disabled successfully" };
+	}
 }
