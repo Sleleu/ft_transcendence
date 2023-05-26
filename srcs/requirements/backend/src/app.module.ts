@@ -7,7 +7,6 @@ import { FriendModule } from './friend/friend.module';
 import { HistoryModule } from './history/history.module';
 import { SocketsModule } from './sockets/sockets.module';
 import { IntraModule } from './intra/intra.module';
-import { GameModule } from './game/game.module';
 
 @Module({
   imports: [ConfigModule.forRoot({isGlobal: true}),
@@ -18,7 +17,6 @@ import { GameModule } from './game/game.module';
 			HistoryModule,
 			SocketsModule,
 			IntraModule,
-			GameModule,
 		]
 })
 export class AppModule {}

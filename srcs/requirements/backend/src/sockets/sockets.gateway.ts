@@ -3,6 +3,7 @@ import { SocketsService } from './sockets.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import {Server, Socket} from 'socket.io';
+import { GameState, MovePlayerDto, MoveOpponentDto, BounceBallDto } from './dto/game.dto';
 
 
 @WebSocketGateway({cors : true})
@@ -17,6 +18,10 @@ export class SocketsGateway {
   }
 
   handleConnection(client: Socket) {
+    client.on('gameStateUpdate', (gameState: GameState) => {
+
+      console.log("handleconnection");
+    });
     console.log('Client connected:', client.id);
   }
 
@@ -51,17 +56,36 @@ export class SocketsGateway {
     client.broadcast.emit('typing', { name, isTyping });
   }
 
-}
+  @SubscribeMessage('start')
+  startGame(): void{
+    console.log("in socketgatway start game")
+    return this.messagesService.startGame();
+  }
 
-// @SubscribeMessage('updateMessage')
-// update(@MessageBody() updateMessageDto: UpdateMessageDto) {
-//   return this.messagesService.update(updateMessageDto.id, updateMessageDto);
-// }
-// @SubscribeMessage('removeMessage')
-// remove(@MessageBody() id: number) {
-//   return this.messagesService.remove(id);
-// }
-// @SubscribeMessage('findOneMessage')
-// findOne(@MessageBody() id: number) {
-//   return this.messagesService.findOne(id);
-// }
+  @SubscribeMessage('pause')
+  pauseGame(): void{
+    console.log("in socketgatway pause game")
+    return this.messagesService.pauseGame();
+  }
+
+  @SubscribeMessage('reset')
+  resetGame(): void{
+    console.log("in socketgatway reset game")
+    return this.messagesService.resetGame();
+  }
+
+  @SubscribeMessage('move-player')
+	movePlayer(@MessageBody() movePlayerDto: MovePlayerDto): void{
+		return this.messagesService.movePlayer(movePlayerDto);
+	}
+
+  @SubscribeMessage('move-opponent')
+	moveOpponent(@MessageBody() moveOpponentDto: MoveOpponentDto): void{
+		return this.messagesService.moveOpponent(moveOpponentDto);
+	}
+
+  @SubscribeMessage('bounceBall')
+	bounceBall(@MessageBody() bounceBallDto: BounceBallDto): void{
+		return this.messagesService.bounceBall(bounceBallDto);
+	}
+}
