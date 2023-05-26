@@ -22,7 +22,7 @@ export class UserController {
 		if (!req.user) {
 			throw new NotFoundException('User not found');
 		}
-		console.log("passage dans /users/profile : ", { user: req.user })
+		//console.log("passage dans /users/profile : ", { user: req.user })
 		return (req.user);
 	}
 

@@ -22,7 +22,7 @@ export class UserService {
 				// }
 
 	async getUserFromToken(token : string) {
-		console.log("Passage dans getProfile()")
+		//console.log("Passage dans getProfile()")
 		try {
             const decoded = this.jwtService.verify(token);
             if (!decoded) {

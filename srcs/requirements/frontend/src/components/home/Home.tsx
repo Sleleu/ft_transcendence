@@ -19,8 +19,10 @@ interface HomeProps {
 	user: User;
   }
   
-  const Home: React.FC<HomeProps> = ({ user }) => {
+function Home() {
 
+
+    const [user, setUser] = useState<User>({ username: '', id: -1, elo: -1, win: -1, loose: -1, createAt: '', updateAt: '', state: 'inexistant' })
     const [activeComponent, setActiveComponent] = useState<string>('play')
     const [stack, setStack] = useState<string[]>([]);
     const navigate = useNavigate()
@@ -51,6 +53,24 @@ interface HomeProps {
             push(activeComponent)
         setActiveComponent(component)
     }
+
+    const api = async () => {
+        const data = await fetch("http://localhost:5000/users/profile", { 
+			method: "GET",
+			credentials: 'include'})
+        const userProfile = await data.json();
+        console.log('user in api', userProfile)
+		return userProfile;
+    }
+
+    useEffect(() => {
+        const getUser = async () => {
+            const userFromServer = await api()
+            setUser(userFromServer)
+        }
+        getUser()
+    }, [])
+
 	
     const extractId = (str: string) => {
         const regex = /\d+/g;
