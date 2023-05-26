@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ForbiddenException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ApiToken, User42 } from './intra.interface';
@@ -115,29 +115,40 @@ export class IntraService {
 		return token;
 	  }
 
-	  async setTwoFASecret(secret: string, userId: number) {
-    	const user = await this.prismaService.user.update({
+	  async isTwoFAEnabled(userId: number) {
+		const user = await this.prismaService.user.findUnique({
+		  where: { id: userId },
+		});
+		if (!user)
+			throw new ForbiddenException('isTwoFAEnabled : User not found');
+		if (user.TwoFAenabled === true)
+			return true;
+		else
+			return false;
+	  }
+	  
+
+	async setTwoFASecret(secret: string, userId: number) {
+    	await this.prismaService.user.update({
       	where: { id: userId },
       	data: { TwoFASecret : secret },
 		});
 	}
 
-	  async generateTwoFactorAuthenticationSecret(user: User42) {
+	async generateTwoFactorAuthenticationSecret(login : string, userId : number) {
 		const secret = authenticator.generateSecret()
 	
-		const otpauthUrl = authenticator.keyuri(user.email, 'ft_transcendence', secret);
+		const otpauthUrl = authenticator.keyuri(login, 'ft_transcendence', secret);
 	
-		await this.setTwoFASecret(secret, user.id);
+		await this.setTwoFASecret(secret, userId);
 
-		const qrCodeImage = await QRCode.toDataURL(otpauthUrl);
-		
 		return {
 		  secret,
-		  qrCodeImage,
+		  otpauthUrl
 		}
 	  }
-	  
-	  async verifyTwoFactorAuthenticationToken(userId: number, token: string) {
+
+	async verifyTwoFactorAuthenticationToken(userId: number, token: string) {
 		const user = await this.prismaService.user.findUnique({
 		  where: { id: userId },
 		});
@@ -151,6 +162,20 @@ export class IntraService {
 		return authenticator.verify({
 		token,
 		secret,
+		});
+	  }
+
+	async enableTwoFA(userId : number) {
+		await this.prismaService.user.update({
+      	where: { id: userId },
+		data : { TwoFAenabled : true }
+		});
+	  }
+
+	async disableTwoFA(userId : number) {
+		await this.prismaService.user.update({
+      	where: { id: userId },
+		data : { TwoFAenabled : false }
 		});
 	  }
 }
