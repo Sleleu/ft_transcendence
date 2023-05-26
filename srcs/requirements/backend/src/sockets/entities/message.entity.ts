@@ -31,6 +31,7 @@ export class RoomObj {
 export class JoinRoomDto {
     name: string;
     roomName: string;
+    password: string;
 }
 
 export class TypingDto {

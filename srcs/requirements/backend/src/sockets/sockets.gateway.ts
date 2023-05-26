@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Cipher } from 'crypto';
 import { User } from '@prisma/client';
 import { FriendService } from 'src/friend/friend.service';
+import { ForbiddenException } from '@nestjs/common';
 
 @WebSocketGateway({ cors: true })
 export class SocketsGateway {
@@ -126,23 +127,30 @@ export class SocketsGateway {
 
   @SubscribeMessage('join')
   async joinRoom(@MessageBody() dto:JoinRoomDto, @ConnectedSocket() client: Socket) {
+    let room;
+    let user;
     try {
-      const room = await this.messagesService.getRoomByName(dto.roomName);
-      const user = this.messagesService.getUser(client.id);
+      room = await this.messagesService.getRoomByName(dto.roomName);
+      user = this.messagesService.getUser(client.id);
       console.log('ROOM\n', room);
       console.log('USER\n', user);
+    }
+    catch(e) {
+      throw new ForbiddenException('Room does not exist');
+    }
       if (room.type === 'private')
       {
         const whitelisted = this.messagesService.searchWhiteList(room.id, user.id)
         if (!whitelisted)
-          throw 'ROOM ACCESS FORBIDDEN';
+          throw new ForbiddenException('Access to private room forbidden');
+      }
+      if (room.type === 'protected')
+      {
+        if (!dto.password || dto.password !== room.password)
+          throw new ForbiddenException('Wrong password provided');
       }
       client.join(dto.roomName);
       console.log(user.username, 'joined room :', dto.roomName);
-    }
-    catch(e) {
-      console.log(e);
-    }
   }
 
   @SubscribeMessage('leave')
