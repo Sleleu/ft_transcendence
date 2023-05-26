@@ -11,9 +11,9 @@ export class SocketsService {
 
   constructor(private prisma: PrismaService) { }
 
-  async getUserWithToken (access_token: string) {
+  async getUserWithToken(access_token: string) {
     const user = await this.prisma.user.findFirstOrThrow({
-      where : {
+      where: {
         access_token: access_token,
       },
     });
@@ -26,17 +26,28 @@ export class SocketsService {
     return Object.values(this.clientToUser);
   }
 
+  supClient(id: string) {
+    delete this.clientToUser[id];
+  }
+
+  findSocketById(id: number) {
+    const clientId = Object.keys(this.clientToUser).find(
+      (key) => this.clientToUser[key].id === id
+    );
+    return clientId;
+  }
+
   getUser(clientId: string) {
     return this.clientToUser[clientId];
   }
 
   async createRoom(dto: CreateRoomDto, userId: number) {
     const room = await this.prisma.room.create({
-      data : {
+      data: {
         name: dto.name,
         type: dto.type,
         password: dto.password, //DEVRAIT ETRE UN HASH
-        owner: {connect: {id: userId}},
+        owner: { connect: { id: userId } },
       }
     })
     return room;
@@ -73,10 +84,10 @@ export class SocketsService {
 
   async createMessage(createMessageDto: CreateMessageDto, username: string) {
     const message = await this.prisma.message.create({
-      data : {
+      data: {
         name: username,
         text: createMessageDto.text,
-        room: {connect: {id:createMessageDto.room}},
+        room: { connect: { id: createMessageDto.room } },
       }
     })
     return message;

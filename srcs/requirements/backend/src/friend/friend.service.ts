@@ -22,7 +22,11 @@ export class FriendService {
                 recipient: { connect: { id: friendId } }
             },
         });
-        return request
+        const ret = await this.prisma.friendRequest.findMany({
+            where: { senderId: UserId, recipientId: friendId },
+            include: { sender: true }
+        })
+        return ret[0]
     }
 
     async addFriend(userId: number, friendId: number): Promise<void> {
@@ -105,8 +109,8 @@ export class FriendService {
             include: { friend: true }
         })
         const alreadyReq = await this.prisma.friendRequest.findMany({
-            where : {senderId : userId },
-            include : {recipient: true}
+            where: { senderId: userId },
+            include: { recipient: true }
         })
 
         const filtered = friend.filter((friend) => friend.id !== userId && !user?.friend.some((f) => f.friendId === friend.id) && !alreadyReq?.some((req) => req.recipientId === friend.id))

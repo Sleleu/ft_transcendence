@@ -3,8 +3,9 @@ import { useState, useEffect } from 'react';
 import '../css/FriendAdd.css'
 import { User } from '../../../types';
 import FriendAddOnglet from './FriendAddOnglet';
+import { Socket } from 'socket.io-client';
 
-const FriendAdd = () => {
+const FriendAdd = ({ socket }: { socket?: Socket }) => {
 
     const inputStyle = {
         width: '70%',
@@ -60,7 +61,7 @@ const FriendAdd = () => {
                     </div>
                 ) : (
                     friendList.map((friend) =>
-                        <FriendAddOnglet key={friend.id} friend={friend} />)
+                        <FriendAddOnglet key={friend.id} friend={friend} socket={socket} />)
                 )}
             </div>
         </div>

@@ -1,6 +1,8 @@
 import React from 'react'
 import '../css/FriendOptionOnglet.css'
 import { User } from '../../../types';
+import ConfirmationPopUp from '../../../popUp/ConfirmationPopUp';
+import { useState } from 'react';
 
 
 type PropsOnglet = {
@@ -13,6 +15,22 @@ type PropsOnglet = {
 }
 
 const FriendOptionOnglet = ({ changeComponent, context, txt, friend, update, change }: PropsOnglet) => {
+
+    const [visible, setVisible] = useState(false)
+    let stop = false
+
+    const onConfirm = (confirm: boolean) => {
+        if (confirm && context === 'removeFriend') {
+            actionRemove()
+        }
+        if (confirm && context === 'block') { }
+        if (!confirm)
+            stop = true
+    }
+
+    const onVisible = (state: boolean) => {
+        setVisible(state)
+    }
 
     const handleClick = () => {
         if (context === 'watchGame')
@@ -27,7 +45,14 @@ const FriendOptionOnglet = ({ changeComponent, context, txt, friend, update, cha
             removeFriend()
     }
 
-    const removeFriend = async () => {
+    const removeFriend = () => {
+        if (!stop)
+            setVisible(true)
+        if (stop)
+            stop = true;
+    }
+
+    const actionRemove = async () => {
         const req = 'http://localhost:5000/friend/delete/' + friend.id
         await fetch(req, { method: "DELETE", credentials: "include" })
         update()
@@ -35,6 +60,8 @@ const FriendOptionOnglet = ({ changeComponent, context, txt, friend, update, cha
     }
 
     const invitePlay = () => {
+        const compo = "invitePlay" + friend.id
+        changeComponent(compo)
     }
 
     const block = () => {
@@ -78,6 +105,7 @@ const FriendOptionOnglet = ({ changeComponent, context, txt, friend, update, cha
 
     return (
         <div className='containerFriendOptionOnglet' onClick={handleClick}>
+            {visible === true && <ConfirmationPopUp onConfirm={onConfirm} onVisible={onVisible} opacity={true} message={"Delete this Friend ?"} />}
             <div className='nameText' style={padding}>{txt}</div>
             {context === 'sendMessage' ?
                 (<div className='image' style={styleImage} />) :
