@@ -45,12 +45,30 @@ export class SocketsService {
     const rooms = this.prisma.room.findMany();
     return rooms;
   }
+  async getRoomByName(roomName: string) {
+    const room = await this.prisma.room.findFirstOrThrow({
+      where : {
+        name: roomName,
+      },
+    });
+    return room;
+  }
 
   async addWhitelistUser(roomId: number, userId: number) {
     return this.prisma.room.update({
       where: { id: roomId },
       data: { whitelist: { connect: { id: userId } } },
     });
+  }
+  async searchWhiteList(roomId: number, userId: number) {
+    const room = await this.prisma.room.findUniqueOrThrow({
+      where : {id: roomId},
+      include: { whitelist: true },
+    });
+    console.log('WHITELIST: ', room.whitelist);
+    const isWhiteListed = room.whitelist.some((user) => user.id === userId);
+    console.log(isWhiteListed);
+    return isWhiteListed;
   }
 
   async createMessage(createMessageDto: CreateMessageDto, username: string) {
@@ -69,11 +87,6 @@ export class SocketsService {
       where: { roomId },
       orderBy: { createdAt: 'asc' },
     });
-  }
-  
-  findAll() {
-    const messages = this.prisma.message.findMany();
-    return messages;
   }
 
 }

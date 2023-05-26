@@ -46,7 +46,7 @@ export class SocketsGateway {
   }
 
   // CHAT -------------------------------------------
-  
+
   // @SubscribeMessage('addWhiteList')
   // async addWhiteList(@MessageBody('roomId') roomId: number, @MessageBody('userId') userId: number) {
     //   const room = await this.messagesService.addWhitelistUser(roomId, userId);
@@ -57,12 +57,13 @@ export class SocketsGateway {
   // {
   //   return this.messagesService.identify(name, client.id);
   // }
-    
+
   @SubscribeMessage('createRoom')
   async createRoom(@MessageBody() dto: CreateRoomDto,
    @ConnectedSocket() client: Socket) {
     const user = this.messagesService.getUser(client.id);
     const room = await this.messagesService.createRoom(dto, user.id);
+    this.messagesService.addWhitelistUser(room.id, user.id);
     console.log(room);
     return room;
   }
@@ -83,12 +84,6 @@ export class SocketsGateway {
     return message;
   }
 
-  @SubscribeMessage('findAllMessages')
-    findAll() {
-    const messages = this.messagesService.findAll();
-    return messages;
-  }
-
   @SubscribeMessage('findRoomMessages')
     findRoom(@MessageBody('roomId') roomId: number,) {
     const messages = this.messagesService.getMessagesByRoom(roomId);
@@ -96,12 +91,24 @@ export class SocketsGateway {
   }
 
   @SubscribeMessage('join')
-  joinRoom(@MessageBody() joinDto:JoinRoomDto, @ConnectedSocket() client: Socket) {
-    //Check le type de la room
-    //Si la room est privée : user sur la whitelist
-    //Si la room est protected : password valide
-    client.join(joinDto.roomName);
-    console.log(joinDto.name, 'joined room :', joinDto.roomName);
+  async joinRoom(@MessageBody() dto:JoinRoomDto, @ConnectedSocket() client: Socket) {
+    try {
+      const room = await this.messagesService.getRoomByName(dto.roomName);
+      const user = this.messagesService.getUser(client.id);
+      console.log('ROOM\n', room);
+      console.log('USER\n', user);
+      if (room.type === 'private')
+      {
+        const whitelisted = this.messagesService.searchWhiteList(room.id, user.id)
+        if (!whitelisted)
+          throw 'ROOM ACCESS FORBIDDEN';
+      }
+      client.join(dto.roomName);
+      console.log(user.username, 'joined room :', dto.roomName);
+    }
+    catch(e) {
+      console.log(e);
+    }
   }
 
   @SubscribeMessage('leave')
@@ -116,7 +123,7 @@ export class SocketsGateway {
     const user = await this.messagesService.getUser(client.id);
     const username = user.username;
     const typing = dto.isTyping;
-    client.to(dto.roomName).emit('typing', { username, typing }); 
+    client.to(dto.roomName).emit('typing', { username, typing });
   }
 
 }
