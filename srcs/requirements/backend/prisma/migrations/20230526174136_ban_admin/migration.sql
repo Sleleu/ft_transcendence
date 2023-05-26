@@ -78,6 +78,18 @@ CREATE TABLE "_RoomWhitelist" (
     "B" INTEGER NOT NULL
 );
 
+-- CreateTable
+CREATE TABLE "_Admin" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_Banned" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 
@@ -89,6 +101,18 @@ CREATE UNIQUE INDEX "_RoomWhitelist_AB_unique" ON "_RoomWhitelist"("A", "B");
 
 -- CreateIndex
 CREATE INDEX "_RoomWhitelist_B_index" ON "_RoomWhitelist"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_Admin_AB_unique" ON "_Admin"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_Admin_B_index" ON "_Admin"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_Banned_AB_unique" ON "_Banned"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_Banned_B_index" ON "_Banned"("B");
 
 -- AddForeignKey
 ALTER TABLE "friends" ADD CONSTRAINT "friends_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -116,3 +140,15 @@ ALTER TABLE "_RoomWhitelist" ADD CONSTRAINT "_RoomWhitelist_A_fkey" FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE "_RoomWhitelist" ADD CONSTRAINT "_RoomWhitelist_B_fkey" FOREIGN KEY ("B") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_Admin" ADD CONSTRAINT "_Admin_A_fkey" FOREIGN KEY ("A") REFERENCES "Room"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_Admin" ADD CONSTRAINT "_Admin_B_fkey" FOREIGN KEY ("B") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_Banned" ADD CONSTRAINT "_Banned_A_fkey" FOREIGN KEY ("A") REFERENCES "Room"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_Banned" ADD CONSTRAINT "_Banned_B_fkey" FOREIGN KEY ("B") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -9,17 +9,18 @@ import { Cipher } from 'crypto';
 import { User } from '@prisma/client';
 import { FriendService } from 'src/friend/friend.service';
 import { ForbiddenException } from '@nestjs/common';
+import { SocketsChatGateway } from './sockets-message.gateway';
 
 @WebSocketGateway({ cors: true })
 export class SocketsGateway {
   @WebSocketServer()
   server: Server;
 
-  constructor(private readonly messagesService: SocketsService,
+  constructor(
+    private readonly messagesService: SocketsService,
     private jwtService: JwtService,
-    private friendService: FriendService) { }
+    private friendService: FriendService) {}
 
-  // INIT ----------------------------------------
   afterInit() {
     console.log('WebSocket Gateway initialized');
   }
@@ -49,6 +50,9 @@ export class SocketsGateway {
     this.messagesService.supClient(client.id)
   }
 
+
+
+  //FRIEND
   @SubscribeMessage('getFriend')
   async getFriendsByUserId(@ConnectedSocket() client: Socket) {
     const user = this.messagesService.getUser(client.id);
@@ -74,94 +78,6 @@ export class SocketsGateway {
         friendSocket.emit('friendRequestNotification', { req : request });
       }
     }
-  }
-
-  // CHAT -------------------------------------------
-
-  // @SubscribeMessage('addWhiteList')
-  // async addWhiteList(@MessageBody('roomId') roomId: number, @MessageBody('userId') userId: number) {
-  //   const room = await this.messagesService.addWhitelistUser(roomId, userId);
-  //   return room;
-  // }
-  // @SubscribeMessage('connectToChat')
-  // connect(@MessageBody() name: string, @ConnectedSocket() client: Socket)
-  // {
-  //   return this.messagesService.identify(name, client.id);
-  // }
-
-  @SubscribeMessage('createRoom')
-  async createRoom(@MessageBody() dto: CreateRoomDto,
-    @ConnectedSocket() client: Socket) {
-    const user = this.messagesService.getUser(client.id);
-    const room = await this.messagesService.createRoom(dto, user.id);
-    this.messagesService.addWhitelistUser(room.id, user.id);
-    console.log(room);
-    return room;
-  }
-
-  @SubscribeMessage('findAllRooms')
-  findAllRooms() {
-    const rooms = this.messagesService.findAllRooms();
-    return rooms;
-  }
-
-  @SubscribeMessage('createMessage')
-  async create(@MessageBody() createMessageDto: CreateMessageDto,
-    @ConnectedSocket() client: Socket) {
-    const user = this.messagesService.getUser(client.id);
-    const message = await this.messagesService.createMessage(createMessageDto, user.username);
-    this.server.to(createMessageDto.roomName).emit('message', message);
-
-    return message;
-  }
-
-  @SubscribeMessage('findRoomMessages')
-  findRoom(@MessageBody('roomId') roomId: number,) {
-    const messages = this.messagesService.getMessagesByRoom(roomId);
-    return messages;
-  }
-
-  @SubscribeMessage('join')
-  async joinRoom(@MessageBody() dto:JoinRoomDto, @ConnectedSocket() client: Socket) {
-    let room;
-    let user;
-    try {
-      room = await this.messagesService.getRoomByName(dto.roomName);
-      user = this.messagesService.getUser(client.id);
-      console.log('ROOM\n', room);
-      console.log('USER\n', user);
-    }
-    catch(e) {
-      throw new ForbiddenException('Room does not exist');
-    }
-      if (room.type === 'private')
-      {
-        const whitelisted = this.messagesService.searchWhiteList(room.id, user.id)
-        if (!whitelisted)
-          throw new ForbiddenException('Access to private room forbidden');
-      }
-      if (room.type === 'protected')
-      {
-        if (!dto.password || dto.password !== room.password)
-          throw new ForbiddenException('Wrong password provided');
-      }
-      client.join(dto.roomName);
-      console.log(user.username, 'joined room :', dto.roomName);
-  }
-
-  @SubscribeMessage('leave')
-  leaveRoom(@MessageBody() joinDto: JoinRoomDto, @ConnectedSocket() client: Socket) {
-    client.leave(joinDto.roomName);
-    console.log(joinDto.name, 'left room :', joinDto.roomName);
-  }
-
-  //Ne fonctionne plus pour le moment
-  @SubscribeMessage('typing')
-  async typing(@MessageBody() dto: TypingDto, @ConnectedSocket() client: Socket) {
-    const user = await this.messagesService.getUser(client.id);
-    const username = user.username;
-    const typing = dto.isTyping;
-    client.to(dto.roomName).emit('typing', { username, typing });
   }
 
 }

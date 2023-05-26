@@ -29,7 +29,9 @@ model User {
   	friendRequestsReceived	FriendRequest[] @relation("FriendRequestRecipient")
 	history					History[]
 	rooms                   Room[]               @relation("RoomOwner")
-	whitelistedRooms         Room[]               @relation("RoomWhitelist")
+	whitelistedRooms        Room[]               @relation("RoomWhitelist")
+	adminRooms         		Room[]               @relation("Admin")
+	bannedRooms         	Room[]               @relation("Banned")
 	@@map("users")
 }
 
@@ -79,6 +81,8 @@ model Room {
 	ownerId     Int?
   	owner       User?    @relation("RoomOwner", fields: [ownerId], references: [id])
 	whitelist   User[]   @relation("RoomWhitelist")
+	admin		User[]   @relation("Admin")
+	banned		User[]   @relation("Banned")
 
 	messages	Message[]
 }

@@ -6,9 +6,12 @@ import { config } from 'process';
 import { FriendController } from 'src/friend/friend.controler';
 import { FriendModule } from 'src/friend/friend.module';
 import { FriendService } from 'src/friend/friend.service';
+import { SocketsChatGateway } from './sockets-message.gateway';
+import { MessageService } from './message.service';
 
 @Module({
   imports: [JwtModule.register({ secret: 'transcendence_secret' }), FriendModule],
-  providers: [SocketsGateway, SocketsService, FriendService]
+  providers: [SocketsGateway, SocketsChatGateway,
+     SocketsService, FriendService, MessageService]
 })
 export class SocketsModule { }

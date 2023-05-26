@@ -23,7 +23,7 @@ const CreateRoom:React.FC<Props> = ({socket, setRooms, setCreateRoom, user}) => 
     }
     const FormStyle: CSSProperties = {
         display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignContent: 'center',
-        
+
         padding: '20px',
     }
     const RoomTypeStyle: CSSProperties = {
@@ -66,7 +66,7 @@ const CreateRoom:React.FC<Props> = ({socket, setRooms, setCreateRoom, user}) => 
             <div style={RoomTypeStyle}><input type='checkbox' checked={checkbox === 'public'} onChange={() => handleCheckboxChange('public')}></input>PUBLIC</div>
             <div style={RoomTypeStyle}><input type='checkbox' checked={checkbox === 'private'} onChange={() => handleCheckboxChange('private')}></input>PRIVATE</div>
             <div style={RoomTypeStyle}><input type='checkbox' checked={checkbox === 'protected'} onChange={() => handleCheckboxChange('protected')}></input>PROTECTED</div>
-            {checkbox === 'protected' ? 
+            {checkbox === 'protected' ?
             <input value={password} onChange={handlePassTyping} placeholder='Password'></input>
             : null}
             <button>CREATE ROOM</button>
