@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Res, HttpException, HttpStatus, Req } from '@nestjs/common';
+import { Controller, Get, Query, Res, HttpException, HttpStatus, Req, Post } from '@nestjs/common';
 import { IntraService } from './intra.service';
 import { Response, Request } from 'express';
 import { ApiToken } from './intra.interface';
@@ -75,5 +75,57 @@ export class IntraController {
 	  } else {
 		throw new HttpException('Invalid session', HttpStatus.UNAUTHORIZED);
 	  }
+	}
+
+	@Get('generate-2fa-secret')
+	async generateTwoFASecret(@Req() req : Request) {
+  	const sessionId = req.cookies.Authorization;
+  	const user = await this.prismaService.user.findFirst({
+    	where: {
+      	access_token: sessionId
+    	},
+  	});
+	console.log('Passage dans generate et user = ', user);
+  	if (!user) {
+    	throw new HttpException('Invalid session', HttpStatus.UNAUTHORIZED);
+  	}
+  	const { secret, otpauthUrl } = await this.intraService.generateTwoFactorAuthenticationSecret(user.username, user.id);
+  	return { secret, otpauthUrl };
+	}
+
+	@Get('verify-2fa-code')
+	async verifyTwoFACode(@Req() req : Request, @Query('code') code : string) {
+	const sessionId = req.cookies.Authorization;
+	const user = await this.prismaService.user.findFirst({
+		where: {
+		access_token: sessionId
+		},
+	});
+
+	if (!user) {
+		throw new HttpException('Invalid session', HttpStatus.UNAUTHORIZED);
+	}
+
+	const isTwoFAValid = await this.intraService.verifyTwoFactorAuthenticationToken(user.id, code);
+	if (isTwoFAValid) {
+		return { message: "2FA code valid" };
+	} else {
+		throw new HttpException('Invalid 2FA code', HttpStatus.FORBIDDEN);
+	}
+	}
+
+	@Post('enable-2fa')
+	async enableTwoFA(@Req() req : Request) {
+		const sessionId = req.cookies.Authorization;
+		const user = await this.prismaService.user.findFirst({
+			where: {
+				access_token: sessionId
+			},
+		});
+		if (!user) {
+			throw new HttpException('Invalid session', HttpStatus.UNAUTHORIZED);
+		}
+		await this.intraService.enableTwoFA(user.id);
+		return { message: "2FA enabled successfully" };
 	}
 }

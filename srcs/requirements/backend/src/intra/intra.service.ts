@@ -5,7 +5,6 @@ import { ApiToken, User42 } from './intra.interface';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { authenticator } from 'otplib';
-import * as QRCode from 'qrcode';
 
 @Injectable()
 export class IntraService {
