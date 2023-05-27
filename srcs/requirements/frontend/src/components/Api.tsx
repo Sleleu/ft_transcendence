@@ -1,5 +1,5 @@
 const baseRequest = async (url : string, method : string) => {
-  const response = await fetch(url, {
+  const response = await fetch('http://localhost:5000' + url, {
     method: method,
     credentials: 'include'
   });
@@ -27,18 +27,18 @@ export const verifyTwoFACode = async (code : string) => {
   }
 }
 
-export const getUserProfile = () => baseRequest("http://localhost:5000/users/profile", "GET");
+export const getUserProfile = () => baseRequest("/users/profile", "GET");
 
-export const logout = () => baseRequest("http://localhost:5000/users/logout", "GET");
+export const logout = () => baseRequest("/users/logout", "GET");
 
-export const enableTwoFA = () => baseRequest("http://localhost:5000/twofa/enable-2fa", "POST");
+export const enableTwoFA = () => baseRequest("/twofa/enable-2fa", "POST");
 
-export const enableTwoFAVerified = () => baseRequest("http://localhost:5000/twofa/enable-2fa-verified", "POST");
+export const enableTwoFAVerified = () => baseRequest("/twofa/enable-2fa-verified", "POST");
 
-export const disableTwoFA = () => baseRequest("http://localhost:5000/twofa/disable-2fa", "POST");
+export const disableTwoFA = () => baseRequest("/twofa/disable-2fa", "POST");
 
-export const disableTwoFAVerified = () => baseRequest("http://localhost:5000/twofa/disable-2fa-verified", "POST");
+export const disableTwoFAVerified = () => baseRequest("/twofa/disable-2fa-verified", "POST");
 
-export const check2FA = () => baseRequest("http://localhost:5000/twofa/check-2fa", "GET");
+export const check2FA = () => baseRequest("/twofa/check-2fa", "GET");
 
-export const check2FAVerified = () => baseRequest("http://localhost:5000/twofa/check-2fa-verified", "GET");
+export const check2FAVerified = () => baseRequest("/twofa/check-2fa-verified", "GET");
