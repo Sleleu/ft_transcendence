@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { enableTwoFA, disableTwoFA } from '../Api';
+import { enableTwoFA, disableTwoFA, check2FA } from '../Api';
 import TwoFASetup from './TwoFASetup';
 
 const SettingsAuth = () => {
@@ -12,59 +12,42 @@ const SettingsAuth = () => {
         method: "GET",
         credentials: 'include'
       });
-
       if (response.ok) {
         await response.text();
         setOtpauthUrl(otpauthUrl);
       } else {
         console.error("Error fetching 2FA secret:", response.status, response.statusText);
       }
-
-      //check si le 2fa est activé par le compte
-      const responseStatus = await fetch("http://localhost:5000/twofa/check-2fa", {
-        method: "GET",
-        credentials: 'include'
-      });
-
-      if (responseStatus.ok) {
-        const status = await responseStatus.json();
-        console.log("status = ", status)
-        setTwoFAEnabled(status);
-      } else {
-        console.error("Error fetching 2FA status:", responseStatus.status, responseStatus.statusText);
-      }
+      const isTwoFAenabled : boolean = await check2FA();
+      setTwoFAEnabled(isTwoFAenabled);
     }
 
     fetchData();
   }, []);
 
-  const handleEnableTwoFA = async () => {
+  const handleTwoFA = async (code : string) => {
     try {
+      if (code === 'enable') {
       await enableTwoFA();
       alert('Two-factor authentication enabled successfully');
       setTwoFAEnabled(true);
+      }
+      else if (code === 'disable') {
+        await disableTwoFA();
+        alert('Two-factor authentication disabled successfully');
+        setTwoFAEnabled(false);   
+      }
     } catch (error) {
       console.error(error);
-      alert('Failed to enable two-factor authentication');
-    }
-  };
-
-  const handleDisableTwoFA = async () => {
-    try {
-      await disableTwoFA();
-      alert('Two-factor authentication disabled successfully');
-      setTwoFAEnabled(false);
-    } catch (error) {
-      console.error(error);
-      alert('Failed to disable two-factor authentication');
+      alert('An Error occured with two-factor authentication');
     }
   };
 
   return (
     <>
       <p className='text bold'>2F authentication</p>
-      { twoFAEnabled === false && <button onClick={handleEnableTwoFA}>Enable Two Factor Authentication</button> }
-	  { twoFAEnabled === true && <button onClick={handleDisableTwoFA}>Disable Two Factor Authentication</button> }
+      { twoFAEnabled === false && <button onClick={() => handleTwoFA('enable')}>Enable Two Factor Authentication</button> }
+	  { twoFAEnabled === true && <button onClick={() => handleTwoFA('disable')}>Disable Two Factor Authentication</button> }
       {twoFAEnabled && <TwoFASetup />}
     </>
   );

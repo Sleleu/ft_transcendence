@@ -42,3 +42,5 @@ export const disableTwoFAVerified = () => baseRequest("/twofa/disable-2fa-verifi
 export const check2FA = () => baseRequest("/twofa/check-2fa", "GET");
 
 export const check2FAVerified = () => baseRequest("/twofa/check-2fa-verified", "GET");
+
+export const generateTwoFASecret = () => baseRequest("/twofa/generate-2fa-secret", "GET");
