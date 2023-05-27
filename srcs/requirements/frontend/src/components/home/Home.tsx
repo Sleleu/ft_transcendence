@@ -13,8 +13,8 @@ import Settings from '../settings/Settings';
 import Stats from '../popup/Stats/Stats';
 import { User } from '../types'
 import Friend from '../friend/list/src/friend';
-import Cookies from 'js-cookie';
 import Verify2FA from '../Login/Verify-2fa';
+import { getUserProfile } from '../Api';
 
 
 function Home() {
