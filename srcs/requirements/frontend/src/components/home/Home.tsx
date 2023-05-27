@@ -87,7 +87,7 @@ function Home() {
 			credentials: "include",
 		  });
 		  Cookies.remove("Authorization");
-          await fetch("http://localhost:5000/intra/disable-2fa-verified", {
+          await fetch("http://localhost:5000/twofa/disable-2fa-verified", {
             method: "POST",
             credentials: 'include'
           });
@@ -106,7 +106,7 @@ const handle2FASuccess = () => {
 
 const check2FAEnabled = async (userId: number) => {
     try {
-        const response = await fetch(`http://localhost:5000/intra/check-2fa`);
+        const response = await fetch(`http://localhost:5000/twofa/check-2fa`);
         const result = await response.json();
         setTwoFAEnabled(result);
     } catch (error) {
@@ -120,7 +120,7 @@ useEffect(() => {
 
 const check2FAVerified = async () => {
     try {
-        const response = await fetch(`http://localhost:5000/intra/check-2fa-verified`, { 
+        const response = await fetch(`http://localhost:5000/twofa/check-2fa-verified`, { 
             method: "GET",
             credentials: 'include'
         });

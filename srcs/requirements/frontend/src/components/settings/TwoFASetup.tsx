@@ -5,7 +5,7 @@ const TwoFASetup = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("http://localhost:5000/intra/generate-2fa-secret", {
+      const response = await fetch("http://localhost:5000/twofa/generate-2fa-secret", {
         method: "GET",
         credentials: 'include'
       });

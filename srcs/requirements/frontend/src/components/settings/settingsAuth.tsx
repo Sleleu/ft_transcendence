@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { enableTwoFA, disableTwoFA } from '../Api';
 import TwoFASetup from './TwoFASetup';
 
@@ -9,7 +8,7 @@ const SettingsAuth = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("http://localhost:5000/intra/generate-2fa-secret", {
+      const response = await fetch("http://localhost:5000/twofa/generate-2fa-secret", {
         method: "GET",
         credentials: 'include'
       });
@@ -22,7 +21,7 @@ const SettingsAuth = () => {
       }
 
       //check si le 2fa est activé par le compte
-      const responseStatus = await fetch("http://localhost:5000/intra/check-2fa", {
+      const responseStatus = await fetch("http://localhost:5000/twofa/check-2fa", {
         method: "GET",
         credentials: 'include'
       });

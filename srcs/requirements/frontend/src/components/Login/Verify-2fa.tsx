@@ -18,7 +18,7 @@ const Verify2FA: React.FC<Verify2FAProps> = (props) => {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/intra/verify-2fa-code`, {
+        `http://localhost:5000/twofa/verify-2fa-code`, {
           method: "POST",
           headers: {
             'Content-Type': 'application/json'
@@ -30,7 +30,7 @@ const Verify2FA: React.FC<Verify2FAProps> = (props) => {
       if (!response.ok) {
         throw new Error("Invalid 2FA code.");
       }
-      await fetch("http://localhost:5000/intra/enable-2fa-verified", {
+      await fetch("http://localhost:5000/twofa/enable-2fa-verified", {
         method: "POST",
         credentials: 'include'
       });

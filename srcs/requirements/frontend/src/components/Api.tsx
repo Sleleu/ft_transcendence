@@ -35,7 +35,7 @@ export async function logout() {
   }
 
   export const enableTwoFA = async () => {
-    const response = await fetch("http://localhost:5000/intra/enable-2fa", {
+    const response = await fetch("http://localhost:5000/twofa/enable-2fa", {
       method: "POST",
       credentials: 'include'
     });
@@ -48,7 +48,7 @@ export async function logout() {
   };
 
   export const disableTwoFA = async () => {
-    const response = await fetch("http://localhost:5000/intra/disable-2fa", {
+    const response = await fetch("http://localhost:5000/twofa/disable-2fa", {
       method: "POST",
       credentials: 'include'
     });
