@@ -6,6 +6,32 @@ import { FriendRequest } from '@prisma/client'
 export class FriendService {
     constructor(private prisma: PrismaService) { }
 
+    async bloqueUserById(userId: number, friendId: number) {
+        const isAreadyBloque = await this.prisma.bloqueUser.findMany({
+            where: { senderId: userId, recipientId: friendId },
+        })
+        if (isAreadyBloque.length)
+            return undefined
+        const request = await this.prisma.bloqueUser.create({
+            data: {
+                sender: { connect: { id: userId } },
+                recipient: { connect: { id: friendId } }
+            },
+        });
+        await this.prisma.friend.deleteMany({
+            where: {
+                userId: userId,
+                friendId: friendId
+            }
+        })
+        await this.prisma.friend.deleteMany({
+            where: {
+                userId: friendId,
+                friendId: userId
+            }
+        })
+    }
+
     async createFriendRequest(UserId: number, friendId: number) {
         const isAlreadyFriend = await this.prisma.friend.findMany({
             where: { userId: UserId, friendId: friendId }
@@ -18,7 +44,13 @@ export class FriendService {
         const isAlreadyRequest = await this.prisma.friendRequest.findMany({
             where: { senderId: UserId, recipientId: friendId },
         })
-        if (isAlreadyRequest.length) {
+        const bloque = await this.prisma.bloqueUser.findMany({
+            where: { senderId: UserId, recipientId: friendId }
+        })
+        const bloqued = await this.prisma.bloqueUser.findMany({
+            where: { recipientId: UserId, senderId: friendId }
+        })
+        if (isAlreadyRequest.length || bloque.length || bloqued.length) {
             return undefined;
         }
         const request = await this.prisma.friendRequest.create({
@@ -81,7 +113,7 @@ export class FriendService {
             include: { friend: true },
         })
         return friend.map(friend => {
-            const { hash, ...rest } = friend.friend
+            const { access_token, ...rest } = friend.friend
             return { ...friend, friend: rest }
         })
     }
@@ -115,12 +147,16 @@ export class FriendService {
         })
         const alreadyReq = await this.prisma.friendRequest.findMany({
             where: { senderId: userId },
-            include: { recipient: true }
         })
-
-        const filtered = friend.filter((friend) => friend.id !== userId && !user?.friend.some((f) => f.friendId === friend.id) && !alreadyReq?.some((req) => req.recipientId === friend.id))
+        const bloqued = await this.prisma.bloqueUser.findMany({
+            where: { senderId: userId },
+        })
+        const bloquedBy = await this.prisma.bloqueUser.findMany({
+            where: { recipientId: userId },
+        })
+        const filtered = friend.filter((friend) => friend.id !== userId && !user?.friend.some((f) => f.friendId === friend.id) && !alreadyReq?.some((req) => req.recipientId === friend.id) && !bloqued?.some((req) => req.recipientId === friend.id) && !bloquedBy?.some((req) => req.senderId === friend.id))
         return filtered.map(friend => {
-            const { hash, ...rest } = friend
+            const { access_token, ...rest } = friend
             return friend
         })
     }
@@ -131,8 +167,9 @@ export class FriendService {
             include: { sender: true }
         })
         return request.map(sender => {
-            const { hash, ...rest } = sender.sender
+            const { access_token, ...rest } = sender.sender
             return { ...sender, sender: rest }
         })
     }
+
 }

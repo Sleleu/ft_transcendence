@@ -3,6 +3,7 @@ import '../css/FriendOptionOnglet.css'
 import { User } from '../../../types';
 import ConfirmationPopUp from '../../../popUp/ConfirmationPopUp';
 import { useState } from 'react';
+import { Socket } from 'socket.io-client';
 
 
 type PropsOnglet = {
@@ -11,9 +12,10 @@ type PropsOnglet = {
     changeComponent: (component: string) => void;
     friend: User
     change: (compo: string) => void
+    socket?: Socket
 }
 
-const FriendOptionOnglet = ({ changeComponent, context, txt, friend,  change }: PropsOnglet) => {
+const FriendOptionOnglet = ({ changeComponent, context, txt, friend, change, socket }: PropsOnglet) => {
 
     const [visible, setVisible] = useState(false)
     let stop = false
@@ -52,8 +54,9 @@ const FriendOptionOnglet = ({ changeComponent, context, txt, friend,  change }: 
     }
 
     const actionRemove = async () => {
-        const req = 'http://localhost:5000/friend/delete/' + friend.id
-        await fetch(req, { method: "DELETE", credentials: "include" })
+        // const req = 'http://localhost:5000/friend/delete/' + friend.id
+        // await fetch(req, { method: "DELETE", credentials: "include" })
+        socket?.emit('deleteFriend', { id: friend.id })
         change('add')
     }
 

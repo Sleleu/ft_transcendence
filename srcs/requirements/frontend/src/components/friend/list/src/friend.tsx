@@ -126,7 +126,7 @@ const Friend: FC<FriendProps> = ({ changeComponent }) => {
           <div className='containerFriendBodyRight'>
             {component === 'add' && <FriendAdd socket={socket} />}
             {component === 'friendRequest' && <FriendRequest sender={friendReq} socket={socket} />}
-            {component === 'friend' && <FriendOption friend={searchFriend[searchFriend.findIndex((friend) => friend.friendId === option)].friend} changeComponent={changeComponent} change={changeComponentFriend} />}
+            {component === 'friend' && <FriendOption friend={searchFriend[searchFriend.findIndex((friend) => friend.friendId === option)].friend} changeComponent={changeComponent} change={changeComponentFriend} socket={socket} />}
           </div>
         </div>
       </div>
