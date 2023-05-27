@@ -1,8 +1,10 @@
-import { Body, Controller, ForbiddenException, Get, HttpException, HttpStatus, Post, Req } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Get, HttpException, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Request } from 'express';
 import { TwofaService } from './twofa.service';
+import { JwtGuard } from 'src/auth/guard';
 
+@UseGuards(JwtGuard)
 @Controller('twofa')
 export class TwofaController {
 

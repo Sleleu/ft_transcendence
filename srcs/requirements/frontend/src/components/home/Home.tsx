@@ -82,15 +82,15 @@ function Home() {
 
 	const handleLogout = async () => {
 		try {
+          await fetch("http://localhost:5000/twofa/disable-2fa-verified", {
+              method: "POST",
+              credentials: 'include'
+          });
 		  await fetch("http://localhost:5000/users/logout", {
 			method: "GET",
 			credentials: "include",
 		  });
 		  Cookies.remove("Authorization");
-          await fetch("http://localhost:5000/twofa/disable-2fa-verified", {
-            method: "POST",
-            credentials: 'include'
-          });
 		  navigate('/');
 		} catch (error) {
 		  console.error("Error while disconnect :", error);
@@ -104,9 +104,12 @@ const handle2FASuccess = () => {
 }
 
 
-const check2FAEnabled = async (userId: number) => {
+const check2FAEnabled = async () => {
     try {
-        const response = await fetch(`http://localhost:5000/twofa/check-2fa`);
+        const response = await fetch(`http://localhost:5000/twofa/check-2fa`, { 
+            method: "GET",
+            credentials: 'include'
+        });
         const result = await response.json();
         setTwoFAEnabled(result);
     } catch (error) {
@@ -115,8 +118,8 @@ const check2FAEnabled = async (userId: number) => {
 }
 
 useEffect(() => {
-    check2FAEnabled(user.id);
-}, [user.id]);
+    check2FAEnabled();
+}, []);
 
 const check2FAVerified = async () => {
     try {
