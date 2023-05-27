@@ -16,10 +16,7 @@ import Friend from '../friend/list/src/friend';
 import Cookies from 'js-cookie';
 import Verify2FA from '../Login/Verify-2fa';
 
-interface HomeProps {
-	user: User;
-  }
-  
+
 function Home() {
 
 
@@ -90,6 +87,10 @@ function Home() {
 			credentials: "include",
 		  });
 		  Cookies.remove("Authorization");
+          await fetch("http://localhost:5000/intra/disable-2fa-verified", {
+            method: "POST",
+            credentials: 'include'
+          });
 		  navigate('/');
 		} catch (error) {
 		  console.error("Error while disconnect :", error);
@@ -97,6 +98,11 @@ function Home() {
 	  };
 
 const [twoFAEnabled, setTwoFAEnabled] = useState<boolean>(false);
+
+const handle2FASuccess = () => {
+    set2FAVerified(true);
+}
+
 
 const check2FAEnabled = async (userId: number) => {
     try {
@@ -112,15 +118,30 @@ useEffect(() => {
     check2FAEnabled(user.id);
 }, [user.id]);
 
-if (twoFAEnabled && !is2FAVerified) {
-    return <Verify2FA onVerify={() => set2FAVerified(true)} />;
+const check2FAVerified = async () => {
+    try {
+        const response = await fetch(`http://localhost:5000/intra/check-2fa-verified`, { 
+            method: "GET",
+            credentials: 'include'
+        });
+        const result = await response.json();
+        set2FAVerified(result);
+    } catch (error) {
+        console.error(error);
+    }
 }
 
+useEffect(() => {
+    check2FAVerified();
+}, []);
+
+if (twoFAEnabled && !is2FAVerified) {
+    return <Verify2FA onVerifySuccess={handle2FASuccess} />;
+}
+    
     return (
         <div className="baground">
             <div className='containerFullPage'>
-                {/* {activeComponent === "login" && <Login changeComponent={changeComponent} />} */}
-
                 <div className='containerRectangle'>
                     <div className='rectangleLeft' />
                     <div className='rectangleRight' />

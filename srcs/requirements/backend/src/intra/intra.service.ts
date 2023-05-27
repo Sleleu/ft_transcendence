@@ -126,7 +126,32 @@ export class IntraService {
 		else
 			return false;
 	  }
-	  
+
+	  async isTwoFAVerified(userId: number) {
+		const user = await this.prismaService.user.findUnique({
+		  where: { id: userId },
+		});
+		if (!user)
+			throw new ForbiddenException('isTwoFAEnabled : User not found');
+		if (user.isTwoFAverified === true)
+			return true;
+		else
+			return false;
+	  }
+
+	  async enableTwoFAVerified(userId : number) {
+		await this.prismaService.user.update({
+      	where: { id: userId },
+		data : { isTwoFAverified : true }
+		});
+	  }
+
+	  async disableTwoFAVerified(userId : number) {
+		await this.prismaService.user.update({
+      	where: { id: userId },
+		data : { isTwoFAverified : false }
+		});
+	  }
 
 	async setTwoFASecret(secret: string, userId: number) {
     	await this.prismaService.user.update({

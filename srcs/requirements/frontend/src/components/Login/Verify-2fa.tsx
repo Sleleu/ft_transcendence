@@ -1,10 +1,10 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 
 interface Verify2FAProps {
-  onVerify: () => void;
+  onVerifySuccess: () => void;
 }
 
-const Verify2FA: React.FC<Verify2FAProps> = ({ onVerify }) => {
+const Verify2FA: React.FC<Verify2FAProps> = (props) => {
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -18,17 +18,24 @@ const Verify2FA: React.FC<Verify2FAProps> = ({ onVerify }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/intra/verify-2fa-code?code=${code}`
-      );
+        `http://localhost:5000/intra/verify-2fa-code`, {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({ code })
+        });
       
       if (!response.ok) {
         throw new Error("Invalid 2FA code.");
       }
-
-      const data = await response.json();
-
-      setMessage(data.message);
+      await fetch("http://localhost:5000/intra/enable-2fa-verified", {
+        method: "POST",
+        credentials: 'include'
+      });
       setError(null);
+      props.onVerifySuccess(); // appel à la fonction de rappel
     } catch (error) {
       setError("Invalid 2FA code.");
       setMessage(null);

@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { enableTwoFA } from '../Api';
+import { enableTwoFA, disableTwoFA } from '../Api';
 import TwoFASetup from './TwoFASetup';
 
 const SettingsAuth = () => {
-  const navigate = useNavigate();
   const [otpauthUrl, setOtpauthUrl] = useState(null);
-  const [twoFAEnabled, setTwoFAEnabled] = useState(false); // Variable d'état pour suivre l'état du bouton
+  const [twoFAEnabled, setTwoFAEnabled] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -16,10 +15,24 @@ const SettingsAuth = () => {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        setOtpauthUrl(data.otpauthUrl);
+        await response.text();
+        setOtpauthUrl(otpauthUrl);
       } else {
         console.error("Error fetching 2FA secret:", response.status, response.statusText);
+      }
+
+      //check si le 2fa est activé par le compte
+      const responseStatus = await fetch("http://localhost:5000/intra/check-2fa", {
+        method: "GET",
+        credentials: 'include'
+      });
+
+      if (responseStatus.ok) {
+        const status = await responseStatus.json();
+        console.log("status = ", status)
+        setTwoFAEnabled(status);
+      } else {
+        console.error("Error fetching 2FA status:", responseStatus.status, responseStatus.statusText);
       }
     }
 
@@ -39,7 +52,7 @@ const SettingsAuth = () => {
 
   const handleDisableTwoFA = async () => {
     try {
-      await enableTwoFA();
+      await disableTwoFA();
       alert('Two-factor authentication disabled successfully');
       setTwoFAEnabled(false);
     } catch (error) {

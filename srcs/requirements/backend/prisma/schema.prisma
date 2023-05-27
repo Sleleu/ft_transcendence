@@ -22,6 +22,7 @@ model User {
 	access_token			String?
 	TwoFASecret				String?
 	TwoFAenabled			Boolean @default(false)
+	isTwoFAverified			Boolean @default(false)
 	elo 					Int @default(400)
 	win 					Int @default(0)
 	loose 					Int @default(0)

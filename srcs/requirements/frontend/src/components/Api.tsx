@@ -46,4 +46,17 @@ export async function logout() {
       throw new Error('Failed to enable two-factor authentication');
     }
   };
+
+  export const disableTwoFA = async () => {
+    const response = await fetch("http://localhost:5000/intra/disable-2fa", {
+      method: "POST",
+      credentials: 'include'
+    });
+  
+    if (response.ok) {
+      return response.json();
+    } else {
+      throw new Error('Failed to disable two-factor authentication');
+    }
+  };
   
