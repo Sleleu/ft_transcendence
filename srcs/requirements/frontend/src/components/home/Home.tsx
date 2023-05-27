@@ -14,11 +14,9 @@ import Stats from '../popup/Stats/Stats';
 import { User } from '../types'
 import Friend from '../friend/list/src/friend';
 import Verify2FA from '../Login/Verify-2fa';
-import { getUserProfile } from '../Api';
-
+import { check2FA, check2FAVerified, disableTwoFAVerified, getUserProfile, logout } from '../Api';
 
 function Home() {
-
 
     const [user, setUser] = useState<User>({ username: '', id: -1, elo: -1, win: -1, loose: -1, createAt: '', updateAt: '', state: 'inexistant' })
     const [activeComponent, setActiveComponent] = useState<string>('play')
@@ -26,6 +24,7 @@ function Home() {
     const navigate = useNavigate()
     const existingRanks: string[] = ['bronze', 'silver', 'gold', 'crack', 'ultime']; 
     const userRank: string =  user.elo > 5000 || user.elo < 0 ? 'ultime' : existingRanks[Math.floor(user.elo / 1000)];
+    const [twoFAEnabled, setTwoFAEnabled] = useState<boolean>(false);
     const [is2FAVerified, set2FAVerified] = useState(false);
 
     const push = (item: string) => {
@@ -53,24 +52,14 @@ function Home() {
         setActiveComponent(component)
     }
 
-    const api = async () => {
-        const data = await fetch("http://localhost:5000/users/profile", { 
-			method: "GET",
-			credentials: 'include'})
-        const userProfile = await data.json();
-        console.log('user in api', userProfile)
-		return userProfile;
-    }
-
     useEffect(() => {
         const getUser = async () => {
-            const userFromServer = await api()
+            const userFromServer = await getUserProfile();
             setUser(userFromServer)
         }
         getUser()
     }, [])
 
-	
     const extractId = (str: string) => {
         const regex = /\d+/g;
         const numbers = str.match(regex)
@@ -82,21 +71,13 @@ function Home() {
 
 	const handleLogout = async () => {
 		try {
-          await fetch("http://localhost:5000/twofa/disable-2fa-verified", {
-              method: "POST",
-              credentials: 'include'
-          });
-		  await fetch("http://localhost:5000/users/logout", {
-			method: "GET",
-			credentials: "include",
-		  });
+          await disableTwoFAVerified();
+		  await logout();
 		  navigate('/');
 		} catch (error) {
 		  console.error("Error while disconnect :", error);
 		}
 	  };
-
-const [twoFAEnabled, setTwoFAEnabled] = useState<boolean>(false);
 
 const handle2FASuccess = () => {
     set2FAVerified(true);
@@ -105,11 +86,7 @@ const handle2FASuccess = () => {
 
 const check2FAEnabled = async () => {
     try {
-        const response = await fetch(`http://localhost:5000/twofa/check-2fa`, { 
-            method: "GET",
-            credentials: 'include'
-        });
-        const result = await response.json();
+        const result = await check2FA();
         setTwoFAEnabled(result);
     } catch (error) {
         console.error(error);
@@ -120,13 +97,9 @@ useEffect(() => {
     check2FAEnabled();
 }, []);
 
-const check2FAVerified = async () => {
+const TwoFAVerified = async () => {
     try {
-        const response = await fetch(`http://localhost:5000/twofa/check-2fa-verified`, { 
-            method: "GET",
-            credentials: 'include'
-        });
-        const result = await response.json();
+        const result = await check2FAVerified();
         set2FAVerified(result);
     } catch (error) {
         console.error(error);
@@ -134,7 +107,7 @@ const check2FAVerified = async () => {
 }
 
 useEffect(() => {
-    check2FAVerified();
+    TwoFAVerified();
 }, []);
 
 if (twoFAEnabled && !is2FAVerified) {
