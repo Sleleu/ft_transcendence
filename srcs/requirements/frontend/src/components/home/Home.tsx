@@ -90,7 +90,6 @@ function Home() {
 			method: "GET",
 			credentials: "include",
 		  });
-		  Cookies.remove("Authorization");
 		  navigate('/');
 		} catch (error) {
 		  console.error("Error while disconnect :", error);
