@@ -1,4 +1,5 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
+import { enableTwoFAVerified, verifyTwoFACode } from "../Api";
 
 interface Verify2FAProps {
   onVerifySuccess: () => void;
@@ -17,25 +18,10 @@ const Verify2FA: React.FC<Verify2FAProps> = (props) => {
     event.preventDefault();
 
     try {
-      const response = await fetch(
-        `http://localhost:5000/twofa/verify-2fa-code`, {
-          method: "POST",
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include',
-          body: JSON.stringify({ code })
-        });
-      
-      if (!response.ok) {
-        throw new Error("Invalid 2FA code.");
-      }
-      await fetch("http://localhost:5000/twofa/enable-2fa-verified", {
-        method: "POST",
-        credentials: 'include'
-      });
+      await verifyTwoFACode(code);
+      await enableTwoFAVerified();
       setError(null);
-      props.onVerifySuccess(); // appel à la fonction de rappel
+      props.onVerifySuccess();
     } catch (error) {
       setError("Invalid 2FA code.");
       setMessage(null);
