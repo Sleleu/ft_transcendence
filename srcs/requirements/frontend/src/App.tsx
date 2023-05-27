@@ -7,6 +7,7 @@ import CreateAccount from './components/Login/CreateAccount';
 import Login from './components/Login/Login';
 import Chat from './components/chat/Chat';
 import PrivateRoute from './PrivateRoute';
+import Verify2FA from './components/Login/Verify-2fa';
 
 function App() {
 
@@ -20,7 +21,6 @@ function App() {
     <Router>
       <div>
         <Routes>
-          {/* <Route path="/" Component={(props) => <Chat {...props} />} /> */}
           <Route path="/" Component={(props) => <Login {...props} updateToken={updateToken} />} />
           <Route path='/home'
           element={

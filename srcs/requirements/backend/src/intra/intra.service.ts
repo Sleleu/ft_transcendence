@@ -5,6 +5,7 @@ import { ApiToken, User42 } from './intra.interface';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { authenticator } from 'otplib';
+import { toDataURL } from 'qrcode';
 
 @Injectable()
 export class IntraService {
@@ -141,10 +142,11 @@ export class IntraService {
 	
 		await this.setTwoFASecret(secret, userId);
 
-		return {
-		  secret,
-		  otpauthUrl
-		}
+		return otpauthUrl;
+	  }
+
+	async generateQrCodeDataURL(otpAuthUrl: string) {
+		return toDataURL(otpAuthUrl);
 	  }
 
 	async verifyTwoFactorAuthenticationToken(userId: number, token: string) {

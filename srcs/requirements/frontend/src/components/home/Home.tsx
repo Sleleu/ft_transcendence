@@ -14,6 +14,7 @@ import Stats from '../popup/Stats/Stats';
 import { User } from '../types'
 import Friend from '../friend/list/src/friend';
 import Cookies from 'js-cookie';
+import Verify2FA from '../Login/Verify-2fa';
 
 interface HomeProps {
 	user: User;
@@ -28,6 +29,7 @@ function Home() {
     const navigate = useNavigate()
     const existingRanks: string[] = ['bronze', 'silver', 'gold', 'crack', 'ultime']; 
     const userRank: string =  user.elo > 5000 || user.elo < 0 ? 'ultime' : existingRanks[Math.floor(user.elo / 1000)];
+    const [is2FAVerified, set2FAVerified] = useState(false);
 
     const push = (item: string) => {
         setStack([...stack, item])
@@ -93,6 +95,26 @@ function Home() {
 		  console.error("Error while disconnect :", error);
 		}
 	  };
+
+const [twoFAEnabled, setTwoFAEnabled] = useState<boolean>(false);
+
+const check2FAEnabled = async (userId: number) => {
+    try {
+        const response = await fetch(`http://localhost:5000/intra/check-2fa`);
+        const result = await response.json();
+        setTwoFAEnabled(result);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+useEffect(() => {
+    check2FAEnabled(user.id);
+}, [user.id]);
+
+if (twoFAEnabled && !is2FAVerified) {
+    return <Verify2FA onVerify={() => set2FAVerified(true)} />;
+}
 
     return (
         <div className="baground">

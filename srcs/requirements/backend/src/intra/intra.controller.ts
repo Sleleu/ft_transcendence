@@ -42,6 +42,10 @@ export class IntraController {
 			})
 			if (!User)
 				throw new HttpException('Cannot create new user from createUser()', HttpStatus.FORBIDDEN);
+
+			//check le 2FA
+			const isTwoFAEnabled = await this.intraService.isTwoFAEnabled(User.id);
+
 			const JwtToken = await this.intraService.getJwtToken(User?.id, User?.username)
 			console.log("jwt token : ", JwtToken);
 			console.log("User : ", User.username);
@@ -59,8 +63,12 @@ export class IntraController {
 			res.cookie('Authorization', JwtToken, {
 				httpOnly: true
 			});
-			res.redirect('http://localhost:3000/home');
+			if (isTwoFAEnabled)
+				res.redirect('http://localhost:3000/verify-2fa');
+			else
+				res.redirect('http://localhost:3000/home');
 	}
+
 	@Get('verify-session')
 	async verifySession(@Req() req : Request) {
 	  const sessionId = req.cookies.Authorization
@@ -89,9 +97,12 @@ export class IntraController {
   	if (!user) {
     	throw new HttpException('Invalid session', HttpStatus.UNAUTHORIZED);
   	}
-  	const { secret, otpauthUrl } = await this.intraService.generateTwoFactorAuthenticationSecret(user.username, user.id);
-  	return { secret, otpauthUrl };
+  	const otpauthUrl = await this.intraService.generateTwoFactorAuthenticationSecret(user.username, user.id);
+	const qrcode = await this.intraService.generateQrCodeDataURL(otpauthUrl)
+	
+	return qrcode;
 	}
+
 
 	@Get('verify-2fa-code')
 	async verifyTwoFACode(@Req() req : Request, @Query('code') code : string) {
@@ -142,5 +153,19 @@ export class IntraController {
 		}
 		await this.intraService.disableTwoFA(user.id);
 		return { message: "2FA disabled successfully" };
+	}
+
+	@Get('check-2fa')
+	async checkTwoFA(@Req() req : Request) {
+		const sessionId = req.cookies.Authorization;
+		const user = await this.prismaService.user.findFirst({
+			where: {
+				access_token: sessionId
+			},
+		});
+		if (!user) {
+			throw new HttpException('Invalid session', HttpStatus.UNAUTHORIZED);
+		}
+		return await this.intraService.isTwoFAEnabled(user.id);
 	}
 }

@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import QRCode from 'react-qr-code';
 
 const TwoFASetup = () => {
-  const [otpauthUrl, setOtpauthUrl] = useState(null);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -12,8 +11,8 @@ const TwoFASetup = () => {
       });
 
       if(response.ok) {
-        const data = await response.json();
-        setOtpauthUrl(data.otpauthUrl);
+        const data = await response.text();
+        setQrCodeUrl(data);
       } else {
         console.error("Error fetching 2FA secret:", response.status, response.statusText);
       }
@@ -24,11 +23,12 @@ const TwoFASetup = () => {
 
   return (
     <div>
-      {otpauthUrl && (
-        <QRCode value={otpauthUrl} />
+      {qrCodeUrl && (
+        <img src={qrCodeUrl} alt="QR code" />
       )}
     </div>
   );
 };
 
 export default TwoFASetup;
+

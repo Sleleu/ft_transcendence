@@ -1,6 +1,10 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 
-const Verify2FA: React.FC = () => {
+interface Verify2FAProps {
+  onVerify: () => void;
+}
+
+const Verify2FA: React.FC<Verify2FAProps> = ({ onVerify }) => {
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
