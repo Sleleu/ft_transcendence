@@ -7,22 +7,30 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Message } from '@prisma/client';
 import { GameState, MovePlayerDto, MoveOpponentDto, BounceBallDto} from './dto/game.dto';
 
+const PADDLE_BOARD_SIZE = 3;
+const PADDLE_EDGE_SPACE = 1;
+
+const ROW_SIZE = 10;
+const COL_SIZE = 20;
+
+const board = [...Array(PADDLE_BOARD_SIZE)].map((_, pos) => pos);
+
 @Injectable()
 export class SocketsService {
   messages: MessageObj[] = [{id: 1, name: 'gmansuy', text: 'heyooo'}, {id: 2, name: 'Sleleu', text: 'yooo'}];
   private clientToUser: { [clientId: string]: string } = {};
 
   private gameState: GameState = {
-		player: [], // Initial player board
-		opponent: [], // Initial opponent board
+		player: board.map((x) => x * COL_SIZE + PADDLE_EDGE_SPACE),
+		opponent: board.map((x) => (x + 1) * COL_SIZE - (PADDLE_EDGE_SPACE + 1)),
 		ball: 0, // Initial ball position
 		ballSpeed: 200,
-		deltaX: 1, // Initial ball delta x
-		deltaY: -20, // Initial ball delta y
+		deltaX: -1, // Initial ball delta x
+		deltaY: -1, // Initial ball delta y
 		playerScore: 0, // Initial player score
 		opponentScore: 0, // Initial opponent score
 		pause: true, // Initial game state (paused)
-		opponentDir: true, // Initial opponent direction
+		opponentDir: false, // Initial opponent direction
 		opponentSpeed:300,
 	};
 
@@ -56,7 +64,7 @@ export class SocketsService {
   //gabriel part end
 
   	getGameState() : GameState{
-    console.log("starting the game");
+    console.log("getting the game status");
 		return this.gameState;
 	}
 
@@ -71,16 +79,16 @@ export class SocketsService {
 
 	resetGame(): void{
 		this.gameState = {
-			player: [], // Reset player board
-			opponent: [], // Reset opponent board
-			ball: 0, // Reset ball position
+			player: board.map((x) => x * COL_SIZE + PADDLE_EDGE_SPACE), // Reset player board
+			opponent: board.map((x) => (x + 1) * COL_SIZE - (PADDLE_EDGE_SPACE + 1)), // Reset opponent board
+			ball: Math.round((ROW_SIZE * COL_SIZE) / 2) + ROW_SIZE, // Reset ball position
 			ballSpeed: 200,
 			deltaX: 1, // Reset ball delta x
-			deltaY: -20, // Reset ball delta y
+			deltaY: -1, // Reset ball delta y
 			playerScore: 0, // Reset player score
 			opponentScore: 0, // Reset opponent score
 			pause: true, // Reset game state (paused)
-			opponentDir: true, // Reset opponent direction
+			opponentDir: false, // Reset opponent direction
 			opponentSpeed: 300,
 		};
 	}
@@ -168,6 +176,7 @@ export class SocketsService {
 
 	@Interval(16)
 	private updateGameStateInterval(): void{
+		console.log("inside the interval on the server side");
 		if (!this.gameState.pause){
 			this.updateGameState();
 		}

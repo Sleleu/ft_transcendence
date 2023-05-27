@@ -1,6 +1,5 @@
 import React, { useEffect, useState, CSSProperties } from 'react';
 import Box, { BACKGROUND, PLAYER, BALL } from './box';
-import { io, Socket } from 'socket.io-client';
 
 /* size */
 const ROW_SIZE = 10;
@@ -76,15 +75,15 @@ const InitialState = (): GameState => {
   return {
     player: board.map((x) => x * COL_SIZE + PADDLE_EDGE_SPACE),
     opponent: board.map((x) => (x + 1) * COL_SIZE - (PADDLE_EDGE_SPACE + 1)),
-    ball: Math.round((ROW_SIZE * COL_SIZE) / 2) + ROW_SIZE,
+    ball: Math.round((ROW_SIZE * COL_SIZE) / 2) + ROW_SIZE,//look into this
     ballSpeed: 200,
+    deltaY: -COL_SIZE,//buggie
     deltaX: -1,
-    deltaY: -COL_SIZE,
-    playerScore: 0,
-    opponentScore: 0,
-    pause: true,
     opponentDir: false,
     opponentSpeed: 300,
+    pause: true,
+    playerScore: 0,
+    opponentScore: 0,
   };
 };
 
@@ -94,111 +93,10 @@ interface GameProps {
 
 const Game: React.FC<GameProps> = ({ changeComponent }) => {
   const [state, setState] = useState<GameState>(InitialState());
-  const [socket, setSocket ] = useState<Socket | null> (null);
-
-  useEffect(() => {
-
-    const socket = io('http://localhost:5000')
-    setSocket(socket);
-    //Handle game state updates
-    console.log("after setting soocket");
-
-    socket.on('gameState', (gameState: GameState) => {
-      console.log("client side event: gameState");
-      setState(gameState);
-    });
-
-    socket?.on('start', () => {
-      console.log("client side event: start");
-      setState((prevState) => ({
-        ...prevState,
-        pause: false,
-      }));
-      bounceBall();
-    });
-
-    socket?.on('pause', () => {
-      console.log("client side event: pause");
-      setState((prevState) => ({
-        ...prevState,
-        pause: true,
-      }));
-    });
-
-    socket?.on('reset', () => {
-      console.log("client side event: reset");
-      resetGame();
-    });
-
-    socket?.on('bounceBall', (newBallPosition: number) => {
-      console.log("client side event: bounceball");
-      setState((prevState) => ({
-        ...prevState,
-        ball: newBallPosition,
-      }));
-    });
-
-    socket?.on('move-player', (movedPlayer: number[]) => {
-      console.log("client side event: move-player");
-      setState((prevState) => ({
-        ...prevState,
-        player: movedPlayer,
-        pause: false,
-      }));
-    });
-
-    socket?.on('move-opponent', (movedPlayer: number[]) => {
-      console.log("client side event: move-opponent");
-      setState((prevState) => ({
-        ...prevState,
-        opponent: movedPlayer,
-      }));
-    });
-
-    socket?.on('changeOpponentDir', () => {
-      console.log("client side event: changeOpponentDir");
-      setState((prevState) => ({
-        ...prevState,
-        opponentDir: !prevState.opponentDir,
-      }));
-    });
-
-    socket?.on('bounceBall', (newDelta: number) => {
-      console.log("client side event: bounceBall with: " + newDelta);
-      setState((prevState) => ({
-        ...prevState,
-        deltaY: newDelta,
-      }));
-    });
-
-    socket?.on('score', (scores: { playerScore: number; opponentScore: number }) => {
-      console.log("client side event: score");
-      setState((prevState) => ({
-        ...prevState,
-        playerScore: scores.playerScore,
-        opponentScore: scores.opponentScore,
-      }));
-    });
-
-    // if (!state.pause){
-      // const intervalId = setInterval(bounceBall, state.ballSpeed); // Call bounceBall repeatedly
-    // Store the intervalId in state to clear it later
-      // setState((prevState) => ({
-      //   ...prevState,
-      //   intervalId: intervalId,
-      // }));
-    // }
-
-    //clean up socket connection
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
 
   const handleMouseMove = (event: MouseEvent) => {
     const container = document.getElementById("root");
     let movedPlayer: number[] | null = null;
-    console.log("handle mousemmove event")
     if (container) {
       const containerRect = container.getBoundingClientRect();
       const mouseY = event.clientY - containerRect.top;
@@ -207,14 +105,19 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
       movedPlayer = moveBoard(playerBoard, isUp);
     }
     if (movedPlayer !== null) {
-      socket?.emit('move-player', movedPlayer);
+      setState({
+        ...state,
+        player: movedPlayer,
+        pause: false,
+      });
     }
   };
 
-  const resetGame = () => {
-    setState(InitialState());
-    socket?.emit('reset');
-  };
+  const resetGame = () =>
+    setState((prevState) => ({
+      ...prevState,
+      ball: Math.round((ROW_SIZE * COL_SIZE) / 2) + (ROW_SIZE),
+    }));
 
   const moveBoard = (playerBoard: number[], isUp: boolean) => {
     const playerEdge = isUp ? playerBoard[0] : playerBoard[PADDLE_BOARD_SIZE - 1];
@@ -228,14 +131,9 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
   };
 
   const touchingEdge = (pos: number) =>
-    pos % COL_SIZE === 0 ||
-    pos % COL_SIZE === COL_SIZE - 1 ||
-    pos < COL_SIZE ||
-    pos >= (ROW_SIZE - 1) * COL_SIZE;
+    pos % COL_SIZE === 0 || pos % COL_SIZE === COL_SIZE - 1 || pos < COL_SIZE || pos >= (ROW_SIZE - 1) * COL_SIZE;
 
-    // (0 <= pos && pos < COL_SIZE) ||
-    //(COL_SIZE * (ROW_SIZE - 1) <= pos &&
-    //pos < COL_SIZE * ROW_SIZE);
+    // (0 <= pos && pos < COL_SIZE) || (COL_SIZE * (ROW_SIZE - 1) <= pos && pos < COL_SIZE * ROW_SIZE);
 
   const touchingPaddle = (pos: number) =>
     state.player.indexOf(pos) !== -1 ||
@@ -254,49 +152,61 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
 
   const moveOpponent = () => {
     const movedPlayer = moveBoard(state.opponent, state.opponentDir);
-    movedPlayer
-      ? socket?.emit('move-opponent', movedPlayer)
-      : socket?.emit('changOpponentDir');
+    movedPlayer ? setState((prevState) => ({ ...prevState, opponent: movedPlayer })) : setState((prevState) => ({ ...prevState, opponentDir: !prevState.opponentDir }));
   };
 
   const bounceBall = () => {
     const newState = state.ball + state.deltaY + state.deltaX;
 
-    console.log('inside bounceball with new position of ' + newState);
     if (touchingEdge(newState)) {
       console.log("touchingedge");
-      socket?.emit('bounceBall', -state.deltaY);
+      setState((prevState) => ({ ...prevState, deltaY: -prevState.deltaY }));
     }
 
     if (touchingPaddleEdge(newState)) {
       console.log("touchingPaddleEdge");
-      socket?.emit('bounceBall', -state.deltaY);
+      setState((prevState) => ({ ...prevState, deltaY: -prevState.deltaY }));
     }
 
     if (touchingPaddle(newState)) {
       console.log("touchingPaddle");
-      socket?.emit('bounceBall', -state.deltaX);
+      setState((prevState) => ({ ...prevState, deltaX: -prevState.deltaX }));
     }
 
     setState((prevState) => ({
       ...prevState,
-      ball: newState,
+      ball: prevState.ball + prevState.deltaY + prevState.deltaX,
     }));
 
-    socket?.emit('bounceBall', newState);
+    if (isScore(newState)) {
+      if (state.deltaX !== -1) {
+        setState((prevState) => ({
+          ...prevState,
+          playerScore: prevState.playerScore + 1,
+          ball: newState,
+        }));
+      } else {
+        setState((prevState) => ({
+          ...prevState,
+          opponentScore: prevState.opponentScore + 1,
+          ball: newState,
+        }));
+      }
+      setState((prevState) => ({ ...prevState, pause: true }));
+      resetGame();
+    }
   };
 
-  const keyInput = (event : KeyboardEvent) => {
-    const{ key } = event;
+  const keyInput = ({ keyCode }: KeyboardEvent) => {
     console.log("calling keyinput");
-    switch (key) {
-      case "Enter":
+    switch (keyCode) {
+      case PLAY:
         console.log("PLAY keyinput");
-        socket?.emit('start');
+        setState((prevState) => ({ ...prevState, pause: false }));
         break;
-      case " ":
+      case PAUSE:
         console.log("pause keyinput");
-        socket?.emit('pause');
+        setState((prevState) => ({ ...prevState, pause: true }));
         break;
       default:
         break;
@@ -304,14 +214,28 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
   };
 
   useEffect(() => {
-    // Attach event listeners for keyboard input
-    document.addEventListener('keydown', keyInput);
+    /* moving the ball */
+    const ballInterval = setInterval(() => {
+      if (!state.pause) {
+        bounceBall();
+      }
+    }, state.ballSpeed);
 
-    // Clean up event listeners on component unmount
+    /* moving the opponent */
+    const opponentInterval = setInterval(() => {
+      if (!state.pause) {
+        moveOpponent();
+      }
+    }, state.opponentSpeed);
+
+    document.addEventListener("keydown", keyInput);
+
     return () => {
-      document.removeEventListener('keydown', keyInput);
+      clearInterval(ballInterval);
+      clearInterval(opponentInterval);
+      document.removeEventListener("keydown", keyInput);
     };
-  }, [keyInput]);
+  }, [state.pause, state.ballSpeed, state.opponentSpeed]);
 
   const board = [...Array(ROW_SIZE * COL_SIZE)].map((_, pos) => {
     let val = BACKGROUND;

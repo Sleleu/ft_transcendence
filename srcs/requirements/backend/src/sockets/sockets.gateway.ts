@@ -57,35 +57,47 @@ export class SocketsGateway {
   }
 
   @SubscribeMessage('start')
-  startGame(): void{
+  startGame(@ConnectedSocket() client: Socket): void{
     console.log("in socketgatway start game")
-    return this.messagesService.startGame();
+    this.messagesService.startGame();
+    client.emit('start', this.messagesService.getGameState().pause);
   }
 
   @SubscribeMessage('pause')
-  pauseGame(): void{
+  pauseGame(@ConnectedSocket() client: Socket): void{
     console.log("in socketgatway pause game")
-    return this.messagesService.pauseGame();
+    this.messagesService.pauseGame();
+    client.emit('pause', this.messagesService.getGameState());
   }
 
   @SubscribeMessage('reset')
-  resetGame(): void{
+  resetGame(@ConnectedSocket() client: Socket): void{
     console.log("in socketgatway reset game")
-    return this.messagesService.resetGame();
+    this.messagesService.resetGame();
+    client.emit('reset', this.messagesService.getGameState());
   }
 
   @SubscribeMessage('move-player')
-	movePlayer(@MessageBody() movePlayerDto: MovePlayerDto): void{
-		return this.messagesService.movePlayer(movePlayerDto);
-	}
+	movePlayer(@MessageBody() movePlayerDto: MovePlayerDto, @ConnectedSocket() client: Socket): void{
+		this.messagesService.movePlayer(movePlayerDto);
+    client.emit('move-player', this.messagesService.getGameState());
+  }
 
   @SubscribeMessage('move-opponent')
-	moveOpponent(@MessageBody() moveOpponentDto: MoveOpponentDto): void{
-		return this.messagesService.moveOpponent(moveOpponentDto);
-	}
+	moveOpponent(@MessageBody() moveOpponentDto: MoveOpponentDto, @ConnectedSocket() client: Socket): void{
+		this.messagesService.moveOpponent(moveOpponentDto);
+    client.emit('move-opponent', this.messagesService.getGameState());
+  }
 
   @SubscribeMessage('bounceBall')
-	bounceBall(@MessageBody() bounceBallDto: BounceBallDto): void{
-		return this.messagesService.bounceBall(bounceBallDto);
-	}
+	bounceBall(@MessageBody() bounceBallDto: BounceBallDto,  @ConnectedSocket() client: Socket): void{
+		this.messagesService.bounceBall(bounceBallDto);
+    client.emit('bounceBall', this.messagesService.getGameState());
+  }
+
+  @SubscribeMessage('moveBall')
+  moveBall(@ConnectedSocket() client: Socket): void{
+    console.log("server side: moveBall event");
+
+  }
 }
