@@ -1,51 +1,20 @@
+const baseRequest = async (url : string, method : string) => {
+  const response = await fetch(url, {
+    method: method,
+    credentials: 'include'
+  });
 
-export const getUserProfile = async () => {
-    const response = await fetch("http://localhost:5000/users/profile", {
-      method: "GET",
-      credentials: 'include'
-    });
-  
-    if (response.ok) {
-      return response.json();
-    } else {
-      throw new Error('Failed to fetch user profile');
-    }
-  };
-
-export async function logout() {
-    const response = await fetch('http://localhost:5000/users/logout', {
-      method: 'POST',
-      credentials: 'include',
-    });
-  
-    if (!response.ok) {
-      throw new Error(`Failed to log out: ${response.statusText}`);
-    }
+  if (response.ok) {
+    return response.json();
+  } else {
+    throw new Error(`Failed to perform request: ${response.statusText}`);
   }
+};
 
-  export const enableTwoFA = async () => {
-    const response = await fetch("http://localhost:5000/twofa/enable-2fa", {
-      method: "POST",
-      credentials: 'include'
-    });
-  
-    if (response.ok) {
-      return response.json();
-    } else {
-      throw new Error('Failed to enable two-factor authentication');
-    }
-  };
+export const getUserProfile = () => baseRequest("http://localhost:5000/users/profile", "GET");
 
-  export const disableTwoFA = async () => {
-    const response = await fetch("http://localhost:5000/twofa/disable-2fa", {
-      method: "POST",
-      credentials: 'include'
-    });
-  
-    if (response.ok) {
-      return response.json();
-    } else {
-      throw new Error('Failed to disable two-factor authentication');
-    }
-  };
-  
+export const logout = () => baseRequest("http://localhost:5000/users/logout", "POST");
+
+export const enableTwoFA = () => baseRequest("http://localhost:5000/twofa/enable-2fa", "POST");
+
+export const disableTwoFA = () => baseRequest("http://localhost:5000/twofa/disable-2fa", "POST");
