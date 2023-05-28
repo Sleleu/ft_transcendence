@@ -87,7 +87,7 @@ export class SocketsGateway {
   @SubscribeMessage('move-player')
 	movePlayer(@MessageBody() movePlayer: number[], @ConnectedSocket() client: Socket): void{
 		this.messagesService.movePlayer(movePlayer);
-    client.emit('move-player', this.messagesService.getGameState());
+    client.emit('move-player', this.messagesService.getGameState().player);
   }
 
   @SubscribeMessage('move-opponent')
