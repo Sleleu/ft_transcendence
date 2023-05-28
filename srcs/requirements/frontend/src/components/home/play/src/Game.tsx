@@ -101,9 +101,9 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
     const socket = io('http://localhost:5000')
     setSocket(socket);
     //Handle game state updates
-    console.log("after setting soocket");
+    console.log("after setting socket");
 
-    socket.on('gameState', (gameState: GameState) => {
+    socket?.on('gameState', (gameState: GameState) => {
       console.log("client side event: gameState");
       setState(gameState);
     });
@@ -114,7 +114,6 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
         ...prevState,
         pause: false,
       }));
-      bounceBall();
     });
 
     socket?.on('pause', () => {
@@ -130,29 +129,19 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
       resetGame();
     });
 
-    socket?.on('bounceBall', (newBallPosition: number) => {
+    socket?.on('bounceBall', (gameState: GameState) => {
       console.log("client side event: bounceball");
-      setState((prevState) => ({
-        ...prevState,
-        ball: newBallPosition,
-      }));
+      setState(gameState);
     });
 
-    socket?.on('move-player', (movedPlayer: number[]) => {
+    socket?.on('move-player', (gameState: GameState) => {
       console.log("client side event: move-player");
-      setState((prevState) => ({
-        ...prevState,
-        player: movedPlayer,
-        pause: false,
-      }));
+      // setState(gameState);
     });
 
-    socket?.on('move-opponent', (movedPlayer: number[]) => {
+    socket?.on('move-opponent', (gameState: GameState) => {
       console.log("client side event: move-opponent");
-      setState((prevState) => ({
-        ...prevState,
-        opponent: movedPlayer,
-      }));
+      // setState(gameState);
     });
 
     socket?.on('changeOpponentDir', () => {
@@ -163,53 +152,25 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
       }));
     });
 
-    socket?.on('bounceBall', (newDelta: number) => {
-      console.log("client side event: bounceBall with: " + newDelta);
-      setState((prevState) => ({
-        ...prevState,
-        deltaY: newDelta,
-      }));
-    });
-
-    socket?.on('score', (scores: { playerScore: number; opponentScore: number }) => {
+    socket?.on('score', (gameState: GameState) => {
       console.log("client side event: score");
-      setState((prevState) => ({
-        ...prevState,
-        playerScore: scores.playerScore,
-        opponentScore: scores.opponentScore,
-      }));
+      setState(gameState);
     });
 
-    // if (!state.pause){
-      // const intervalId = setInterval(bounceBall, state.ballSpeed); // Call bounceBall repeatedly
-    // Store the intervalId in state to clear it later
-      // setState((prevState) => ({
-      //   ...prevState,
-      //   intervalId: intervalId,
-      // }));
-    // }
+    if (!state.pause){
+      const intervalId = setInterval(bounceBall, state.ballSpeed); // Call bounceBall repeatedly
+      console.log("inside the if statement")
+      // Store the intervalId in state to clear it later
+      return () => {
+        clearInterval(intervalId); // Clear the interval on component unmount
+      };
+    }
 
     //clean up socket connection
     return () => {
       socket.disconnect();
     };
-  }, []);
-
-  const handleMouseMove = (event: MouseEvent) => {
-    const container = document.getElementById("root");
-    let movedPlayer: number[] | null = null;
-    console.log("handle mousemmove event")
-    if (container) {
-      const containerRect = container.getBoundingClientRect();
-      const mouseY = event.clientY - containerRect.top;
-      const playerBoard = state.player;
-      const isUp = mouseY < containerRect.height / 2;
-      movedPlayer = moveBoard(playerBoard, isUp);
-    }
-    if (movedPlayer !== null) {
-      socket?.emit('move-player', movedPlayer);
-    }
-  };
+  }, [state.pause]);
 
   const resetGame = () => {
     setState(InitialState());
@@ -227,15 +188,10 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
     return null;
   };
 
-  const touchingEdge = (pos: number) =>
-    pos % COL_SIZE === 0 ||
-    pos % COL_SIZE === COL_SIZE - 1 ||
-    pos < COL_SIZE ||
-    pos >= (ROW_SIZE - 1) * COL_SIZE;
-
-    // (0 <= pos && pos < COL_SIZE) ||
-    //(COL_SIZE * (ROW_SIZE - 1) <= pos &&
-    //pos < COL_SIZE * ROW_SIZE);
+  const touchingEdge = (pos: number) =>//bug here when it bounces the left edge it comes out from the right side
+    (0 <= pos && pos < COL_SIZE - 1) ||
+    (COL_SIZE * (ROW_SIZE - 1) <= pos &&
+    pos < COL_SIZE * ROW_SIZE);
 
   const touchingPaddle = (pos: number) =>
     state.player.indexOf(pos) !== -1 ||
@@ -256,35 +212,52 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
     const movedPlayer = moveBoard(state.opponent, state.opponentDir);
     movedPlayer
       ? socket?.emit('move-opponent', movedPlayer)
-      : socket?.emit('changOpponentDir');
+      : socket?.emit('changeOpponentDir');
   };
 
   const bounceBall = () => {
-    const newState = state.ball + state.deltaY + state.deltaX;
 
-    console.log('inside bounceball with new position of ' + newState);
-    if (touchingEdge(newState)) {
-      console.log("touchingedge");
-      socket?.emit('bounceBall', -state.deltaY);
-    }
+    setState((prevState) => {
+      const newState = prevState.ball + prevState.deltaY + prevState.deltaX;
 
-    if (touchingPaddleEdge(newState)) {
-      console.log("touchingPaddleEdge");
-      socket?.emit('bounceBall', -state.deltaY);
-    }
+      if (touchingEdge(newState)) {
+        socket?.emit('bounceBall', { deltaX: prevState.deltaX, deltaY: -prevState.deltaY });
+        console.log("touching the edge ", -prevState.deltaY);
+        return {
+          ...prevState,
+          ball: newState,
+          deltaY: - prevState.deltaY,
+        };
+      }
 
-    if (touchingPaddle(newState)) {
-      console.log("touchingPaddle");
-      socket?.emit('bounceBall', -state.deltaX);
-    }
+      if (touchingPaddleEdge(newState)) {
+        socket?.emit('bounceBall', { deltaX: prevState.deltaX, deltaY: -prevState.deltaY });
+        return {
+          ...prevState,
+          ball: newState,
+          deltaY: - prevState.deltaY,
+        };
+      }
 
-    setState((prevState) => ({
-      ...prevState,
-      ball: newState,
-    }));
+      if (touchingPaddle(newState)) {
+        socket?.emit('bounceBall', { deltaX: -prevState.deltaX, deltaY: prevState.deltaY });
+        return {
+          ...prevState,
+          ball: newState,
+          deltaX: - prevState.deltaX,
+        };
+      }
 
-    socket?.emit('bounceBall', newState);
+      return {
+        ...prevState,
+        ball: newState,
+      };
+    });
   };
+
+  useEffect(() => {
+    console.log('New state:', state);
+  }, [state]);
 
   const keyInput = (event : KeyboardEvent) => {
     const{ key } = event;
@@ -304,14 +277,43 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
   };
 
   useEffect(() => {
-    // Attach event listeners for keyboard input
     document.addEventListener('keydown', keyInput);
 
-    // Clean up event listeners on component unmount
     return () => {
       document.removeEventListener('keydown', keyInput);
     };
   }, [keyInput]);
+
+
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      if (state.pause)
+        return ;
+      const container = document.getElementById("root");
+      let movedPlayer: number[] | null = null;
+      if (container) {
+        console.log("handle mousemmove event")
+        const containerRect = container.getBoundingClientRect();
+        const mouseY = event.clientY - containerRect.top;
+        const playerBoard = state.player;
+        const isUp = mouseY < containerRect.height / 2;
+        movedPlayer = moveBoard(playerBoard, isUp);
+      }
+      if (movedPlayer !== null) {
+        socket?.emit('move-player', movedPlayer);
+        setState((prevState) => ({
+            ...prevState,
+            player: movedPlayer,
+        }) as GameState);
+      }
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+    };
+  },);
 
   const board = [...Array(ROW_SIZE * COL_SIZE)].map((_, pos) => {
     let val = BACKGROUND;

@@ -5,7 +5,7 @@ import { UpdateMessageDto } from './dto/update-message.dto';
 import { MessageObj } from './entities/message.entity';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Message } from '@prisma/client';
-import { GameState, MovePlayerDto, MoveOpponentDto, BounceBallDto} from './dto/game.dto';
+import { GameState, BounceBallDto} from './dto/game.dto';
 
 const PADDLE_BOARD_SIZE = 3;
 const PADDLE_EDGE_SPACE = 1;
@@ -93,13 +93,12 @@ export class SocketsService {
 		};
 	}
 
-	movePlayer(movePlayerDto: MovePlayerDto): void{
-		this.gameState.player = movePlayerDto.player;
-		this.gameState.pause = movePlayerDto.pause;
+	movePlayer(movePlayer: number[]): void{
+		this.gameState.player = movePlayer;
 	}
 
-	moveOpponent(moveOpponentDto: MoveOpponentDto): void{
-		this.gameState.opponent = moveOpponentDto.opponent;
+	moveOpponent(moveOpponent: number[]): void{
+		this.gameState.opponent = moveOpponent;
 	}
 
 	bounceBall(bounceBallDto: BounceBallDto): void{
