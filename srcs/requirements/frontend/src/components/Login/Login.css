@@ -1,0 +1,15 @@
+.auth-code-container {
+	display: flex;
+	justify-content: center;
+	flex-direction: row;
+	gap: 10px;
+  }
+  
+  .auth-code-input-cell {
+	width: 30px;
+	height: 30px;
+	background-color: rgba(255, 255, 255, 0.7);
+	border: 1px solid #ff00ea;
+	padding: 5px;
+	box-shadow: 0 0 5px #ff00f2, 0 0 5px #f700ff, 0 0 5px #ea00ff, 0 0 40px #ea00ff;
+  }
