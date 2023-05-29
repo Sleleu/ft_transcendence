@@ -8,8 +8,43 @@
   .auth-code-input-cell {
 	width: 30px;
 	height: 30px;
-	background-color: rgba(255, 255, 255, 0.7);
+	background-color: rgba(255, 255, 255, 0.1);
 	border: 1px solid #ff00ea;
 	padding: 5px;
 	box-shadow: 0 0 5px #ff00f2, 0 0 5px #f700ff, 0 0 5px #ea00ff, 0 0 40px #ea00ff;
+	color: #ffffff; /* White text */
+	text-align: center; /* Centered text */
+	font-weight: bold; /* Bold text */
+	font-size: larger;
+	text-shadow: 0 0 5px #ea00ff, 0 0 10px #ea00ff; /* Neon effect */
   }
+
+  .neon-button {
+	position: relative;
+	overflow: hidden;
+	transition: color 0.3s ease-in-out;
+	color: #39FF14;
+  }
+  
+  .neon-button::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: #39FF14;
+	z-index: -1;
+	transition: transform 0.3s ease-in-out;
+	box-shadow: 0 0 10px #39FF14, 0 0 20px #39FF14, 0 0 30px #39FF14, 0 0 40px #39FF14;
+	transform: scale(0);
+  }
+  
+  .neon-button:hover::after {
+	transform: scale(1);
+  }
+
+  .lock-image {
+	width: 20%;
+	height: 20%; 
+}

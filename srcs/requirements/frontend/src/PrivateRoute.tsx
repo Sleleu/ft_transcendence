@@ -63,7 +63,7 @@ const PrivateRoute: React.FC<{ children: React.ReactElement }> = ({ children }) 
     if (!isLogged) {
       const navigateWithDelay = setTimeout(() => {
         navigate('/', { replace: true });
-      }, 1300);
+      }, 1000);
 
       return () => clearTimeout(navigateWithDelay);
     }

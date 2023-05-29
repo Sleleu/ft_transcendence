@@ -3,6 +3,7 @@ import { enableTwoFAVerified, verifyTwoFACode } from "../Api";
 import AuthCode from 'react-auth-code-input';
 import { CSSProperties } from "styled-components";
 import './Login.css'
+import Lock from './../../img/et_lock.svg'
 
 const Container: CSSProperties = {
 	height: '70%',
@@ -27,7 +28,7 @@ const Form: CSSProperties = {
 };
 
 const Button: CSSProperties = {
-	backgroundColor: '#4CAF50',
+	backgroundColor: 'rgba(255, 255, 255, 0.1)',
 	color: 'white',
 	padding: '15px 32px',
 	textAlign: 'center',
@@ -36,9 +37,13 @@ const Button: CSSProperties = {
 	fontSize: '16px',
 	margin: '4px 2px',
 	cursor: 'pointer',
-	border: 'none',
+	border: '2px',
 	borderRadius: '4px',
+	borderBlockColor: 'white',
+	boxShadow: '0 0 10px cyan, 0 0 10px cyan, 0 0 10px cyan, 0 0 10px cyan',
+	textShadow: '0 0 5px white, 0 0 10px cyan'
 };
+
 
 const AuthCodeContainer: CSSProperties = {
 	display: 'flex',
@@ -78,15 +83,17 @@ const Verify2FA: React.FC<Verify2FAProps> = (props) => {
 	<div className="baground">
 	  <div className='containerFullPage'>
 		<div style={Container}>
+		  <img src={Lock} className="lock-image" />
 	      <h1>Verify 2FA</h1>
 	      <form onSubmit={handleSubmit} style={Form}>
+			<h3>This account has two-factor authentication enabled.</h3>
 	        <label>
 	          Enter your 2FA code:
 	        </label>
 	        <div style={AuthCodeContainer}>
 	          <AuthCode containerClassName="auth-code-container" inputClassName="auth-code-input-cell" allowedCharacters="numeric" onChange={handleInputChange}/>
 	        </div>
-	        <button type="submit" style={Button}>Verify</button>
+	        <button type="submit" style={Button} className="neon-button" >Verify</button>
 	      </form>
 	      <div style={{width: '80%'}}>
 	        {error && <p style={{ color: "red" }}>{error}</p>}

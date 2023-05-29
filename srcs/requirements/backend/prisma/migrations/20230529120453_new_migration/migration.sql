@@ -10,6 +10,7 @@ CREATE TABLE "users" (
     "access_token" TEXT,
     "TwoFASecret" TEXT,
     "TwoFAenabled" BOOLEAN NOT NULL DEFAULT false,
+    "isTwoFAverified" BOOLEAN NOT NULL DEFAULT false,
     "elo" INTEGER NOT NULL DEFAULT 400,
     "win" INTEGER NOT NULL DEFAULT 0,
     "loose" INTEGER NOT NULL DEFAULT 0,
