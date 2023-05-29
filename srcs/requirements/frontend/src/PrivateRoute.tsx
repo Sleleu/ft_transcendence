@@ -40,8 +40,12 @@ const PrivateRoute: React.FC<{ children: React.ReactElement }> = ({ children }) 
     }
   }, [isLogged, navigate]);
 
+  if (isLogged === null) {
+	return null;
+  }
+  
   if (isLogged) {
-    return children;
+	return children;
   }
 
   return <div>You're not logged, return to the login page...</div>;
