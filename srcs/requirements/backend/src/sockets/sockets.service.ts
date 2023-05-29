@@ -24,7 +24,7 @@ export class SocketsService {
 		player: board.map((x) => x * COL_SIZE + PADDLE_EDGE_SPACE),
 		opponent: board.map((x) => (x + 1) * COL_SIZE - (PADDLE_EDGE_SPACE + 1)),
 		ball: 0, // Initial ball position
-		ballSpeed: 200,
+		ballSpeed: 300,
 		deltaX: -1, // Initial ball delta x
 		deltaY: -1, // Initial ball delta y
 		playerScore: 0, // Initial player score

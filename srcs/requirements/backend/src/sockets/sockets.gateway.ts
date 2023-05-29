@@ -60,53 +60,47 @@ export class SocketsGateway {
   startGame(@ConnectedSocket() client: Socket): void{
     console.log("in socketgatway start game")
     this.messagesService.startGame();
-    client.emit('start');
+    this.server.emit('start');
   }
 
   @SubscribeMessage('pause')
   pauseGame(@ConnectedSocket() client: Socket): void{
     console.log("in socketgatway pause game")
     this.messagesService.pauseGame();
-    client.emit('pause');
+    this.server.emit('pause');
   }
 
   @SubscribeMessage('reset')
   resetGame(@ConnectedSocket() client: Socket): void{
     console.log("in socketgatway reset game")
     this.messagesService.resetGame();
-    client.emit('reset');
+    this.server.emit('reset');
   }
 
   @SubscribeMessage('bounceBall')
   bounceBall(@MessageBody() bounceBallDto: BounceBallDto,  @ConnectedSocket() client: Socket): void{
     this.messagesService.bounceBall(bounceBallDto);
     console.log("server side: bounce ball gateway")
-    client.emit('bounceBall', this.messagesService.getGameState());
+    this.server.emit('gameStateUpdate', this.messagesService.getGameState());
   }
 
   @SubscribeMessage('move-player')
 	movePlayer(@MessageBody() movePlayer: number[], @ConnectedSocket() client: Socket): void{
 		this.messagesService.movePlayer(movePlayer);
-    client.emit('move-player', this.messagesService.getGameState().player);
+    this.server.emit('gameStateUpdate', this.messagesService.getGameState());
   }
 
   @SubscribeMessage('move-opponent')
 	moveOpponent(@MessageBody() moveOpponent: number[], @ConnectedSocket() client: Socket): void{
 		this.messagesService.moveOpponent(moveOpponent);
-    client.emit('move-opponent', this.messagesService.getGameState());
+    this.server.emit('gameStateUpdate', this.messagesService.getGameState());
   }
 
-  @SubscribeMessage('moveBall')
-  moveBall(@ConnectedSocket() client: Socket): void{
-    console.log("server side: moveBall event");
-
-  }
-
-  @SubscribeMessage('score')
-  score(@ConnectedSocket() client: Socket): void{
-    console.log("server side: score event");
-    this.messagesService.getGameState().playerScore++;
-    client.emit('score', this.messagesService.getGameState());
-  }
+  // @SubscribeMessage('score')
+  // score(@ConnectedSocket() client: Socket): void{
+  //   console.log("server side: score event");
+  //   this.messagesService.getGameState().playerScore++;
+  //   client.emit('score', this.messagesService.getGameState());
+  // }
 
 }

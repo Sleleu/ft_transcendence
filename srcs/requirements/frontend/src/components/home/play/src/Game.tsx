@@ -77,7 +77,7 @@ const InitialState = (): GameState => {
     player: board.map((x) => x * COL_SIZE + PADDLE_EDGE_SPACE),
     opponent: board.map((x) => (x + 1) * COL_SIZE - (PADDLE_EDGE_SPACE + 1)),
     ball: Math.round((ROW_SIZE * COL_SIZE) / 2) + ROW_SIZE,
-    ballSpeed: 200,
+    ballSpeed: 300,
     deltaX: -1,
     deltaY: -COL_SIZE,
     playerScore: 0,
@@ -160,13 +160,11 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
     if (!state.pause){
       const intervalId = setInterval(bounceBall, state.ballSpeed); // Call bounceBall repeatedly
       console.log("inside the if statement")
-      // Store the intervalId in state to clear it later
       return () => {
-        clearInterval(intervalId); // Clear the interval on component unmount
+        clearInterval(intervalId);
       };
     }
 
-    //clean up socket connection
     return () => {
       socket.disconnect();
     };
@@ -177,21 +175,13 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
     socket?.emit('reset');
   };
 
-  const moveBoard = (playerBoard: number[], isUp: boolean) => {
-    const playerEdge = isUp ? playerBoard[0] : playerBoard[PADDLE_BOARD_SIZE - 1];
-    const deltaY = isUp ? -COL_SIZE : COL_SIZE;
+  const topbottomEdge = (pos: number) =>
+    pos < COL_SIZE + 1 || // Ball touches top edge
+    pos >= (ROW_SIZE - 1) * COL_SIZE - 1;
 
-    if (!touchingEdge(playerEdge)) {
-      return playerBoard.map((x) => x + deltaY);
-    }
-
-    return null;
-  };
-
-  const touchingEdge = (pos: number) =>//bug here when it bounces the left edge it comes out from the right side
-    (0 <= pos && pos < COL_SIZE - 1) ||
-    (COL_SIZE * (ROW_SIZE - 1) <= pos &&
-    pos < COL_SIZE * ROW_SIZE);
+  const rightleftEdge = (pos: number) =>
+    pos % COL_SIZE === 0 || // Ball touches left edge
+    pos % COL_SIZE === COL_SIZE - 1;
 
   const touchingPaddle = (pos: number) =>
     state.player.indexOf(pos) !== -1 ||
@@ -208,21 +198,26 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
     (state.deltaX === -1 && (pos + 1) % COL_SIZE === 0) ||
     (state.deltaX === 1 && (pos + 1) % COL_SIZE === 0);
 
-  const moveOpponent = () => {
-    const movedPlayer = moveBoard(state.opponent, state.opponentDir);
-    movedPlayer
-      ? socket?.emit('move-opponent', movedPlayer)
-      : socket?.emit('changeOpponentDir');
-  };
+  // const moveOpponent = () => {
+  //   const movedPlayer = moveBoard(state.opponent, state.opponentDir);
+  //   movedPlayer
+  //     ? socket?.emit('move-opponent', movedPlayer)
+  //     : socket?.emit('changeOpponentDir');
+  // };
 
   const bounceBall = () => {
 
     setState((prevState) => {
       const newState = prevState.ball + prevState.deltaY + prevState.deltaX;
 
-      if (touchingEdge(newState)) {
+      if (rightleftEdge(newState)){
+        resetGame();
+        return prevState;
+      }
+
+      if (topbottomEdge(newState)) {
         socket?.emit('bounceBall', { deltaX: prevState.deltaX, deltaY: -prevState.deltaY });
-        console.log("touching the edge ", -prevState.deltaY);
+        console.log("touching the edge: ", state.ball + ", " + state.player);
         return {
           ...prevState,
           ball: newState,
@@ -232,6 +227,7 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
 
       if (touchingPaddleEdge(newState)) {
         socket?.emit('bounceBall', { deltaX: prevState.deltaX, deltaY: -prevState.deltaY });
+        console.log("touching the paddle edge: ", state.ball + ", " + state.player);
         return {
           ...prevState,
           ball: newState,
@@ -241,6 +237,8 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
 
       if (touchingPaddle(newState)) {
         socket?.emit('bounceBall', { deltaX: -prevState.deltaX, deltaY: prevState.deltaY });
+        console.log("touching the paddle: ", state.ball + ", " + state.player);
+
         return {
           ...prevState,
           ball: newState,
@@ -255,10 +253,11 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
     });
   };
 
-  useEffect(() => {
-    console.log('New state:', state);
-  }, [state]);
+  // useEffect(() => {
+  //   console.log('New state:', state);
+  // }, [state]);
 
+  //keyboard events are only for debugging
   const keyInput = (event : KeyboardEvent) => {
     const{ key } = event;
     console.log("calling keyinput");
@@ -276,44 +275,49 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
     }
   };
 
+  const handleMouseMove = (event: MouseEvent) => {
+    if (state.pause)
+      return ;
+    const container = document.getElementById("game");
+    let movedPlayer: number[] | null = null;
+    if (container) {
+      const containerRect = container.getBoundingClientRect();
+      const mouseY = event.clientY - containerRect.top;
+      const playerBoard = state.player;
+      const isUp = mouseY < containerRect.height / 2;
+      movedPlayer = moveBoard(playerBoard, isUp);
+      console.log("board position: ", movedPlayer + "ball position: " + state.ball);
+    }
+    if (movedPlayer !== null) {
+      socket?.emit('move-player', movedPlayer);
+      setState((prevState) => ({
+          ...prevState,
+          player: movedPlayer,
+      }) as GameState);
+    }
+  };
+
+  const moveBoard = (playerBoard: number[], isUp: boolean) => {
+    const playerEdge = isUp ? playerBoard[0] : playerBoard[PADDLE_BOARD_SIZE - 1];
+    const deltaY = isUp ? -COL_SIZE : COL_SIZE;
+
+    if (!topbottomEdge(playerEdge)) {
+      return playerBoard.map((x) => x + deltaY);
+    }
+
+    return playerBoard;
+  };
+
   useEffect(() => {
     document.addEventListener('keydown', keyInput);
-
-    return () => {
-      document.removeEventListener('keydown', keyInput);
-    };
-  }, [keyInput]);
-
-
-  useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      if (state.pause)
-        return ;
-      const container = document.getElementById("root");
-      let movedPlayer: number[] | null = null;
-      if (container) {
-        console.log("handle mousemmove event")
-        const containerRect = container.getBoundingClientRect();
-        const mouseY = event.clientY - containerRect.top;
-        const playerBoard = state.player;
-        const isUp = mouseY < containerRect.height / 2;
-        movedPlayer = moveBoard(playerBoard, isUp);
-      }
-      if (movedPlayer !== null) {
-        socket?.emit('move-player', movedPlayer);
-        setState((prevState) => ({
-            ...prevState,
-            player: movedPlayer,
-        }) as GameState);
-      }
-    };
-
     document.addEventListener('mousemove', handleMouseMove);
 
     return () => {
+      document.removeEventListener('keydown', keyInput);
       document.removeEventListener('mousemove', handleMouseMove);
+
     };
-  },);
+  }, [keyInput, handleMouseMove]);
 
   const board = [...Array(ROW_SIZE * COL_SIZE)].map((_, pos) => {
     let val = BACKGROUND;
@@ -331,15 +335,13 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
   const divider = [...Array(ROW_SIZE / 2 + 2)].map((_, index) => <div key={index}>{"|"}</div>);
 
   return (
-    <div style={outer}>
-      {/* <h1 style={TextStyle}>{"PING-PONG"}</h1> */}
+    <div id="game" style={outer}>
       <div style={style}>
         <div style={style}>{board}</div>
         <div style={score}>{state.playerScore}</div>
         <div style={dividerStyle}>{divider} </div>
         <div style={dividerStyle}>{state.opponentScore}</div>
       </div>
-      {/* <h3 >{"press any key to start/pause"}</h3> */}
     </div>
   );
 };
