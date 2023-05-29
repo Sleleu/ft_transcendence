@@ -2,6 +2,7 @@ import { Body, Controller, Get, NotFoundException, Put, Req, Res, UseGuards } fr
 import { Request, Response } from 'express';
 import { JwtGuard } from 'src/auth/guard';
 import { UserService } from './user.service';
+import { get } from 'http';
 
 interface AuthenticatedUser {
 	id: number;
@@ -15,21 +16,29 @@ interface AuthenticatedRequest extends Request {
 @UseGuards(JwtGuard)
 @Controller('users')
 export class UserController {
-	constructor(private userService: UserService) {}
+	constructor(private userService: UserService) { }
 
 	@Get('profile')
 	async getProfile(@Req() req: AuthenticatedRequest) {
 		if (!req.user) {
 			throw new NotFoundException('User not found');
 		}
-		console.log("passage dans /users/profile : ", { user: req.user })
+		// console.log("passage dans /users/profile : ", { user: req.user })
 		return (req.user);
+	}
+
+	@Get('leaderboard')
+	async getAll(@Req() req: AuthenticatedRequest) {
+		if (!req.user) {
+			throw new NotFoundException('User not found');
+		}
+		return this.userService.getAllUsers();
 	}
 
 	@Get('logout')
 	logout(@Res() res: Response) {
-	  res.clearCookie('Authorization');
-	  return res.status(200).send({ message: 'User logged out' });
+		res.clearCookie('Authorization');
+		return res.status(200).send({ message: 'User logged out' });
 	}
 
 	@Put('update-username')
@@ -37,9 +46,16 @@ export class UserController {
 		if (!req.user) {
 			throw new NotFoundException('User not found');
 		}
-		console.log({ user: req.user })
+		// console.log({ user: req.user })
 		const id = req.user.id;
 		return this.userService.updateUsername(id, newUsername);
 	}
 
+	@Get('blockUser')
+	async getBlockUser(@Req() req: AuthenticatedRequest) {
+		if (!req.user) {
+			throw new NotFoundException('User not found');
+		}
+		return this.userService.getBlock(+req.user.id)
+	}
 }

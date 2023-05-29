@@ -13,7 +13,7 @@ export class AuthController {
   	async signup(@Body() dto: AuthDto, @Res() res : Response) {
 		const newUser = await this.prismaService.user.create({
 			data: {
-				username : dto.username,		
+				username : dto.username,
 			}
 		})
 		if (!newUser) {
@@ -29,7 +29,7 @@ export class AuthController {
 
   @Post('signin')
   signin(@Body() dto: AuthDto, @Res() res : Response) {
-    
+
 	const JwtToken = this.authService.signup(dto);
 	console.log("test token in auth/signin :  ", JwtToken);
 	res.cookie('Authorization', JwtToken, {
