@@ -19,13 +19,13 @@ interface Room {
 
 interface Props {
     user: User;
+    socket?: Socket;
 }
 
-const RoomSelect:React.FC<Props> = ({user}) => {
+const RoomSelect:React.FC<Props> = ({user, socket}) => {
 
     const username = user.username;
     const [rooms, setRooms] = useState<Room[]>([]);
-    const [socket, setSocket] = useState<Socket>();
     const [hover, setHover] = useState<boolean>(false);
 
     const [currentRoom, setCurrentRoom] = useState<number>(-1);
@@ -34,13 +34,10 @@ const RoomSelect:React.FC<Props> = ({user}) => {
     const [createRoom, setCreateRoom] = useState<boolean>(false);
 
     useEffect(() => {
-        const sock = io('http://localhost:5000', {withCredentials: true});
-        setSocket(sock);
-
-        sock.emit('findAllRooms', {}, (response: Room[]) => setRooms(response));
+        socket?.emit('findAllRooms', {}, (response: Room[]) => setRooms(response));
 
         return () => {
-        sock.disconnect();
+        socket?.disconnect();
         };
     }, []);
 

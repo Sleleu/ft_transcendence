@@ -1,7 +1,7 @@
 import React from 'react'
 import '../css/FriendOptionOnglet.css'
 import { User } from '../../../types';
-import ConfirmationPopUp from '../../../popUp/ConfirmationPopUp';
+import ConfirmationPopUp from '../../../popup/ConfirmationPopUp';
 import { useState } from 'react';
 
 

@@ -19,6 +19,7 @@ import Friend from '../friend/list/src/friend';
 import { User } from '../types'
 import Cookies from 'js-cookie';
 import RoomSelect from '../chat/RoomSelect';
+import { io, Socket } from 'socket.io-client';
 
 function Home() {
 
@@ -26,6 +27,7 @@ function Home() {
     const [user, setUser] = useState<User>({ username: '', id: -1, elo: -1, win: -1, loose: -1, createAt: '', updateAt: '', state: 'inexistant' })
     const [activeComponent, setActiveComponent] = useState<string>('play')
     const [stack, setStack] = useState<string[]>([]);
+    const [socket, setSocket] = useState<Socket>();
     const navigate = useNavigate()
     const existingRanks: string[] = ['bronze', 'silver', 'gold', 'crack', 'ultime'];
     const userRank: string =  user.elo > 5000 || user.elo < 0 ? 'ultime' : existingRanks[Math.floor(user.elo / 1000)];
@@ -68,6 +70,8 @@ function Home() {
     }
 
     useEffect(() => {
+        const sock = io('http://localhost:5000', {withCredentials: true});
+        setSocket(sock);
         const getUser = async () => {
             const userFromServer = await api()
             setUser(userFromServer)
@@ -127,7 +131,7 @@ function Home() {
                         {activeComponent === "history" && <History />}
                         {activeComponent === "stat" && <Stats user={user} changeComponent={changeComponent} />}
                         {activeComponent === "friend" && <Friend changeComponent={changeComponent} />}
-                        {activeComponent === "chat" && <RoomSelect user={user} />}
+                        {activeComponent === "chat" && <RoomSelect user={user} socket={socket} />}
 
                         {activeComponent === "leader" && <Classement rank={userRank} changeComponent={changeComponent} />}
                         {activeComponent === "bronzeLead" && <Classement rank={'bronze'} changeComponent={changeComponent} />}
