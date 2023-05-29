@@ -35,10 +35,14 @@ const RoomSelect:React.FC<Props> = ({user, socket}) => {
 
     useEffect(() => {
         socket?.emit('findAllRooms', {}, (response: Room[]) => setRooms(response));
+        socket?.on('disconnect', () => {
+            console.log('Disconnected from Socket.IO server');
+        });
+    
+        socket?.on('connect_error', (error) => {
+            console.log('Connection error:', error);
+        });
 
-        return () => {
-        socket?.disconnect();
-        };
     }, []);
 
     const handleConnect = () => {
@@ -50,13 +54,6 @@ const RoomSelect:React.FC<Props> = ({user, socket}) => {
     //     console.log('Connected to Socket.IO server');
     // });
 
-    socket?.on('disconnect', () => {
-        console.log('Disconnected from Socket.IO server');
-    });
-
-    socket?.on('connect_error', (error) => {
-        console.log('Connection error:', error);
-    });
 
     const Container: CSSProperties = {
         width: '90%',

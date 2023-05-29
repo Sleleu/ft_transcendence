@@ -20,7 +20,6 @@ function App() {
     <Router>
       <div>
         <Routes>
-          {/* <Route path="/" Component={(props) => <RoomSelect {...props} username="gmansuy"/>} /> */}
           <Route path="/" Component={(props) => <Login {...props} updateToken={updateToken} />} />
           <Route path="/home" Component={() => <Home />} />
         </Routes>

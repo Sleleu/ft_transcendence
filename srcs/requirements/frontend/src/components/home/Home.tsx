@@ -22,8 +22,6 @@ import RoomSelect from '../chat/RoomSelect';
 import { io, Socket } from 'socket.io-client';
 
 function Home() {
-
-
     const [user, setUser] = useState<User>({ username: '', id: -1, elo: -1, win: -1, loose: -1, createAt: '', updateAt: '', state: 'inexistant' })
     const [activeComponent, setActiveComponent] = useState<string>('play')
     const [stack, setStack] = useState<string[]>([]);
@@ -65,18 +63,23 @@ function Home() {
             navigate('/')
         }
         const userProfile = await data.json();
-        console.log('user in api', userProfile)
 		return userProfile;
     }
 
     useEffect(() => {
-        const sock = io('http://localhost:5000', {withCredentials: true});
-        setSocket(sock);
+        console.log("PASSAGE DANS USEEFFECT", user);
         const getUser = async () => {
             const userFromServer = await api()
             setUser(userFromServer)
         }
-        getUser()
+        getUser();
+
+        const sock = io('http://localhost:5000', {withCredentials: true});
+        setSocket(sock);
+
+        return () => {
+        socket?.disconnect();
+        };
     }, [])
 
     const extractId = (str: string) => {
@@ -130,7 +133,7 @@ function Home() {
                         {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} />}
                         {activeComponent === "history" && <History />}
                         {activeComponent === "stat" && <Stats user={user} changeComponent={changeComponent} />}
-                        {activeComponent === "friend" && <Friend changeComponent={changeComponent} />}
+                        {activeComponent === "friend" && <Friend changeComponent={changeComponent} socket={socket}/>}
                         {activeComponent === "chat" && <RoomSelect user={user} socket={socket} />}
 
                         {activeComponent === "leader" && <Classement rank={userRank} changeComponent={changeComponent} />}

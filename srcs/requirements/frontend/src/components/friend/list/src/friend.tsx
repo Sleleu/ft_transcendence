@@ -11,6 +11,7 @@ import { runInContext } from 'vm';
 
 interface FriendProps {
   changeComponent: (component: string) => void;
+  socket?: Socket;
 }
 
 interface FriendInterface {
@@ -28,7 +29,7 @@ interface friendReq {
   sender: User
 }
 
-const Friend: FC<FriendProps> = ({ changeComponent }) => {
+const Friend: FC<FriendProps> = ({ changeComponent, socket }) => {
 
   const [friend, setFriend] = useState<FriendInterface[]>([])
   const [searchText, setSearchText] = useState<string>('')
@@ -36,38 +37,34 @@ const Friend: FC<FriendProps> = ({ changeComponent }) => {
   const [component, setComponent] = useState<string>('add')
   const [friendReq, setFriendReq] = useState<friendReq[]>([])
   const [option, setOption] = useState(0)
-  const [socket, setSocket] = useState<Socket | undefined>();
 
 
   useEffect(() => {
-    const sock = io('http://localhost:5000', { withCredentials: true, });
-    setSocket(sock);
-    sock.emit('getFriend', {}, (response: FriendInterface[]) => {
+    socket?.emit('getFriend', {}, (response: FriendInterface[]) => {
       setFriend(response)
       setSearchFriend(sortFriend(response))
     })
-    sock.emit('getFriendReq', {}, (response: friendReq[]) => {
+    socket?.emit('getFriendReq', {}, (response: friendReq[]) => {
       setFriendReq(response)
     })
-    sock.on('friendRequestNotification', ({ req }: { req: friendReq }) => {
+    socket?.on('friendRequestNotification', ({ req }: { req: friendReq }) => {
       setFriendReq((prevFriendReq) => [...prevFriendReq, req])
       console.log("Request from on", req)
     })
-    sock.on('receiveFriend', ({ friends }: { friends: FriendInterface[] }) => {
+    socket?.on('receiveFriend', ({ friends }: { friends: FriendInterface[] }) => {
       setFriend(friends)
       setSearchFriend(sortFriend(friends))
     })
-    sock.on('receiveReq', ({ req }: { req: friendReq[] }) => {
+    socket?.on('receiveReq', ({ req }: { req: friendReq[] }) => {
       if (Array.isArray(req))
         setFriendReq(req)
       else
         setFriendReq([])
     })
     return () => {
-      sock.disconnect()
-      sock.off('friendRequestNotification')
-      sock.off('receiveFriend')
-      sock.off('receiveReq')
+      socket?.off('friendRequestNotification')
+      socket?.off('receiveFriend')
+      socket?.off('receiveReq')
     }
   }, [])
 

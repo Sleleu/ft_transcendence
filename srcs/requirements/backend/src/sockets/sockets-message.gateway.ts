@@ -1,12 +1,8 @@
 import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer, ConnectedSocket, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { SocketsService } from './sockets.service';
 import { CreateMessageDto } from './dto/create-message.dto';
-import { UpdateMessageDto } from './dto/update-message.dto';
 import { Server, Socket } from 'socket.io';
 import { CreateRoomDto, JoinRoomDto, RoomObj, TypingDto, UserDto } from './entities/message.entity';
-import { JwtService } from '@nestjs/jwt';
-import { Cipher } from 'crypto';
-import { User } from '@prisma/client';
 import { ForbiddenException } from '@nestjs/common';
 import { MessageService } from './message.service';
 
@@ -20,11 +16,11 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 	  }
 
 	  handleConnection(client: Socket) {
-		console.log('Client connected:', client.id);
+		// console.log('Client connected:', client.id);
 	  }
 
 	  handleDisconnect(client: Socket) {
-		console.log('Client disconnected:', client.id);
+		// console.log('Client disconnected:', client.id);
 	}
 
 	constructor(
