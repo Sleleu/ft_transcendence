@@ -5,7 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class UserService {
     constructor(private prismaService: PrismaService,
-				private jwtService: JwtService) {}
+        private jwtService: JwtService) { }
 
     async getAllUsers() {
         const users = await this.prismaService.user.findMany({
@@ -21,9 +21,9 @@ export class UserService {
         return users;
     }
 
-	async getUserFromToken(token : string) {
-		console.log("Passage dans getProfile()")
-		try {
+    async getUserFromToken(token: string) {
+        console.log("Passage dans getProfile()")
+        try {
             const decoded = this.jwtService.verify(token);
             if (!decoded) {
                 return null;
@@ -52,9 +52,16 @@ export class UserService {
 
     async updateUsername(id: number, newUsername: string) {
         return this.prismaService.user.update({
-            where: {id: id},
-            data: { username: newUsername},
+            where: { id: id },
+            data: { username: newUsername },
         })
     }
 
+    async getBlock(userId: number) {
+        const user = await this.prismaService.bloqueUser.findMany({
+            where: { senderId: userId },
+            include: { recipient: true }
+        })
+        return user
+    }
 }
