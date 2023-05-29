@@ -1,4 +1,3 @@
-import React from 'react'
 import '../css/FriendOption.css'
 import { User } from '../../../types'
 import FriendOptionOnglet from './FriendOptionOnglet'

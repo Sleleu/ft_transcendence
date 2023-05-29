@@ -1,7 +1,5 @@
-import React from 'react'
 import { User } from '../../../types';
 import '../css/FriendReqOnglet.css'
-import { useState, useEffect } from 'react';
 import { CSSProperties } from 'react';
 import { Socket } from 'socket.io-client';
 

@@ -1,7 +1,6 @@
 import React, { FC, CSSProperties } from 'react'
 import { useState, useEffect } from 'react';
 import '../css/friend.css'
-import Play from '../../../home/play/src/Play'
 import { User } from '../../../types';
 import FriendOnglet from './FriendOnglet';
 import FriendAdd from './FriendAdd';
