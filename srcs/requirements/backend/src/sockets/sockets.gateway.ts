@@ -128,6 +128,24 @@ export class SocketsGateway {
     const request = this.friendService.getFriendReq(user.id)
     client.emit('receiveReq', { req: request })
   }
+
+  @SubscribeMessage('bloqueFriend')
+  async bloqueFriend(@ConnectedSocket() client: Socket, @MessageBody() body: { id: number }) {
+    const user = this.messagesService.getUser(client.id);
+    await this.friendService.bloqueUserById(+user.id, +body.id)
+    const friendUser = await this.friendService.getFriendsByUserId(+user.id)
+    client.emit('receiveFriend', { friends: friendUser })
+    const friendFriend = await this.friendService.getFriendsByUserId(+body.id)
+    const friendSocketId = this.messagesService.findSocketById(+body.id)
+    if (friendSocketId) {
+      const friendSocket = this.server.sockets.sockets.get(friendSocketId)
+      if (friendSocket) {
+        friendSocket.emit('receiveFriend', { friends: friendFriend });
+      }
+    }
+  }
+
+
   // @SubscribeMessage('createMessage')
   // async create(@MessageBody() createMessageDto: CreateMessageDto) {
   //   console.log("Message Received by server : ", createMessageDto);

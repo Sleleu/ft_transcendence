@@ -27,9 +27,8 @@ const FriendReqOnglet = ({ sender, socket }: propsRem) => {
 	}
 
 	const handleBloque = async () => {
-		socket?.emit('bloqueUser', {id : sender.id})
+		socket?.emit('bloqueUser', { id: sender.id })
 	}
-
 
 	return (
 		<div className='containerFriendReqOnglet'>
@@ -37,7 +36,7 @@ const FriendReqOnglet = ({ sender, socket }: propsRem) => {
 			<div className='containerCheck'>
 				<div className='yesButton' title='accept' onClick={handleYes} />
 				<div className='noButton' title='refuse' onClick={handleNo} />
-				<div className='bloqueButton' title='block' onClick={handleBloque}/>
+				<div className='bloqueButton' title='block' onClick={handleBloque} />
 			</div>
 		</div>
 	)

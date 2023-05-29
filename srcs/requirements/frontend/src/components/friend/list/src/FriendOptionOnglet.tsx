@@ -19,12 +19,15 @@ const FriendOptionOnglet = ({ changeComponent, context, txt, friend, change, soc
 
     const [visible, setVisible] = useState(false)
     let stop = false
+    const [message, setMessage] = useState('void')
 
     const onConfirm = (confirm: boolean) => {
         if (confirm && context === 'removeFriend') {
             actionRemove()
         }
-        if (confirm && context === 'block') { }
+        if (confirm && context === 'block') {
+            block()
+        }
         if (!confirm)
             stop = true
     }
@@ -39,7 +42,7 @@ const FriendOptionOnglet = ({ changeComponent, context, txt, friend, change, soc
         else if (context === 'sendMessage')
             sendMessage()
         else if (context === 'block')
-            block()
+            blockFriend()
         else if (context === 'invitePlay')
             invitePlay()
         else if (context === 'removeFriend')
@@ -47,6 +50,15 @@ const FriendOptionOnglet = ({ changeComponent, context, txt, friend, change, soc
     }
 
     const removeFriend = () => {
+        setMessage("Delete this User ?")
+        if (!stop)
+            setVisible(true)
+        if (stop)
+            stop = true;
+    }
+
+    const blockFriend = () => {
+        setMessage("Block this User ?")
         if (!stop)
             setVisible(true)
         if (stop)
@@ -54,8 +66,6 @@ const FriendOptionOnglet = ({ changeComponent, context, txt, friend, change, soc
     }
 
     const actionRemove = async () => {
-        // const req = 'http://localhost:5000/friend/delete/' + friend.id
-        // await fetch(req, { method: "DELETE", credentials: "include" })
         socket?.emit('deleteFriend', { id: friend.id })
         change('add')
     }
@@ -66,6 +76,8 @@ const FriendOptionOnglet = ({ changeComponent, context, txt, friend, change, soc
     }
 
     const block = () => {
+        socket?.emit('bloqueFriend', { id: friend.id })
+        change('add')
     }
 
     const sendMessage = () => {
@@ -106,7 +118,7 @@ const FriendOptionOnglet = ({ changeComponent, context, txt, friend, change, soc
 
     return (
         <div className='containerFriendOptionOnglet' onClick={handleClick}>
-            {visible === true && <ConfirmationPopUp onConfirm={onConfirm} onVisible={onVisible} opacity={true} message={"Delete this Friend ?"} />}
+            {visible === true && <ConfirmationPopUp onConfirm={onConfirm} onVisible={onVisible} opacity={true} message={message} />}
             <div className='nameText' style={padding}>{txt}</div>
             {context === 'sendMessage' ?
                 (<div className='image' style={styleImage} />) :
