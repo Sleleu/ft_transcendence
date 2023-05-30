@@ -17,7 +17,6 @@ const SettingsUsername = ({ user}: SettingsUsernameProps) => {
 	}
 
 	const handleSubmit = async () => {
-		const access_token = Cookies.get('Authorization')
 		const response = await fetch('http://localhost:5000/users/update-username', {
 		method: 'PUT',
 		headers: { 'Content-Type': 'application/json'},
@@ -31,7 +30,7 @@ const SettingsUsername = ({ user}: SettingsUsernameProps) => {
 	return (
 		<Cont alignItems='center' padding='10px' margin='5px' width='380px' height='70%'>
 			<p className='text bold medium cyan-stroke'>Your current username :</p>
-			<p className='text medium purple-stroke neon-purple'>{user.username}</p>
+			<p className='text medium purple-stroke neon-purple'>{user.gameLogin}</p>
 			<p className='text bold'>If you want to change, please enter a new username :</p>
 			<input
 				className="text bold password-input"
