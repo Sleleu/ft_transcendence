@@ -28,7 +28,7 @@ function Home() {
     const [socket, setSocket] = useState<Socket>();
     const navigate = useNavigate()
     const existingRanks: string[] = ['bronze', 'silver', 'gold', 'crack', 'ultime'];
-    const userRank: string =  user.elo > 5000 || user.elo < 0 ? 'ultime' : existingRanks[Math.floor(user.elo / 1000)];
+    const userRank: string = user.elo > 5000 || user.elo < 0 ? 'ultime' : existingRanks[Math.floor(user.elo / 1000)];
 
     const push = (item: string) => {
         setStack([...stack, item])
@@ -57,13 +57,14 @@ function Home() {
 
     const api = async () => {
         const data = await fetch("http://localhost:5000/users/profile", {
-			method: "GET",
-			credentials: 'include'})
+            method: "GET",
+            credentials: 'include'
+        })
         if (data.status === 401) {
             navigate('/')
         }
         const userProfile = await data.json();
-		return userProfile;
+        return userProfile;
     }
 
     useEffect(() => {
@@ -74,11 +75,11 @@ function Home() {
         }
         getUser();
 
-        const sock = io('http://localhost:5000', {withCredentials: true});
+        const sock = io('http://localhost:5000', { withCredentials: true });
         setSocket(sock);
 
         return () => {
-        socket?.disconnect();
+            socket?.disconnect();
         };
     }, [])
 
@@ -91,18 +92,19 @@ function Home() {
             return -1
     }
 
-	const handleLogout = async () => {
-		try {
-		  await fetch("http://localhost:5000/users/logout", {
-			method: "GET",
-			credentials: "include",
-		  });
-		  Cookies.remove("Authorization");
-		  navigate('/');
-		} catch (error) {
-		  console.error("Error while disconnect :", error);
-		}
-	  };
+    const handleLogout = async () => {
+        try {
+            await fetch("http://localhost:5000/users/logout", {
+                method: "GET",
+                credentials: "include",
+            });
+            Cookies.remove("Authorization");
+            navigate('/');
+            socket?.disconnect()
+        } catch (error) {
+            console.error("Error while disconnect :", error);
+        }
+    };
 
     return (
         <div className="baground">
@@ -123,7 +125,7 @@ function Home() {
                         <NavBar
                             changeComponent={changeComponent}
                             front={front}
-							handleLogout={handleLogout}
+                            handleLogout={handleLogout}
                         />
                     </div>}
                     <div className='containerCenter'>
@@ -133,7 +135,7 @@ function Home() {
                         {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} />}
                         {activeComponent === "history" && <History />}
                         {activeComponent === "stat" && <Stats user={user} changeComponent={changeComponent} />}
-                        {activeComponent === "friend" && <Friend changeComponent={changeComponent} socket={socket}/>}
+                        {activeComponent === "friend" && <Friend changeComponent={changeComponent} socket={socket} />}
                         {activeComponent === "chat" && <RoomSelect user={user} socket={socket} />}
 
                         {activeComponent === "leader" && <Classement rank={userRank} changeComponent={changeComponent} />}
