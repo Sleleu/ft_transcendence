@@ -22,7 +22,6 @@ export class UserController {
 		if (!req.user) {
 			throw new NotFoundException('User not found');
 		}
-		console.log("PROUT ", { user: req.user })
 		return (req.user);
 	}
 
@@ -32,14 +31,13 @@ export class UserController {
 	  return res.status(200).send({ message: 'User logged out' });
 	}
 
-	@Put('update-username')
-	async updateUsername(@Req() req: AuthenticatedRequest, @Body('newUsername') newUsername: string) {
+	@Put('update-gameLogin')
+	async updategGameLogin(@Req() req: AuthenticatedRequest, @Body('gameLogin') gameLogin: string) {
 		if (!req.user) {
 			throw new NotFoundException('User not found');
 		}
 		console.log({ user: req.user })
 		const id = req.user.id;
-		return this.userService.updateUsername(id, newUsername);
+		return this.userService.updateGameLogin(id, gameLogin);
 	}
-
 }

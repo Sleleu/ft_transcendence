@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 
@@ -50,10 +50,24 @@ export class UserService {
         }
     }
 
-    async updateUsername(id: number, newUsername: string) {
+    async updateGameLogin(id: number, gameLogin: string) {
+		console.log("test dans update username", id, gameLogin);
+
+		if (gameLogin.length <= 5) {
+			throw new HttpException('Game login must have more than 5 characters', 400);
+		}
+
+		const existingUser = await this.prismaService.user.findFirst({
+			where: { gameLogin: gameLogin }
+		});
+
+		if(existingUser && existingUser.id !== id){
+			throw new HttpException('Game login is already taken by another user', 400);
+		}
+
         return this.prismaService.user.update({
             where: {id: id},
-            data: { username: newUsername},
+            data: { gameLogin: gameLogin},
         })
     }
 
