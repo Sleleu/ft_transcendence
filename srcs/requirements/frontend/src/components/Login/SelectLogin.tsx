@@ -4,9 +4,10 @@ import { User } from '../types';
 
 interface SelectLoginProps {
   user: User;
+  onLoginUpdated: () => void; 
 }
 
-const SelectLogin: React.FC<SelectLoginProps> = ({user}) => {
+const SelectLogin: React.FC<SelectLoginProps> = ({user, onLoginUpdated}) => {
   const [gameLogin, setGameLogin] = useState(user.gameLogin || "");
   const [error, setError] = useState<string | null>(null);
 
@@ -28,6 +29,7 @@ const SelectLogin: React.FC<SelectLoginProps> = ({user}) => {
         }
         const data = await response.json();
         console.log(data);
+        onLoginUpdated(); // callback pour retourner sur home
     } catch (error) {
         if (error instanceof Error) {
             console.error(error);

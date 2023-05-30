@@ -53,11 +53,12 @@ function Home() {
         setActiveComponent(component)
     }
 
+    const getUser = async () => {
+        const userFromServer = await getUserProfile();
+        setUser(userFromServer)
+    }
+
     useEffect(() => {
-        const getUser = async () => {
-            const userFromServer = await getUserProfile();
-            setUser(userFromServer)
-        }
         getUser()
     }, [])
 
@@ -116,7 +117,7 @@ useEffect(() => {
 	}
 	if (user.gameLogin === null)
 	{
-		return <SelectLogin user={user} />;
+		return <SelectLogin user={user} onLoginUpdated={getUser}  />;
 	}
 
 
