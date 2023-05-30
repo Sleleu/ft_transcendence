@@ -1,7 +1,6 @@
-import React from 'react'
 import '../css/FriendOptionOnglet.css'
 import { User } from '../../../types';
-import ConfirmationPopUp from '../../../popup/ConfirmationPopUp';
+import ConfirmationPopUp from '../../../popUp/ConfirmationPopUp';
 import { useState } from 'react';
 import { Socket } from 'socket.io-client';
 
