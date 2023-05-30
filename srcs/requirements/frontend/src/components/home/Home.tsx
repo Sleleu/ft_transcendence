@@ -111,8 +111,6 @@ useEffect(() => {
     TwoFAVerified();
 }, []);
 
-console.log("test", user?.avatar);
-
 	if (twoFAEnabled && !is2FAVerified) {
 		return <Verify2FA onVerifySuccess={handle2FASuccess} />;
 	}

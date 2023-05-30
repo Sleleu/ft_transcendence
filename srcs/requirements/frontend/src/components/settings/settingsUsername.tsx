@@ -2,7 +2,7 @@ import { useState, ChangeEvent } from 'react';
 
 import { Cont } from '../container/container'
 import { User } from '../types'
-import Cookies from 'js-cookie';
+import '../../css/Text.css'
 
 interface SettingsUsernameProps {
 	user: User;
@@ -10,22 +10,37 @@ interface SettingsUsernameProps {
 
 const SettingsUsername = ({ user}: SettingsUsernameProps) => {
 
-	const [newUsername, setNewUsername] = useState('');
+	const [gameLogin, setgameLogin] = useState('');
+	const [error, setError] = useState<string | null>(null);
 
-	const handleNewUsername = (event: ChangeEvent<HTMLInputElement>) => {
-		setNewUsername(event.target.value);
+	const handlegameLogin = (event: ChangeEvent<HTMLInputElement>) => {
+		setgameLogin(event.target.value);
 	}
 
-	const handleSubmit = async () => {
-		const response = await fetch('http://localhost:5000/users/update-username', {
-		method: 'PUT',
-		headers: { 'Content-Type': 'application/json'},
-		body: JSON.stringify({ newUsername }),
-		credentials: "include",  
-		});
+	const handleSubmit = async (event: React.FormEvent) => {
+		event.preventDefault();
+		setError(null);
+		try {
+			const response = await fetch('http://localhost:5000/users/update-gameLogin', {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json'},
+				body: JSON.stringify({ gameLogin }),
+				credentials: "include",  
+			});
+			if (!response.ok) {
+				const errorData = await response.json();
+				setError(errorData.message || 'Something went wrong');
+				return;
+			}
 			const data = await response.json();
 			console.log(data);
-	  };
+		} catch (error) {
+			if (error instanceof Error) {
+				console.error(error);
+				setError(error.message);
+			}
+		}
+	}
 
 	return (
 		<Cont alignItems='center' padding='10px' margin='5px' width='380px' height='70%'>
@@ -35,10 +50,11 @@ const SettingsUsername = ({ user}: SettingsUsernameProps) => {
 			<input
 				className="text bold password-input"
 				type="text"
-				value={newUsername}
+				value={gameLogin}
 				placeholder="new username"
-				onChange={handleNewUsername}
+				onChange={handlegameLogin}
 			/>
+            {error && <p className="red neon-red">{error}</p>}
 			<br />
 			<button 
 				className="btn-little medium text bold cyan-stroke"

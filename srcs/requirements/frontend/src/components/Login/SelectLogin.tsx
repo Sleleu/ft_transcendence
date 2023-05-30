@@ -13,7 +13,7 @@ const SelectLogin: React.FC<SelectLoginProps> = ({user}) => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     console.log(`New game login is ${gameLogin}`);
-    setError(null); // Reset error state before a new submit
+    setError(null);
     try {
         const response = await fetch('http://localhost:5000/users/update-gameLogin', {
             method: 'PUT',
