@@ -1,16 +1,14 @@
-import React from 'react'
 import { User } from '../../../types';
 import '../css/FriendReqOnglet.css'
-import { useState, useEffect } from 'react';
 import { CSSProperties } from 'react';
+import { Socket } from 'socket.io-client';
 
 type propsRem = {
-	onRemove: () => void;
 	sender: User;
-	update: () => void;
+	socket?: Socket
 }
 
-const FriendReqOnglet = ({ sender, onRemove, update }: propsRem) => {
+const FriendReqOnglet = ({ sender, socket }: propsRem) => {
 
 	const padd: CSSProperties = {
 		paddingLeft: '7%',
@@ -19,18 +17,16 @@ const FriendReqOnglet = ({ sender, onRemove, update }: propsRem) => {
 	}
 
 	const handleYes = async () => {
-		const req = 'http://localhost:5000/friend/accept/' + sender.id
-		await fetch(req, { method: "PUT", credentials: "include"})
-		onRemove()
-		update()
+		socket?.emit('acceptFriend', { id: sender.id })
 	}
 
 	const handleNo = async () => {
-		const req = 'http://localhost:5000/friend/refuse/' + sender.id
-		await fetch(req, { method: "DELETE", credentials: "include"})
-		onRemove()
+		socket?.emit('refuseFriend', { id: sender.id })
 	}
 
+	const handleBloque = async () => {
+		socket?.emit('bloqueUser', { id: sender.id })
+	}
 
 	return (
 		<div className='containerFriendReqOnglet'>
@@ -38,7 +34,7 @@ const FriendReqOnglet = ({ sender, onRemove, update }: propsRem) => {
 			<div className='containerCheck'>
 				<div className='yesButton' title='accept' onClick={handleYes} />
 				<div className='noButton' title='refuse' onClick={handleNo} />
-				<div className='bloqueButton' title='block' />
+				<div className='bloqueButton' title='block' onClick={handleBloque} />
 			</div>
 		</div>
 	)

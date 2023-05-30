@@ -3,6 +3,7 @@ import React, { FC, CSSProperties } from 'react'
 import { useState, useEffect } from 'react';
 import { User } from '../../../types';
 import FriendReqOnglet from './FriendReqOnglet';
+import { Socket } from 'socket.io-client';
 
 interface friendReq {
     id: number;
@@ -11,13 +12,7 @@ interface friendReq {
     sender: User
 }
 
-const FriendRequest = ({ sender, update }: { sender: friendReq[], update: () => void }) => {
-
-    const [req, setReq] = useState<friendReq[]>(sender)
-
-    const handleRemoveFromReq = (senderId: number) => {
-        setReq(req.filter(request => request.senderId !== senderId))
-    }
+const FriendRequest = ({ sender, socket }: { sender: friendReq[], socket?: Socket }) => {
 
     const style = {
         paddingLeft: '15%',
@@ -32,8 +27,8 @@ const FriendRequest = ({ sender, update }: { sender: friendReq[], update: () => 
                     <div style={style} className='nameText'>Friends Requests will apear here !</div>
                 </div>
             ) : (
-                req.map((sender) =>
-                    <FriendReqOnglet key={sender.id} sender={sender.sender} onRemove={() => handleRemoveFromReq(sender.senderId)} update={update} />)
+                sender.map((sender) =>
+                    <FriendReqOnglet key={sender.id} sender={sender.sender} socket={socket} />)
             )}
         </div>
     )

@@ -14,18 +14,20 @@ import Settings from '../settings/Settings';
 import Stats from '../popup/Stats/Stats';
 import Login from '../Login/Login';
 import CreateAccount from '../Login/CreateAccount';
-import { User } from '../types'
+import Chat from '../chat/Chat';
 import Friend from '../friend/list/src/friend';
+import { User } from '../types'
 import Cookies from 'js-cookie';
+import RoomSelect from '../chat/RoomSelect';
+import { io, Socket } from 'socket.io-client';
 
 function Home() {
-
-
     const [user, setUser] = useState<User>({ username: '', id: -1, elo: -1, win: -1, loose: -1, createAt: '', updateAt: '', state: 'inexistant' })
     const [activeComponent, setActiveComponent] = useState<string>('play')
     const [stack, setStack] = useState<string[]>([]);
+    const [socket, setSocket] = useState<Socket>();
     const navigate = useNavigate()
-    const existingRanks: string[] = ['bronze', 'silver', 'gold', 'crack', 'ultime']; 
+    const existingRanks: string[] = ['bronze', 'silver', 'gold', 'crack', 'ultime'];
     const userRank: string =  user.elo > 5000 || user.elo < 0 ? 'ultime' : existingRanks[Math.floor(user.elo / 1000)];
 
     const push = (item: string) => {
@@ -54,23 +56,30 @@ function Home() {
     }
 
     const api = async () => {
-        const data = await fetch("http://localhost:5000/users/profile", { 
+        const data = await fetch("http://localhost:5000/users/profile", {
 			method: "GET",
 			credentials: 'include'})
         if (data.status === 401) {
             navigate('/')
         }
         const userProfile = await data.json();
-        console.log('user in api', userProfile)
 		return userProfile;
     }
 
     useEffect(() => {
+        console.log("PASSAGE DANS USEEFFECT", user);
         const getUser = async () => {
             const userFromServer = await api()
             setUser(userFromServer)
         }
-        getUser()
+        getUser();
+
+        const sock = io('http://localhost:5000', {withCredentials: true});
+        setSocket(sock);
+
+        return () => {
+        socket?.disconnect();
+        };
     }, [])
 
     const extractId = (str: string) => {
@@ -122,9 +131,10 @@ function Home() {
                         {activeComponent === "play" && <Play changeComponent={changeComponent} />}
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent} />}
                         {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} />}
-                        {activeComponent === "historic" && <History />}
+                        {activeComponent === "history" && <History />}
                         {activeComponent === "stat" && <Stats user={user} changeComponent={changeComponent} />}
-                        {activeComponent === "friend" && <Friend changeComponent={changeComponent} />}
+                        {activeComponent === "friend" && <Friend changeComponent={changeComponent} socket={socket}/>}
+                        {activeComponent === "chat" && <RoomSelect user={user} socket={socket} />}
 
                         {activeComponent === "leader" && <Classement rank={userRank} changeComponent={changeComponent} />}
                         {activeComponent === "bronzeLead" && <Classement rank={'bronze'} changeComponent={changeComponent} />}
