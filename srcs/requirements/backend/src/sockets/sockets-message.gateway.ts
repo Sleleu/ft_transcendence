@@ -41,6 +41,7 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 			throw new ForbiddenException('Room alerady exists');
 		const room = await this.messagesService.createRoom(dto, user.id);
 		this.messagesService.addWhitelistUser(room.id, user.id);
+		this.messagesService.promoteAdmin(room.id, user.id);
 		console.log(room);
 		return room;
 	}
@@ -77,25 +78,105 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 	  return messages;
 	}
 	@SubscribeMessage('createMessage')
-	async create(@MessageBody() createMessageDto: CreateMessageDto,
+	async create(@MessageBody() dto: CreateMessageDto,
 	  @ConnectedSocket() client: Socket) {
 	  const user = this.socketService.getUser(client.id);
-	  const message = await this.messagesService.createMessage(createMessageDto, user.username);
-	  this.server.to(createMessageDto.roomName).emit('message', message);
+	  const room = await this.messagesService.getRoomByName(dto.roomName);
+	  if (!room)
+		  throw new ForbiddenException('Room does not exist');
+	  const banned = await this.messagesService.isBanned(room.id, user.id);
+	  if (banned)
+	  	throw new ForbiddenException('Client is banned');		
+	  const message = await this.messagesService.createMessage(dto, user.username);
+	  this.server.to(dto.roomName).emit('message', message);
 
 	  return message;
 	}
 
 	@SubscribeMessage('promoteAdmin')
-	async promoteAdmin(@MessageBody('targetId') targetId: number,
+	async promoteAdmin(@MessageBody('target') target: string,
+	@MessageBody('roomName') roomName: string,
 	@ConnectedSocket() client: Socket)
 	{
-		//client is admin
-		//target is a user, not banned and not alerady an admin
-		// promote user
+		const user = this.socketService.getUser(client.id);
+		const room = await this.messagesService.getRoomByName(roomName);
+		if (!room)
+			throw new ForbiddenException('Room does not exist');
+		const verifyClient = await this.messagesService.isAdmin(room.id, user.id);
+		if (!verifyClient)
+			throw new ForbiddenException('Client is not an admin');
+		const userTarget = await this.messagesService.searchUser(target);
+		if (!userTarget)
+			throw new ForbiddenException('Target does not exist');
+		const targetIsBanned = await this.messagesService.isBanned(room.id, userTarget.id);
+		if (targetIsBanned)
+			throw new ForbiddenException('Cannot promote a banned user');
+		const aleradyAdmin = await this.messagesService.isAdmin(room.id, userTarget.id);
+		if (aleradyAdmin)
+			throw new ForbiddenException('User is alerady an admin');
+		this.messagesService.promoteAdmin(room.id, userTarget.id);
 	}
+	@SubscribeMessage('demoteAdmin')
+	async demoteAdmin(@MessageBody('target') target: string,
+	@MessageBody('roomName') roomName: string,
+	@ConnectedSocket() client: Socket)
+	{
+		const user = this.socketService.getUser(client.id);
+		const room = await this.messagesService.getRoomByName(roomName);
+		if (!room)
+			throw new ForbiddenException('Room does not exist');
+		const verifyClient = await this.messagesService.isAdmin(room.id, user.id);
+		if (!verifyClient)
+			throw new ForbiddenException('Client is not an admin');
+		const userTarget = await this.messagesService.searchUser(target);
+		if (!userTarget)
+			throw new ForbiddenException('Target does not exist');
 
-
+		const wasAdmin = this.messagesService.isAdmin(room.id, userTarget.id);
+		if (!wasAdmin)
+			throw new ForbiddenException('User is not an admin');
+		this.messagesService.demoteAdmin(room.id, userTarget.id);
+	}
+	@SubscribeMessage('ban')
+	async ban(@MessageBody('target') target: string,
+	@MessageBody('roomName') roomName: string,
+	@ConnectedSocket() client: Socket)
+	{
+		const user = this.socketService.getUser(client.id);
+		const room = await this.messagesService.getRoomByName(roomName);
+		if (!room)
+			throw new ForbiddenException('Room does not exist');
+		const verifyClient = await this.messagesService.isAdmin(room.id, user.id);
+		if (!verifyClient)
+			throw new ForbiddenException('Client is not an admin');
+		const userTarget = await this.messagesService.searchUser(target);
+		if (!userTarget)
+			throw new ForbiddenException('Target does not exist');
+		const targetIsBanned = await this.messagesService.isBanned(room.id, userTarget.id);
+		if (targetIsBanned)
+			throw new ForbiddenException('Target Alerady Banned');
+		this.messagesService.ban(room.id, userTarget.id);
+	}
+	@SubscribeMessage('unban')
+	async unban(@MessageBody('target') target: string,
+	@MessageBody('roomName') roomName: string,
+	@ConnectedSocket() client: Socket)
+	{
+		const user = this.socketService.getUser(client.id);
+		const room = await this.messagesService.getRoomByName(roomName);
+		if (!room)
+			throw new ForbiddenException('Room does not exist');
+		const verifyClient = await this.messagesService.isAdmin(room.id, user.id);
+		if (!verifyClient)
+			throw new ForbiddenException('Client is not an admin');
+		const userTarget = await this.messagesService.searchUser(target);
+		if (!userTarget)
+			throw new ForbiddenException('Target does not exist');
+		const targetIsBanned = await this.messagesService.isBanned(room.id, userTarget.id);
+		if (!targetIsBanned)
+			throw new ForbiddenException('Target is not Banned');
+		this.messagesService.unban(room.id, userTarget.id);
+	}
 
 	//Ne fonctionne plus pour le moment
 	@SubscribeMessage('typing')
