@@ -57,18 +57,18 @@
 
 .avatar
 {
-    min-height: 80px;
-    min-width: 80px;
+    min-height: 100px;
+    min-width: 100px;
     background-size: cover;
 	background-position: center;
     margin-right: 30px;
-    height: 7vh;
-    width: 7vh;
+    height: 20vh;
+    width: 20vh;
     transition: drop-shadow 0.3s ease;
     filter: drop-shadow(0px 0px 5px white) drop-shadow(0px 0px 10px white);
     cursor: pointer;
     transition: all 0.1s ease-in-out;
-    border-radius: 50%;
+    border-radius: 70%;
 }
 
 .avatar:hover

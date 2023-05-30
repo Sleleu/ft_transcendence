@@ -15,6 +15,7 @@ import { User } from '../types'
 import Friend from '../friend/list/src/friend';
 import Verify2FA from '../Login/Verify-2fa';
 import { check2FA, check2FAVerified, disableTwoFAVerified, getUserProfile, logout } from '../Api';
+import SelectLogin from '../Login/SelectLogin';
 
 function Home() {
 
@@ -112,10 +113,15 @@ useEffect(() => {
 
 console.log("test", user?.avatar);
 
-if (twoFAEnabled && !is2FAVerified) {
-    return <Verify2FA onVerifySuccess={handle2FASuccess} />;
-}
-    
+	if (twoFAEnabled && !is2FAVerified) {
+		return <Verify2FA onVerifySuccess={handle2FASuccess} />;
+	}
+	if (user.gameLogin === null)
+	{
+		return <SelectLogin user={user} />;
+	}
+
+
     return (
         <div className="baground">
             <div className='containerFullPage'>
