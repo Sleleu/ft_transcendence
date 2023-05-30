@@ -21,13 +21,15 @@ interface Verify2FAProps {
   onVerifySuccess: () => void;
 }
 
-const Verify2FA: React.FC<Verify2FAProps> = (props) => {
+const Verify2FA: React.FC<Verify2FAProps> = ({onVerifySuccess}) => {
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
 
   const handleInputChange = (code: string) => {
     setCode(code);
+    if (code.length < 6) {
+        setError(null);
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -37,10 +39,9 @@ const Verify2FA: React.FC<Verify2FAProps> = (props) => {
       await verifyTwoFACode(code);
       await enableTwoFAVerified();
       setError(null);
-      props.onVerifySuccess();
+      onVerifySuccess();
     } catch (error) {
       setError("Invalid 2FA code.");
-      setMessage(null);
     }
   };
 
@@ -62,7 +63,6 @@ const Verify2FA: React.FC<Verify2FAProps> = (props) => {
 	      </form>
 	      <div style={{width: '80%'}}>
 	        {error && <p className="bold neon-red">{error}</p>}
-	        {message && <p style={{ color: "green" }}>{message}</p>}
 	      </div>
 	    </div>
 	  </div>
