@@ -48,13 +48,14 @@ const SelectLogin: React.FC<SelectLoginProps> = ({user}) => {
             <img className='avatar-login' src={user.avatar} />
             <h1>Welcome, {user.username}!</h1>
             <h2>Please enter your new game login</h2>
-            {error && <p className="error-message">{error}</p>}
             <form onSubmit={handleSubmit}>
               <input
+                className='input'
                 type="text"
                 value={gameLogin}
                 onChange={handleChange}
               />
+              {error && <p className="error-message neon-red">{error}</p>}
               <button className='button' type="submit">Confirm</button>
             </form>
           </div>
