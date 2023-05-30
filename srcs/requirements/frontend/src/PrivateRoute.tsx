@@ -18,7 +18,7 @@ const Container: CSSProperties = {
 	color: '#FFFFFF',
 	textAlign: 'center',
 	textShadow: '0 0 8px rgba(255, 255, 255, 0.8)',
-  };
+};
 
 const Text: CSSProperties = {
   fontSize: '24px',

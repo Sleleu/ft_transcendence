@@ -1,5 +1,7 @@
 export interface User {
   username: string;
+  avatar?: string;
+  gameLogin?: string;
   id: number;
   elo: number;
   win: number;

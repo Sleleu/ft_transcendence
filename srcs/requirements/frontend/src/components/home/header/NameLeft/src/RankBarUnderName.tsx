@@ -1,5 +1,6 @@
 import React from 'react'
 import '../css/RankBarUnderName.css'
+import { User } from '../../../../types'
 
 type RankProps = {
     elo: number;

@@ -18,6 +18,7 @@ model User {
 	state					String	@default("online")
 	hash 					String?
 	username 				String @unique
+	gameLogin				String?
 	avatar					String?
 	access_token			String?
 	TwoFASecret				String?

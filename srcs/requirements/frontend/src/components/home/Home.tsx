@@ -110,6 +110,8 @@ useEffect(() => {
     TwoFAVerified();
 }, []);
 
+console.log("test", user?.avatar);
+
 if (twoFAEnabled && !is2FAVerified) {
     return <Verify2FA onVerifySuccess={handle2FASuccess} />;
 }
@@ -129,6 +131,7 @@ if (twoFAEnabled && !is2FAVerified) {
                             changeComponent={changeComponent}
                         />
                         <NavBar
+							user={user}
                             changeComponent={changeComponent}
                             front={front}
 							handleLogout={handleLogout}
