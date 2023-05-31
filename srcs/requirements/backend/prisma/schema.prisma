@@ -27,7 +27,13 @@ model User {
 	friendsOf				Friend[] @relation("FriendUser")
 	friendRequestsSent		FriendRequest[] @relation("FriendRequestSender")
   	friendRequestsReceived	FriendRequest[] @relation("FriendRequestRecipient")
+	bloque					bloqueUser[] @relation("BloqueSender")
+	bloquedBy				bloqueUser[] @relation("BloquedRecipient")
 	history					History[]
+	rooms                   Room[]               @relation("RoomOwner")
+	whitelistedRooms        Room[]               @relation("RoomWhitelist")
+	adminRooms         		Room[]               @relation("Admin")
+	bannedRooms         	Room[]               @relation("Banned")
 	@@map("users")
 }
 
@@ -52,6 +58,14 @@ model FriendRequest {
   status    String    @default("pending")
 }
 
+model bloqueUser {
+  id        Int       @id @default(autoincrement())
+  senderId  Int
+  sender    User      @relation("BloqueSender", fields: [senderId], references: [id])
+  recipientId Int
+  recipient User      @relation("BloquedRecipient", fields: [recipientId], references: [id])
+}
+
 model History {
 	id          Int    @id @default(autoincrement())
 	createdAt   DateTime @default(now())
@@ -66,10 +80,30 @@ model History {
 	elo			Int
 }
 
+model Room {
+	id       	Int       @id @default(autoincrement())
+	createdAt   DateTime @default(now())
+
+	name     	String
+	type		String
+	password	String?
+
+	ownerId     Int?
+  	owner       User?    @relation("RoomOwner", fields: [ownerId], references: [id])
+	whitelist   User[]   @relation("RoomWhitelist")
+	admin		User[]   @relation("Admin")
+	banned		User[]   @relation("Banned")
+
+	messages	Message[]
+}
+
 model Message {
 	id          Int    @id @default(autoincrement())
 	createdAt   DateTime @default(now())
 
 	name		String
 	text		String
+
+	room      	Room     @relation(fields: [roomId], references: [id])
+  	roomId    	Int
 }

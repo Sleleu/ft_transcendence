@@ -5,25 +5,25 @@ import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class UserService {
     constructor(private prismaService: PrismaService,
-				private jwtService: JwtService) {}
+        private jwtService: JwtService) { }
 
-				// async getUsers() {
-				// 	const users = await this.prisma.user.findMany({
-				// 		select: {
-				// 			id: true,
-				// 			state: true,
-				// 			username: true,
-				// 			elo: true,
-				// 			win: true,
-				// 			loose: true,
-				// 		}
-				// 	});
-				// 	return users;
-				// }
+    async getAllUsers() {
+        const users = await this.prismaService.user.findMany({
+            select: {
+                id: true,
+                state: true,
+                username: true,
+                elo: true,
+                win: true,
+                loose: true,
+            }
+        });
+        return users;
+    }
 
-	async getUserFromToken(token : string) {
-		console.log("Passage dans getProfile()")
-		try {
+    async getUserFromToken(token: string) {
+        console.log("Passage dans getProfile()")
+        try {
             const decoded = this.jwtService.verify(token);
             if (!decoded) {
                 return null;
@@ -52,9 +52,16 @@ export class UserService {
 
     async updateUsername(id: number, newUsername: string) {
         return this.prismaService.user.update({
-            where: {id: id},
-            data: { username: newUsername},
+            where: { id: id },
+            data: { username: newUsername },
         })
     }
 
+    async getBlock(userId: number) {
+        const user = await this.prismaService.bloqueUser.findMany({
+            where: { senderId: userId },
+            include: { recipient: true }
+        })
+        return user
+    }
 }

@@ -77,7 +77,7 @@ const InitialState = (): GameState => {
     player: board.map((x) => x * COL_SIZE + PADDLE_EDGE_SPACE),
     opponent: board.map((x) => (x + 1) * COL_SIZE - (PADDLE_EDGE_SPACE + 1)),
     ball: Math.round((ROW_SIZE * COL_SIZE) / 2) + ROW_SIZE,
-    ballSpeed: 300,
+    ballSpeed: 100,
     deltaX: -1,
     deltaY: -COL_SIZE,
     playerScore: 0,
@@ -90,33 +90,22 @@ const InitialState = (): GameState => {
 
 interface GameProps {
   changeComponent: (component: string) => void;
+  socket?: Socket;
+  opponentID: string | number;
 }
 
-const Game: React.FC<GameProps> = ({ changeComponent }) => {
+const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
   const [state, setState] = useState<GameState>(InitialState());
-  const [socket, setSocket ] = useState<Socket | null> (null);
-
 
   useEffect(() => {
-    const socket = io('http://localhost:5000')
-    setSocket(socket);
-    //Handle game state updates
-    console.log("after setting socket");
+    console.log("client side: joining a room");
+    // socket?.emit('join-room');
+    socket?.emit('start');
 
     return () => {
-      socket.disconnect();
+      socket?.disconnect();
     };
   }, []);
-
-  // useEffect(() => {
-  //   if (!state.pause){
-  //     const intervalId = setInterval(bounceBall, state.ballSpeed); // Call bounceBall repeatedly
-  //     console.log("inside the if statement")
-  //     return () => {
-  //       clearInterval(intervalId);
-  //     };
-  //   }
-  // }, [state.pause]);
 
   const resetGame = () => {
     setState(InitialState());
@@ -125,7 +114,6 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
   const topbottomEdge = (pos: number) =>
     pos < COL_SIZE + 1 || // Ball touches top edge
     pos >= (ROW_SIZE - 1) * COL_SIZE - 1;
-
 
   socket?.on('gameState', (gameState: GameState) => {
     console.log("client side event: gameState");
@@ -160,6 +148,8 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
       deltaX: gameState.deltaX,
       deltaY: gameState.deltaY,
       ball: gameState.ball,
+      playerScore: gameState.playerScore,
+      opponentScore: gameState.opponentScore,
     }));
   });
 
@@ -193,6 +183,11 @@ const Game: React.FC<GameProps> = ({ changeComponent }) => {
       ...prevState,
       playerScore: gameState.playerScore,
     }));
+  });
+
+  socket?.on('game-over', (gameState: GameState) => {
+    console.log("client side event: game-over");
+
   });
 
   //keyboard events are only for debugging

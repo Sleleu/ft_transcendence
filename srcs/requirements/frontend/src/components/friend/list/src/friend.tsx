@@ -1,15 +1,17 @@
 import React, { FC, CSSProperties } from 'react'
 import { useState, useEffect } from 'react';
 import '../css/friend.css'
-import Play from '../../../home/play/src/Play'
 import { User } from '../../../types';
 import FriendOnglet from './FriendOnglet';
 import FriendAdd from './FriendAdd';
 import FriendRequest from './FriendRequest';
 import FriendOption from './FriendOption';
+import { io, Socket } from 'socket.io-client';
+import { runInContext } from 'vm';
 
 interface FriendProps {
   changeComponent: (component: string) => void;
+  socket?: Socket;
 }
 
 interface FriendInterface {
@@ -27,47 +29,44 @@ interface friendReq {
   sender: User
 }
 
-const Friend: FC<FriendProps> = ({ changeComponent }) => {
+const Friend: FC<FriendProps> = ({ changeComponent, socket }) => {
 
   const [friend, setFriend] = useState<FriendInterface[]>([])
   const [searchText, setSearchText] = useState<string>('')
   const [searchFriend, setSearchFriend] = useState<FriendInterface[]>([])
   const [component, setComponent] = useState<string>('add')
   const [friendReq, setFriendReq] = useState<friendReq[]>([])
-  const [update, setUpadte] = useState(0)
   const [option, setOption] = useState(0)
 
-  const api = async () => {
-    const data = await fetch("http://localhost:5000/friend", { 
-		method: "GET",
-		credentials: "include",
-	});
-    const jsonData = await data.json();
-    return jsonData;
-  }
-
-  const getFriendReq = async () => {
-    const data = await fetch("http://localhost:5000/friend/request", {
-		method: "GET",
-		credentials: "include",})
-    const jsonData = await data.json();
-    return jsonData;
-  }
 
   useEffect(() => {
-    const getUser = async () => {
-      const userFromServer = await api()
-      setFriend(userFromServer)
-      setSearchFriend(sortFriend(userFromServer))
-      const friendR = await getFriendReq()
-      setFriendReq(friendR)
+    socket?.emit('getFriend', {}, (response: FriendInterface[]) => {
+      setFriend(response)
+      setSearchFriend(sortFriend(response))
+    })
+    socket?.emit('getFriendReq', {}, (response: friendReq[]) => {
+      setFriendReq(response)
+    })
+    socket?.on('friendRequestNotification', ({ req }: { req: friendReq }) => {
+      setFriendReq((prevFriendReq) => [...prevFriendReq, req])
+      console.log("Request from on", req)
+    })
+    socket?.on('receiveFriend', ({ friends }: { friends: FriendInterface[] }) => {
+      setFriend(friends)
+      setSearchFriend(sortFriend(friends))
+    })
+    socket?.on('receiveReq', ({ req }: { req: friendReq[] }) => {
+      if (Array.isArray(req))
+        setFriendReq(req)
+      else
+        setFriendReq([])
+    })
+    return () => {
+      socket?.off('friendRequestNotification')
+      socket?.off('receiveFriend')
+      socket?.off('receiveReq')
     }
-    getUser()
-  }, [update])
-
-  const updateFriend = () => {
-    setUpadte(+1)
-  }
+  }, [])
 
   const sortFriend = (friend: FriendInterface[]) => {
     return friend.sort((a, b) => (a.friend.state !== 'offline' ? -1 : 1))
@@ -75,13 +74,7 @@ const Friend: FC<FriendProps> = ({ changeComponent }) => {
 
   const handleSearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value.toLowerCase()
-    console.log('value = ', value)
     setSearchText(value)
-    if (!friend)
-    {
-      const friendR = await getFriendReq()
-      setFriendReq(friendR)
-    }
     const filteredFriends = friend.filter((friend) => friend.friend.username.toLowerCase().startsWith(value))
     const sortedFriend = filteredFriends.sort((a, b) => (a.friend.state !== 'offline' ? -1 : 1))
     setSearchFriend(sortedFriend)
@@ -127,9 +120,9 @@ const Friend: FC<FriendProps> = ({ changeComponent }) => {
             }
           </div>
           <div className='containerFriendBodyRight'>
-            {component === 'add' && <FriendAdd  />}
-            {component === 'friendRequest' && <FriendRequest sender={friendReq} update={updateFriend} />}
-            {component === 'friend' && <FriendOption friend={searchFriend[searchFriend.findIndex((friend) => friend.friendId === option)].friend} changeComponent={changeComponent} update={updateFriend} change={changeComponentFriend} />}
+            {component === 'add' && <FriendAdd socket={socket} />}
+            {component === 'friendRequest' && <FriendRequest sender={friendReq} socket={socket} />}
+            {component === 'friend' && <FriendOption friend={searchFriend[searchFriend.findIndex((friend) => friend.friendId === option)].friend} changeComponent={changeComponent} change={changeComponentFriend} socket={socket} />}
           </div>
         </div>
       </div>

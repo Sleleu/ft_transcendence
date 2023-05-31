@@ -2,16 +2,18 @@ import React from 'react'
 import '../css/FriendAddOnglet.css'
 import { User } from '../../../types';
 import { useState } from 'react';
+import { Socket } from 'socket.io-client';
 
-const FriendAddOnglet = ({ friend }: { friend: User} ) => {
+const FriendAddOnglet = ({ friend, socket }: { friend: User, socket?: Socket }) => {
 
 
     const [button, setButton] = useState<boolean>(false)
 
     const handleClick = async () => {
+        // const req = 'http://localhost:5000/friend/send/' + friend.id
+        // await fetch(req, { method: "POST", credentials: "include" })
         setButton(true)
-        const req = 'http://localhost:5000/friend/send/' + friend.id
-        await fetch(req, { method: "POST", credentials: "include"})
+        socket?.emit('send', { id: friend.id })
     }
 
     const nameFriend = {
