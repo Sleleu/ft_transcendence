@@ -20,6 +20,7 @@ import { User } from '../types'
 import Cookies from 'js-cookie';
 import RoomSelect from '../chat/RoomSelect';
 import { io, Socket } from 'socket.io-client';
+import GameChoice from './play/src/GameChoice';
 
 function Home() {
     const [user, setUser] = useState<User>({ username: '', id: -1, elo: -1, win: -1, loose: -1, createAt: '', updateAt: '', state: 'inexistant' })
@@ -145,8 +146,8 @@ function Home() {
                         {activeComponent === "crackLead" && <Classement rank={'crack'} changeComponent={changeComponent} />}
                         {activeComponent === "ultimeLead" && <Classement rank={'ultime'} changeComponent={changeComponent} />}
                         {activeComponent.startsWith("watch") && <div>{extractId(activeComponent)}</div>}
-
                         {activeComponent === "rank" && <Rank user={user} changeComponent={changeComponent} />}
+                        {activeComponent === "gameChoice" && <GameChoice changeComponent={changeComponent} />}
                     </div>
                 </div>
             </div>
