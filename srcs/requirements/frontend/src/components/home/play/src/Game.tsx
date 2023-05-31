@@ -99,8 +99,8 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
 
   useEffect(() => {
     console.log("client side: joining a room");
-    // socket?.emit('join-room');
-    socket?.emit('start');
+    socket?.emit('join-room', socket.id);
+    // socket?.emit('start');
 
     return () => {
       socket?.disconnect();
@@ -118,6 +118,11 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
   socket?.on('gameState', (gameState: GameState) => {
     console.log("client side event: gameState");
     setState(gameState);
+  });
+
+  socket?.on('game-over', (gameState: GameState) => {
+    console.log("client side event: game over");
+    resetGame();
   });
 
   socket?.on('start', () => {
