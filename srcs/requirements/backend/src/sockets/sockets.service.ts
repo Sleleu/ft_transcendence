@@ -23,10 +23,10 @@ export class SocketsService {
   private gameState: GameState = {
 		player: board.map((x) => x * COL_SIZE + PADDLE_EDGE_SPACE),
 		opponent: board.map((x) => (x + 1) * COL_SIZE - (PADDLE_EDGE_SPACE + 1)),
-		ball: 0, // Initial ball position
+		ball: Math.round((ROW_SIZE * COL_SIZE) / 2) + ROW_SIZE, // Initial ball position
 		ballSpeed: 300,
 		deltaX: -1, // Initial ball delta x
-		deltaY: -1, // Initial ball delta y
+		deltaY: -COL_SIZE, // Initial ball delta y
 		playerScore: 0, // Initial player score
 		opponentScore: 0, // Initial opponent score
 		pause: true, // Initial game state (paused)
@@ -64,27 +64,29 @@ export class SocketsService {
   //gabriel part end
 
   	getGameState() : GameState{
-    console.log("getting the game status");
+    // console.log("server service: gameState");
 		return this.gameState;
 	}
 
 	startGame(): void {
 		this.gameState.pause = false;
-		console.log("im here inside startGame");
+		console.log("server service: startGame");
 	}
 
 	pauseGame(): void {
 		this.gameState.pause = true;
+		console.log("server service: pauseGame");
 	}
 
 	resetGame(): void{
+		console.log("server service: resetGame");
 		this.gameState = {
 			player: board.map((x) => x * COL_SIZE + PADDLE_EDGE_SPACE), // Reset player board
 			opponent: board.map((x) => (x + 1) * COL_SIZE - (PADDLE_EDGE_SPACE + 1)), // Reset opponent board
 			ball: Math.round((ROW_SIZE * COL_SIZE) / 2) + ROW_SIZE, // Reset ball position
-			ballSpeed: 200,
-			deltaX: 1, // Reset ball delta x
-			deltaY: -1, // Reset ball delta y
+			ballSpeed: 300,
+			deltaX: -1, // Reset ball delta x
+			deltaY: -COL_SIZE, // Reset ball delta y
 			playerScore: 0, // Reset player score
 			opponentScore: 0, // Reset opponent score
 			pause: true, // Reset game state (paused)
@@ -94,62 +96,80 @@ export class SocketsService {
 	}
 
 	movePlayer(movePlayer: number[]): void{
+		// console.log("server service: move-player");
 		this.gameState.player = movePlayer;
 	}
 
 	moveOpponent(moveOpponent: number[]): void{
+		console.log("server service: move-opponent");
 		this.gameState.opponent = moveOpponent;
 	}
 
-	bounceBall(bounceBallDto: BounceBallDto): void{
+	updateBallPosition(bounceBallDto: BounceBallDto): void{
+		console.log("server service: update ball position");
 		this.gameState.deltaX = bounceBallDto.deltaX;
 		this.gameState.deltaY = bounceBallDto.deltaY;
+		this.gameState.ball = this.gameState.ball + bounceBallDto.deltaY + bounceBallDto.deltaX;
 	}
 
-	private updateGameState():void{
-		const COL_SIZE = 20;
-		const ROW_SIZE = 10;
+	// private isScore(pos: number, COL_SIZE: number, ROW_SIZE: number): boolean {
+	// 	return (
+	// 	  (this.gameState.deltaX === -1 && (pos + 1) % COL_SIZE === 0) ||
+	// 	  (this.gameState.deltaX === 1 && pos % COL_SIZE === 0)
+	// 	);
+	// }
 
-		console.log("updating game status in socket service");
+	bounceBall():void{
+
+		console.log("server bounceball function");
 		// Update ball position
-		this.gameState.ball += this.gameState.deltaY + this.gameState.deltaX;
+		const newstate = this.gameState.ball + this.gameState.deltaY + this.gameState.deltaX;
 
-		// Check if the ball touches the edge
-		if (this.touchingEdge(this.gameState.ball, COL_SIZE, ROW_SIZE)) {
-		  this.gameState.deltaY = -this.gameState.deltaY;
+		if (this.rightleftEdge(this.gameState.ball)) {
+			console.log("service: rightleft edge");
+			this.resetGame();
 		}
-
-		// Check if the ball touches a paddle edge
-		if (this.touchingPaddleEdge(this.gameState.ball)) {
-		  this.gameState.deltaY = -this.gameState.deltaY;
+		else if (this.topbottomEdge(this.gameState.ball)) {
+			this.gameState.deltaY = -this.gameState.deltaY;
+			this.gameState.ball = newstate;
+			console.log("service: touching topbottom edge");
 		}
-
-		// Check if the ball touches a paddle
-		if (this.touchingPaddle(this.gameState.ball)) {
+		else if (this.touchingPaddleEdge(this.gameState.ball)) {
+		  this.gameState.deltaY = -this.gameState.deltaY;
+		  this.gameState.ball = newstate;
+		  console.log("service: touching paddle edge");
+		}
+		else if (this.touchingPaddle(this.gameState.ball)) {
 		  this.gameState.deltaX = -this.gameState.deltaX;
+		  this.gameState.ball = newstate;
+		  console.log("service: touching paddle ");
 		}
-
+		else
+		{
+			console.log("service: updating ball movement");
+			this.gameState.ball = newstate;
+		}
 		// Check if a score occurs
-		if (this.isScore(this.gameState.ball, COL_SIZE, ROW_SIZE)) {
-		  if (this.gameState.deltaX !== -1) {
-			this.gameState.playerScore++;
-		  } else {
-			this.gameState.opponentScore++;
-		  }
-		  this.gameState.pause = true;
-		  this.resetGame();
-		  return;
-		}
-
+		// if (this.isScore(this.gameState.ball, COL_SIZE, ROW_SIZE)) {
+		//   if (this.gameState.deltaX !== -1) {
+		// 	this.gameState.playerScore++;
+		//   } else {
+		// 	this.gameState.opponentScore++;
+		//   }
+		//   this.gameState.pause = true;
+		//   this.resetGame();
+		//   return;
+		// }
 	}
 
-	private touchingEdge(pos: number, COL_SIZE: number, ROW_SIZE: number): boolean {
-		return (
-		  pos % COL_SIZE === 0 ||
-		  pos % COL_SIZE === COL_SIZE - 1 ||
-		  pos < COL_SIZE ||
-		  pos >= (ROW_SIZE - 1) * COL_SIZE
-		);
+	private topbottomEdge(pos: number): boolean {
+		return (pos < COL_SIZE + 1 || //top edge
+			pos >= (ROW_SIZE - 1) * COL_SIZE - 1);
+	}
+
+	private rightleftEdge(pos: number): boolean {
+		return (pos % COL_SIZE === 0 || // Ball touches left edge
+		pos % COL_SIZE === COL_SIZE - 1);
 	}
 
 	private touchingPaddle(pos: number): boolean {
@@ -164,21 +184,6 @@ export class SocketsService {
 		const playerEdges = [player[0], player[player.length - 1]];
 		const opponentEdges = [opponent[0], opponent[opponent.length - 1]];
 		return playerEdges.includes(pos) || opponentEdges.includes(pos);
-	}
-
-	private isScore(pos: number, COL_SIZE: number, ROW_SIZE: number): boolean {
-		return (
-		  (this.gameState.deltaX === -1 && (pos + 1) % COL_SIZE === 0) ||
-		  (this.gameState.deltaX === 1 && pos % COL_SIZE === 0)
-		);
-	}
-
-	@Interval(16)
-	private updateGameStateInterval(): void{
-		console.log("inside the interval on the server side");
-		if (!this.gameState.pause){
-			this.updateGameState();
-		}
 	}
 
 }

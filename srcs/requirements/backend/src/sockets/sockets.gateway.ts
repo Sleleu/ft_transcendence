@@ -1,13 +1,14 @@
-import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer, ConnectedSocket } from '@nestjs/websockets';
+import { WebSocketGateway, OnGatewayInit, SubscribeMessage, MessageBody, WebSocketServer, ConnectedSocket } from '@nestjs/websockets';
 import { SocketsService } from './sockets.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import {Server, Socket} from 'socket.io';
 import { GameState, BounceBallDto } from './dto/game.dto';
+import { Interval } from '@nestjs/schedule';
 
 
 @WebSocketGateway({cors : true})
-export class SocketsGateway {
+export class SocketsGateway implements OnGatewayInit{
   @WebSocketServer()
   server: Server;
 
@@ -18,15 +19,20 @@ export class SocketsGateway {
   }
 
   handleConnection(client: Socket) {
-    client.on('gameStateUpdate', (gameState: GameState) => {
-
-      console.log("handleconnection");
-    });
     console.log('Client connected:', client.id);
   }
 
   handleDisconnect(client: Socket) {
     console.log('Client disconnected:', client.id);
+  }
+
+  @Interval(16)
+  updateGameStateInterval(): void{
+	  console.log("inside the interval on the server side");
+	  if (!this.messagesService.getGameState().pause){
+      this.messagesService.bounceBall();
+      this.server.emit("updateBallPosition", this.messagesService.getGameState());
+	  }
   }
 
   @SubscribeMessage('createMessage')
@@ -77,24 +83,25 @@ export class SocketsGateway {
     this.server.emit('reset');
   }
 
-  @SubscribeMessage('bounceBall')
+  @SubscribeMessage('updateBallPosition')
   bounceBall(@MessageBody() bounceBallDto: BounceBallDto,  @ConnectedSocket() client: Socket): void{
-    this.messagesService.bounceBall(bounceBallDto);
-    console.log("server side: bounce ball gateway")
-    this.server.emit('gameStateUpdate', this.messagesService.getGameState());
+    this.messagesService.updateBallPosition(bounceBallDto);
+    console.log("server side: bounce ball gateway emitting from: ", client.id);
+    this.server.emit('updateBallPosition', this.messagesService.getGameState());
   }
 
   @SubscribeMessage('move-player')
 	movePlayer(@MessageBody() movePlayer: number[], @ConnectedSocket() client: Socket): void{
-		this.messagesService.movePlayer(movePlayer);
-    this.server.emit('gameStateUpdate', this.messagesService.getGameState());
+		// console.log("server side: move-player");
+    this.messagesService.movePlayer(movePlayer);
+    client.broadcast.emit('move-opponent', this.messagesService.getGameState());
   }
 
-  @SubscribeMessage('move-opponent')
-	moveOpponent(@MessageBody() moveOpponent: number[], @ConnectedSocket() client: Socket): void{
-		this.messagesService.moveOpponent(moveOpponent);
-    this.server.emit('gameStateUpdate', this.messagesService.getGameState());
-  }
+  // @SubscribeMessage('move-opponent')
+	// moveOpponent(@MessageBody() moveOpponent: number[], @ConnectedSocket() client: Socket): void{
+	// 	this.messagesService.moveOpponent(moveOpponent);
+  //   this.server.emit('move-opponent', this.messagesService.getGameState());
+  // }
 
   // @SubscribeMessage('score')
   // score(@ConnectedSocket() client: Socket): void{

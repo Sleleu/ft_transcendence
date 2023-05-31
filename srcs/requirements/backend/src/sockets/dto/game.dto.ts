@@ -13,15 +13,6 @@ export interface GameState {
 	opponentScore: number;
 	}
 
-//   export interface MovePlayerDto {
-// 	player: number[];
-// 	pause: boolean;
-//   }
-
-//   export interface MoveOpponentDto {
-// 	opponent: number[];
-//   }
-
   export interface BounceBallDto {
 	deltaX: number;
 	deltaY: number;
