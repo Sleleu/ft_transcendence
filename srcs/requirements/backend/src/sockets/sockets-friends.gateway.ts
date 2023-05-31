@@ -31,13 +31,13 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
           const friends = await this.friendService.getFriendsByUserId(user.id);
           return friends;
         }
-      
+
         @SubscribeMessage('getFriendReq')
         async getFriendReq(@ConnectedSocket() client: Socket) {
           const user = this.socketService.getUser(client.id);
           return this.friendService.getFriendReq(user.id)
         }
-      
+
         @SubscribeMessage('send')
         async sendFriendReq(@ConnectedSocket() client: Socket, @MessageBody() body: { id: number }) {
           const user = this.socketService.getUser(client.id);
@@ -52,7 +52,7 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
             }
           }
         }
-      
+
         @SubscribeMessage('acceptFriend')
         async acceptFriendReq(@ConnectedSocket() client: Socket, @MessageBody() body: { id: number }) {
           const user = this.socketService.getUser(client.id);
@@ -70,7 +70,7 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
             }
           }
         }
-      
+
         @SubscribeMessage('refuseFriend')
         async refuseFriendReq(@ConnectedSocket() client: Socket, @MessageBody() body: { id: number }) {
           const user = this.socketService.getUser(client.id);
@@ -78,7 +78,7 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
           const request = this.friendService.getFriendReq(user.id)
           client.emit('receiveReq', { req: request })
         }
-      
+
         @SubscribeMessage('deleteFriend')
         async deleteFriend(@ConnectedSocket() client: Socket, @MessageBody() body: { id: number }) {
           const user = this.socketService.getUser(client.id);
@@ -94,7 +94,7 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
             }
           }
         }
-      
+
         @SubscribeMessage('bloqueUser')
         async bloqueUser(@ConnectedSocket() client: Socket, @MessageBody() body: { id: number }) {
           const user = this.socketService.getUser(client.id);
@@ -105,7 +105,7 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
           const request = this.friendService.getFriendReq(user.id)
           client.emit('receiveReq', { req: request })
         }
-      
+
         @SubscribeMessage('bloqueFriend')
         async bloqueFriend(@ConnectedSocket() client: Socket, @MessageBody() body: { id: number }) {
           const user = this.socketService.getUser(client.id);

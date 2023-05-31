@@ -2,6 +2,9 @@ import React, {useState, useEffect, useRef} from 'react'
 import { io, Socket } from 'socket.io-client';
 import Message from './Message';
 import { CSSProperties } from 'styled-components';
+import { User } from '../types';
+import WhitelistEntry from './WhiteListEntry';
+import PopupChat from './PopupChat';
 
 interface MessageObj {
     id: number;
@@ -16,17 +19,22 @@ interface Props {
     roomName: string;
     socket: Socket | undefined;
     leaveRoom: (roomName:string) => void;
+    changeComponent: (component: string) => void;
 }
 
-const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom}) => {
+const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom, changeComponent}) => {
 
     const [messages, setMessages] = useState<MessageObj []>([]);
+    const [whitelist, setWhitelist] = useState<User[]>([]);
     const [messageText, setMessageText] = useState<string>("");
+
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
+    const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
+
     const [typing, setTyping] = useState<string>("");
     const [hover, setHover] = useState<boolean>(false);
     const [adminText, setAdminText] = useState<string>("");
     const [adminButton, setAdminButton] = useState<string>("");
-    
 
     const Container: CSSProperties = {
         width: '100%',
@@ -65,7 +73,7 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom}) => {
 
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-around',
+        justifyContent: 'flex-start',
     }
     const leftBlock: CSSProperties = {
         width: '70%',
@@ -121,21 +129,33 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom}) => {
         cursor: hover ? 'pointer' : 'auto',
     }
     const RoomName: CSSProperties = {
-        fontSize: '48px', fontWeight:'800', color: '#ee55ff',
+        fontSize: '48px', fontWeight:'800', color: '#fff',
     }
 
     useEffect(() => {
         socket?.emit('findRoomMessages', {roomId: roomId}, (response: MessageObj[]) => {
         setMessages(response);
         });
+        socket?.emit('getWhitelist', {roomName: roomName}, () => {
+            });
 
         socket?.on('message', (message: MessageObj) => {
-        setMessages((prevMessages) => [...prevMessages, message]);
+            setMessages((prevMessages) => [...prevMessages, message]);
         });
+
+        socket?.on('whitelist', (users: User[]) => {
+            setWhitelist(users);
+        })
+
+        socket?.on('kickUser', () => {
+            changeComponent('home');
+        })
+
         return () => {
             socket?.off('message');
-          };
-        }, []);
+        };
+
+    }, []);
 
 
 socket?.on('typing', ({name, isTyping}) => {
@@ -192,6 +212,12 @@ const adminSubmit = (e: React.FormEvent) => {
     else if (adminButton === 'unban')
         socket?.emit('unban', {target : adminText, roomName: roomName});
 }
+
+    const handleUserClick = (user: User, event: React.MouseEvent<HTMLSpanElement>) => {
+        setSelectedUser(user);
+        setPopupPosition({ x: event.clientX, y: event.clientY });
+    };
+
     return (
         <div style={Container}>
             <div style={topBar}>
@@ -221,7 +247,10 @@ const adminSubmit = (e: React.FormEvent) => {
                     </form>
                 </div>
                 <div style={rightBlock}>
-                    {/* AMIS */}
+                    {whitelist.map((user) => <WhitelistEntry user={user} handleUserClick={handleUserClick} key={user.id}/>)}
+                </div>
+                <div>
+                 {selectedUser && <PopupChat user={selectedUser} position={popupPosition} setSelectedUser={setSelectedUser} socket={socket} roomName={roomName}/>}
                 </div>
             </div>
         </div>

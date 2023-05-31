@@ -5,6 +5,7 @@ import { Server, Socket } from 'socket.io';
 import { CreateRoomDto, JoinRoomDto, RoomObj, TypingDto, UserDto } from './entities/message.entity';
 import { ForbiddenException } from '@nestjs/common';
 import { MessageService } from './message.service';
+import { copyFileSync } from 'fs';
 
 @WebSocketGateway({ cors: true })
 export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -63,6 +64,17 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 			throw new ForbiddenException('Wrong password provided');
 		}
 		client.join(dto.roomName);
+		if (room.type === 'protected' || room.type === 'public')
+		{
+			const whitelisted = await this.messagesService.searchWhiteList(room.id, user.id)
+			if (!whitelisted)
+			{
+				console.log('WHITELISTING');
+				this.messagesService.addWhitelistUser(room.id, user.id);
+			}
+			else
+				console.log('NOT WHITELISTING');
+		}
 		console.log(user.username, 'joined room :', dto.roomName);
 	}
 	@SubscribeMessage('leave')
@@ -86,7 +98,7 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		  throw new ForbiddenException('Room does not exist');
 	  const banned = await this.messagesService.isBanned(room.id, user.id);
 	  if (banned)
-	  	throw new ForbiddenException('Client is banned');		
+	  	throw new ForbiddenException('Client is banned');
 	  const message = await this.messagesService.createMessage(dto, user.username);
 	  this.server.to(dto.roomName).emit('message', message);
 
@@ -176,6 +188,41 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		if (!targetIsBanned)
 			throw new ForbiddenException('Target is not Banned');
 		this.messagesService.unban(room.id, userTarget.id);
+	}
+
+	@SubscribeMessage('kick')
+	async kick(@MessageBody('target') targetId: number,
+	@MessageBody('roomName') roomName: string,
+	@ConnectedSocket() client: Socket)
+	{
+		const user = this.socketService.getUser(client.id);
+		const room = await this.messagesService.getRoomByName(roomName);
+		if (!room)
+			throw new ForbiddenException('Room does not exist');
+		const verifyClient = await this.messagesService.isAdmin(room.id, user.id);
+		if (!verifyClient)
+			throw new ForbiddenException('Client is not an admin');
+		const kickedId = this.socketService.findSocketById(targetId);
+		if (!kickedId)
+			throw new ForbiddenException('Invalid target client ID');
+		const kickedClient = this.server.sockets.sockets.get(kickedId);
+		if (!kickedClient)
+			throw new ForbiddenException('Invalid target');
+		kickedClient.emit('kickUser');
+	}
+
+
+
+	@SubscribeMessage('getWhitelist')
+	async getWhitelist(@MessageBody('roomName') roomName: string,
+	@ConnectedSocket() client: Socket) {
+		const room = await this.messagesService.getRoomByName(roomName);
+		if (!room)
+			throw new ForbiddenException('Room does not exist');
+		const users = await this.messagesService.getWhiteList(room.id);
+		if (!users)
+			throw new ForbiddenException('No users in this room');
+		this.server.to(roomName).emit('whitelist', users);
 	}
 
 	//Ne fonctionne plus pour le moment

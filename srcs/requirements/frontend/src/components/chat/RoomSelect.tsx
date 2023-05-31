@@ -20,9 +20,10 @@ interface Room {
 interface Props {
     user: User;
     socket?: Socket;
+    changeComponent: (component: string) => void;
 }
 
-const RoomSelect:React.FC<Props> = ({user, socket}) => {
+const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
 
     const username = user.username;
     const [rooms, setRooms] = useState<Room[]>([]);
@@ -38,7 +39,7 @@ const RoomSelect:React.FC<Props> = ({user, socket}) => {
         socket?.on('disconnect', () => {
             console.log('Disconnected from Socket.IO server');
         });
-    
+
         socket?.on('connect_error', (error) => {
             console.log('Connection error:', error);
         });
@@ -178,7 +179,7 @@ const RoomSelect:React.FC<Props> = ({user, socket}) => {
                 </div>
             </div>
             :
-            <Chat name={username} roomId={currentRoom} roomName={roomName} socket={socket} leaveRoom={leaveRoom}/>
+            <Chat name={username} roomId={currentRoom} roomName={roomName} socket={socket} leaveRoom={leaveRoom} changeComponent={changeComponent}/>
             }
         </div>
   )

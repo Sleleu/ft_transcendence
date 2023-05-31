@@ -58,6 +58,13 @@ export class MessageService {
     const isWhiteListed = room?.whitelist.some((user) => user.id === userId);
     return isWhiteListed;
   }
+  async getWhiteList(roomId: number) {
+    const rooms = await this.prisma.room.findUnique({
+      where : {id: roomId},
+      include: { whitelist: true },
+    });
+    return rooms?.whitelist;
+  }
 
   async ban(roomId: number, userId: number) {
     return this.prisma.room.update({
@@ -104,7 +111,7 @@ export class MessageService {
   async createMessage(createMessageDto: CreateMessageDto, username: string) {
     const message = await this.prisma.message.create({
       data: {
-        name: username,
+        name: username, 
         text: createMessageDto.text,
         room: { connect: { id: createMessageDto.room } },
       }
