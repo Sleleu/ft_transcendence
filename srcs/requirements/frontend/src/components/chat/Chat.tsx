@@ -24,6 +24,9 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom}) => {
     const [messageText, setMessageText] = useState<string>("");
     const [typing, setTyping] = useState<string>("");
     const [hover, setHover] = useState<boolean>(false);
+    const [adminText, setAdminText] = useState<string>("");
+    const [adminButton, setAdminButton] = useState<string>("");
+    
 
     const Container: CSSProperties = {
         width: '100%',
@@ -175,12 +178,34 @@ const handleHover = () => {
     setHover(!hover);
 };
 
+const adminType = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAdminText(event.target.value);
+}
+const adminSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (adminButton === '+')
+        socket?.emit('promoteAdmin', {target : adminText, roomName: roomName});
+    else if (adminButton === '-')
+        socket?.emit('demoteAdmin', {target : adminText, roomName: roomName});
+    else if (adminButton === 'ban')
+        socket?.emit('ban', {target : adminText, roomName: roomName});
+    else if (adminButton === 'unban')
+        socket?.emit('unban', {target : adminText, roomName: roomName});
+}
     return (
         <div style={Container}>
             <div style={topBar}>
                 {/* NAVBAR DU CHAT */}
                 <span style={RoomName}>{roomName}</span>
                 <div style={leaveButton} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => leaveRoom(roomName)}>LEAVE ROOM</div>
+                <form onSubmit={adminSubmit}>
+                    <input value={adminText}
+                     onChange={adminType}></input>
+                    <button onClick={() => {setAdminButton('+')}}>+</button>
+                    <button onClick={() => {setAdminButton('-')}}>-</button>
+                    <button onClick={() => {setAdminButton('ban')}}>ban</button>
+                    <button onClick={() => {setAdminButton('unban')}}>unban</button>
+                </form>
             </div>
             <div style={middleBlock}>
                 <div style={leftBlock}>

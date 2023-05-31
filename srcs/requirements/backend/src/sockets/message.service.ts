@@ -11,6 +11,15 @@ export class MessageService {
 
   constructor(private prisma: PrismaService) { }
 
+  async searchUser(userName : string) {
+    const user = await this.prisma.user.findUnique({
+      where : {
+        username : userName,
+      },
+    });
+    return user;
+  }
+
   async createRoom(dto: CreateRoomDto, userId: number) {
     const room = await this.prisma.room.create({
       data: {
@@ -42,11 +51,11 @@ export class MessageService {
     });
   }
   async searchWhiteList(roomId: number, userId: number) {
-    const room = await this.prisma.room.findUniqueOrThrow({
+    const room = await this.prisma.room.findUnique({
       where : {id: roomId},
       include: { whitelist: true },
     });
-    const isWhiteListed = room.whitelist.some((user) => user.id === userId);
+    const isWhiteListed = room?.whitelist.some((user) => user.id === userId);
     return isWhiteListed;
   }
 
@@ -63,11 +72,11 @@ export class MessageService {
     });
   }
   async isBanned(roomId: number, userId: number) {
-    const room = await this.prisma.room.findUniqueOrThrow({
+    const room = await this.prisma.room.findUnique({
       where : {id: roomId},
       include: { banned: true },
     });
-    const ban = room.banned.some((user) => user.id === userId);
+    const ban = room?.banned.some((user) => user.id === userId);
     return ban;
   }
 
@@ -84,11 +93,11 @@ export class MessageService {
     });
   }
   async isAdmin(roomId: number, userId: number) {
-    const room = await this.prisma.room.findUniqueOrThrow({
+    const room = await this.prisma.room.findUnique({
       where : {id: roomId},
       include: { admin: true },
     });
-    const adm = room.admin.some((user) => user.id === userId);
+    const adm = room?.admin.some((user) => user.id === userId);
     return adm;
   }
 
