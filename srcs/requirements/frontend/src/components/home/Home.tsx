@@ -52,8 +52,9 @@ function Home() {
     }
 
     const changeComponent = (component: string) => {
-        if (activeComponent !== component)
+        if (activeComponent !== component && !activeComponent.startsWith("queue")) {
             push(activeComponent)
+        }
         setActiveComponent(component)
     }
 
@@ -151,7 +152,7 @@ function Home() {
                         {activeComponent === "crackLead" && <Classement rank={'crack'} changeComponent={changeComponent} />}
                         {activeComponent === "ultimeLead" && <Classement rank={'ultime'} changeComponent={changeComponent} />}
                         {activeComponent.startsWith("watch") && <div>{extractId(activeComponent)}</div>}
-                        {activeComponent.startsWith("queue") && <Queue mode={extractText(activeComponent)} name={user.username} />}
+                        {activeComponent.startsWith("queue") && <Queue mode={extractText(activeComponent)} name={user.username} socket={socket} changeComponent={changeComponent} />}
                         {activeComponent === "rank" && <Rank user={user} changeComponent={changeComponent} />}
                         {activeComponent === "gameChoice" && <GameChoice changeComponent={changeComponent} />}
                     </div>
