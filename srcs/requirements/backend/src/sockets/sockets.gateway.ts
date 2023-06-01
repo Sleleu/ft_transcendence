@@ -4,9 +4,6 @@ import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { FriendService } from 'src/friend/friend.service';
 import { MessageService } from './message.service';
-import { GameState, BounceBallDto } from './dto/game.dto';
-import { Interval } from '@nestjs/schedule';
-
 
 @WebSocketGateway({ cors: true })
 export class SocketsGateway {

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, CSSProperties } from 'react';
 import Box, { BACKGROUND, PLAYER, BALL } from './box';
 import { io, Socket } from 'socket.io-client';
+import '../css/Game.css'
 
 /* size */
 const ROW_SIZE = 10;
@@ -11,51 +12,8 @@ const PADDLE_BOARD_SIZE = 3;
 const PADDLE_EDGE_SPACE = 1;
 
 /* buttons */
-
 const PAUSE = 32; // space
 const PLAY = 13; // ENTER
-
-const TextStyle: CSSProperties = {
-  color: "purple",
-};
-
-const inner: CSSProperties = {
-  display: "flex",
-  flexDirection: "row",
-  justifyContent: "center",
-
-};
-
-const outer: CSSProperties = {
-  height: '100%',
-  width: '100%',
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  alignItems: "center",
-  marginBottom: "9em",
-  marginRight: "35em",
-  padding: "10px",
-};
-
-const dividerStyle: CSSProperties  = {
-  marginLeft: "50px",
-  fontSize: "50px",
-  color: "white",
-};
-
-const score: CSSProperties  = {
-  marginLeft: "100px",
-  fontSize: "50px",
-  color: "white",
-};
-
-const style: CSSProperties  = {
-  width: "250px",
-  height: "250px",
-  display: "grid",
-  gridTemplate: `repeat(${ROW_SIZE}, 1fr)/ repeat(${COL_SIZE}, 1fr)`,
-};
 
 type GameState = {
   player: number[];
@@ -192,7 +150,6 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
 
   socket?.on('game-over', (gameState: GameState) => {
     console.log("client side event: game-over");
-
   });
 
   //keyboard events are only for debugging
@@ -273,87 +230,15 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
   const divider = [...Array(ROW_SIZE / 2 + 2)].map((_, index) => <div key={index}>{"|"}</div>);
 
   return (
-    <div id="game" style={outer}>
-      <div style={style}>
-        <div style={style}>{board}</div>
-        <div style={score}>{state.playerScore}</div>
-        <div style={dividerStyle}>{divider} </div>
-        <div style={dividerStyle}>{state.opponentScore}</div>
+    <div id="game" className="outer">
+      <div className="style">
+        <div className="style">{board}</div>
+        <div className="score">{state.playerScore}</div>
+        <div className="dividerStyle">{divider} </div>
+        <div className="dividerStyle">{state.opponentScore}</div>
       </div>
     </div>
   );
 };
 
 export default Game;
-
-
-
-  // const rightleftEdge = (pos: number) =>
-  //   pos % COL_SIZE === 0 || // Ball touches left edge
-  //   pos % COL_SIZE === COL_SIZE - 1;
-
-  // const touchingPaddle = (pos: number) =>
-  //   state.player.indexOf(pos) !== -1 ||
-  //   state.opponent.indexOf(pos) !== -1 ||
-  //   state[(state.deltaX === -1 ? "player" : "opponent")].indexOf(pos + state.deltaX) !== -1;
-
-  // const touchingPaddleEdge = (pos: number) =>
-  //   state.player[0] === pos ||
-  //   state.player[PADDLE_BOARD_SIZE - 1] === pos ||
-  //   state.opponent[0] === pos ||
-  //   state.opponent[PADDLE_BOARD_SIZE - 1] === pos;
-
-  // const isScore = (pos: number) =>
-  //   (state.deltaX === -1 && (pos + 1) % COL_SIZE === 0) ||
-  //   (state.deltaX === 1 && (pos + 1) % COL_SIZE === 0);
-
-  // const bounceBall = () => {
-
-  //   setState((prevState) => {
-  //     const newState = prevState.ball + prevState.deltaY + prevState.deltaX;
-
-  //     if (rightleftEdge(newState)){
-  //       socket?.emit('reset');
-  //       resetGame();
-  //       return prevState;
-  //     }
-
-  //     if (topbottomEdge(newState)) {
-  //       socket?.emit('bounceBall', { deltaX: prevState.deltaX, deltaY: -prevState.deltaY });
-  //       console.log("touching the edge: ", state.ball + ", " + state.player);
-  //       return {
-  //         ...prevState,
-  //         ball: newState,
-  //         deltaY: - prevState.deltaY,
-  //       };
-  //     }
-
-  //     if (touchingPaddleEdge(newState)) {
-  //       socket?.emit('bounceBall', { deltaX: prevState.deltaX, deltaY: -prevState.deltaY });
-  //       console.log("touching the paddle edge: ", state.ball + ", " + state.player);
-  //       return {
-  //         ...prevState,
-  //         ball: newState,
-  //         deltaY: - prevState.deltaY,
-  //       };
-  //     }
-
-  //     if (touchingPaddle(newState)) {
-  //       socket?.emit('bounceBall', { deltaX: -prevState.deltaX, deltaY: prevState.deltaY });
-  //       console.log("touching the paddle: ", state.ball + ", " + state.player);
-
-  //       return {
-  //         ...prevState,
-  //         ball: newState,
-  //         deltaX: - prevState.deltaX,
-  //       };
-  //     }
-
-  //     socket?.emit('bounceBall', { deltaX: prevState.deltaX, deltaY: prevState.deltaY })
-  //     console.log("updating the ball position");
-  //     return {
-  //       ...prevState,
-  //       ball: newState,
-  //     };
-  //   });
-  // };

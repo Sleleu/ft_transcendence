@@ -32,15 +32,17 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 
 	@Interval(500)
 	updateGameStateInterval(): void{
+		// console.log("inside the interval");
 		if (this.gameService.getwinner())
 		{
+			console.log("inside the interval game over");
 			this.server.emit("game-over");
 			this.connectedClients[0].disconnect();
 			this.connectedClients[1].disconnect();
 		}
 		else if (this.connectedClients.length === 2  && !this.gameService.getGameState().pause)
 		{
-			// console.log("inside the interval on the server side");
+			console.log("inside the interval bounce ball");
 			this.gameService.bounceBall();
 			this.server.emit("updateBallPosition", this.gameService.getGameState());
 		}
@@ -63,6 +65,7 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		if (this.connectedClients.length === 2){
 			this.connectedClients.forEach((client)=> {
 				client.emit('start');
+				this.startGame(client);
 			});
 			console.log("server: starting the game: ");
 		}
@@ -75,9 +78,9 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		console.log("in socketgatway start game");
 		this.gameService.startGame();
 
-		this.connectedClients.forEach((client)=> {
-			client.emit('start');
-		});
+		// this.connectedClients.forEach((client)=> {
+		// 	client.emit('start');
+		// });
 	}
 
 	@SubscribeMessage('pause')
@@ -112,13 +115,15 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 
 	@SubscribeMessage('move-player')
 	movePlayer(@MessageBody() movePlayer: number[], @ConnectedSocket() client: Socket): void{
-		// console.log("server side: move-player");
+		console.log("server side: move-player");
 		this.gameService.movePlayer(movePlayer);
+		const opponentClient = this.connectedClients.find(c => c !== client);
 
-		this.connectedClients.forEach((_client)=> {
-			if (client != _client)
-				_client.emit('move-opponent', this.gameService.getGameState());
-		});
+		if (opponentClient)
+		{
+			console.log("emitting to the opponent: ", opponentClient.id);
+			opponentClient.emit('move-opponent', this.gameService.getGameState());
+		}
 	}
 
 	// @SubscribeMessage('move-opponent')
