@@ -27,6 +27,9 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 
 	handleDisconnect(client: Socket) {
 		console.log('game disconnected:', client.id);
+		this.connectedClients.forEach((client)=> {
+			client.disconnect();
+		});
 		// this.connectedClients = this.connectedClients.filter((c) => c.id !== client.id);
 	}
 
@@ -63,8 +66,9 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 
 		}
 		if (this.connectedClients.length === 2){
+			let i = 0;
 			this.connectedClients.forEach((client)=> {
-				client.emit('start');
+				client.emit('start', ++i);
 				this.startGame(client);
 			});
 			console.log("server: starting the game: ");
@@ -114,30 +118,18 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	}
 
 	@SubscribeMessage('move-player')
-	movePlayer(@MessageBody() movePlayer: number[], @ConnectedSocket() client: Socket): void{
+	movePlayer(@MessageBody() movePlayer: number[], playerID: number, @ConnectedSocket() client: Socket): void{
 		console.log("server side: move-player");
-		this.gameService.movePlayer(movePlayer);
+		if (playerID === 1)
+			this.gameService.movePlayer(movePlayer);
+		else
+			this.gameService.moveOpponent(movePlayer);
+
 		const opponentClient = this.connectedClients.find(c => c !== client);
 
 		if (opponentClient)
-		{
-			console.log("emitting to the opponent: ", opponentClient.id);
 			opponentClient.emit('move-opponent', this.gameService.getGameState());
-		}
+	
 	}
-
-	// @SubscribeMessage('move-opponent')
-	  // moveOpponent(@MessageBody() moveOpponent: number[], @ConnectedSocket() client: Socket): void{
-	  // 	this.messagesService.moveOpponent(moveOpponent);
-	//   this.server.emit('move-opponent', this.messagesService.getGameState());
-	// }
-
-	// @SubscribeMessage('score')
-	// score(@ConnectedSocket() client: Socket): void{
-	//   console.log("server side: score event");
-	//   this.messagesService.getGameState().playerScore++;
-	//   client.emit('score', this.messagesService.getGameState());
-	// }
-
 
 }

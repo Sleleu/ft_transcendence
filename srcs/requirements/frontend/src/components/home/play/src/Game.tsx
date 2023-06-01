@@ -27,6 +27,7 @@ type GameState = {
   pause: boolean;
   playerScore: number;
   opponentScore: number;
+  playerID: number;
 };
 
 const InitialState = (): GameState => {
@@ -43,6 +44,7 @@ const InitialState = (): GameState => {
     pause: true,
     opponentDir: false,
     opponentSpeed: 300,
+    playerID: 0,
   };
 };
 
@@ -58,7 +60,6 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
   useEffect(() => {
     console.log("client side: joining a room");
     socket?.emit('join-room', socket.id);
-    // socket?.emit('start');
 
     return () => {
       socket?.disconnect();
@@ -83,11 +84,12 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
     resetGame();
   });
 
-  socket?.on('start', () => {
+  socket?.on('start', (_playerID: number) => {
     console.log("client side event: start");
     setState((prevState) => ({
       ...prevState,
       pause: false,
+      playerID: _playerID,
     }));
   });
 
@@ -116,28 +118,22 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
     }));
   });
 
-  // socket?.on('move-player', (gameState: GameState) => {
-  //   console.log("client side event: move-player");
-  //   setState((prevState) => ({
-  //     ...prevState,
-  //     player: gameState.player,
-  //   }));
-  // });
-
   socket?.on('move-opponent', (gameState: GameState) => {
     console.log("client side event: move-opponent");
-    setState((prevState) => ({
-      ...prevState,
-      opponent: gameState.opponent,
-    }));
-  });
-
-  socket?.on('changeOpponentDir', () => {
-    console.log("client side event: changeOpponentDir");
-    setState((prevState) => ({
-      ...prevState,
-      opponentDir: !prevState.opponentDir,
-    }));
+    if (state.playerID === 1)
+    {
+      setState((prevState) => ({
+        ...prevState,
+        opponent: gameState.opponent,
+      }));
+    }
+    else
+    {
+      setState((prevState) => ({
+        ...prevState,
+        player: gameState.opponent,
+      }));
+    }
   });
 
   socket?.on('score', (gameState: GameState) => {
@@ -189,17 +185,30 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
     if (container) {
       const containerRect = container.getBoundingClientRect();
       const mouseY = event.clientY - containerRect.top;
-      const playerBoard = state.player;
+      let playerBoard;
+      if (state.playerID === 1)
+        playerBoard = state.player;
+      else
+        playerBoard = state.opponent;
       const isUp = mouseY < containerRect.height / 2;
       movedPlayer = moveBoard(playerBoard, isUp);
-      // console.log("board position: ", movedPlayer + "ball position: " + state.ball);
     }
     if (movedPlayer !== null) {
-      socket?.emit('move-player', movedPlayer);
-      setState((prevState) => ({
-          ...prevState,
-          player: movedPlayer,
-      }) as GameState);
+      socket?.emit('move-player', movedPlayer, state.playerID);
+      if (state.playerID === 1)
+      {
+        setState((prevState) => ({
+            ...prevState,
+            player: movedPlayer,
+        }) as GameState);
+      }
+      else
+      {
+        setState((prevState) => ({
+            ...prevState,
+            opponent: movedPlayer,
+        }) as GameState);
+      }
     }
   };
 
