@@ -21,6 +21,7 @@ import Cookies from 'js-cookie';
 import RoomSelect from '../chat/RoomSelect';
 import { io, Socket } from 'socket.io-client';
 import GameChoice from './play/src/GameChoice';
+import Queue from './play/src/Queue';
 
 function Home() {
     const [user, setUser] = useState<User>({ username: '', id: -1, elo: -1, win: -1, loose: -1, createAt: '', updateAt: '', state: 'inexistant' })
@@ -93,6 +94,10 @@ function Home() {
             return -1
     }
 
+    const extractText = (str: string) => {
+        return str[str.length - 1]
+    }
+
     const handleLogout = async () => {
         try {
             await fetch("http://localhost:5000/users/logout", {
@@ -146,6 +151,7 @@ function Home() {
                         {activeComponent === "crackLead" && <Classement rank={'crack'} changeComponent={changeComponent} />}
                         {activeComponent === "ultimeLead" && <Classement rank={'ultime'} changeComponent={changeComponent} />}
                         {activeComponent.startsWith("watch") && <div>{extractId(activeComponent)}</div>}
+                        {activeComponent.startsWith("queue") && <Queue mode={extractText(activeComponent)} name={user.username} />}
                         {activeComponent === "rank" && <Rank user={user} changeComponent={changeComponent} />}
                         {activeComponent === "gameChoice" && <GameChoice changeComponent={changeComponent} />}
                     </div>
