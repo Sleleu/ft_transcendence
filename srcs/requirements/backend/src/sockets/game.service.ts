@@ -84,8 +84,6 @@ export class GameService {
 
 	bounceBall():void{
 
-		// console.log("server bounceball function");
-		// Update ball position
 		const newstate = this.gameState.ball + this.gameState.deltaY + this.gameState.deltaX;
 
 		if (this.rightleftEdge(newstate)) {

@@ -12,8 +12,8 @@ const PADDLE_BOARD_SIZE = 3;
 const PADDLE_EDGE_SPACE = 1;
 
 /* buttons */
-const PAUSE = 32; // space
-const PLAY = 13; // ENTER
+// const PAUSE = 32; // space
+// const PLAY = 13; // ENTER
 
 type GameState = {
   player1: number[];
@@ -55,13 +55,8 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
     console.log("client side: joining a room");
     socket?.emit('join-room', socket.id);
 
-    socket?.on('disconnect', () => {
-      console.log("client side: disconnected from the server")
-      resetGame();
-    });
-
     return () => {
-      socket?.disconnect();
+      socket?.emit("game-over");
     };
   }, []);
 
@@ -129,23 +124,23 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
     }));
   });
 
-  //keyboard events are only for debugging
-  const keyInput = (event : KeyboardEvent) => {
-    const{ key } = event;
-    console.log("calling keyinput");
-    switch (key) {
-      case "Enter":
-        console.log("PLAY keyinput");
-        socket?.emit('start');
-        break;
-      case " ":
-        console.log("pause keyinput");
-        socket?.emit('pause');
-        break;
-      default:
-        break;
-    }
-  };
+  // //keyboard events are only for debugging
+  // const keyInput = (event : KeyboardEvent) => {
+  //   const{ key } = event;
+  //   console.log("calling keyinput");
+  //   switch (key) {
+  //     case "Enter":
+  //       console.log("PLAY keyinput");
+  //       socket?.emit('start');
+  //       break;
+  //     case " ":
+  //       console.log("pause keyinput");
+  //       socket?.emit('pause');
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // };
 
   const moveBoard = (playerBoard: number[], isUp: boolean) => {
     const playerEdge = isUp ? playerBoard[0] : playerBoard[PADDLE_BOARD_SIZE - 1];
@@ -181,15 +176,15 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
   };
 
   useEffect(() => {
-    document.addEventListener('keydown', keyInput);
+    // document.addEventListener('keydown', keyInput);
     document.addEventListener('mousemove', handleMouseMove);
 
     return () => {
-      document.removeEventListener('keydown', keyInput);
+      // document.removeEventListener('keydown', keyInput);
       document.removeEventListener('mousemove', handleMouseMove);
 
     };
-  }, [keyInput, handleMouseMove]);
+  }, [handleMouseMove]);
 
   const board = [...Array(ROW_SIZE * COL_SIZE)].map((_, pos) => {
     let val = BACKGROUND;

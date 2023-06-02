@@ -27,19 +27,10 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 
 	handleDisconnect(client: Socket) {
 		console.log('game disconnected:', client.id);
-
-		//update prisma data
-		this.connectedClients.forEach((client)=> {
-			client.emit("game-over");
-		});
-		this.gameService.resetGame();
-		this.connectedClients = [];
-		console.log(this.connectedClients.length);
 	}
 
 	@Interval(500)
 	updateGameStateInterval(): void{
-		// console.log("inside the interval");
 		if (this.gameService.getwinner())
 		{
 			console.log("inside the interval game over");
@@ -47,10 +38,8 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 			//update prisma data
 			this.connectedClients.forEach((client)=> {
 				client.emit('game-over', this.gameService.getGameState());
-				client.disconnect();
+				this.gameOver(client);
 			});
-
-			this.gameService.resetGame();
 		}
 		else if (this.connectedClients.length === 2  && !this.gameService.getGameState().pause)
 		{
@@ -72,7 +61,6 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		else if (this.connectedClients.length > 2)
 		{
 			console.log("more than two users not allowed");
-
 		}
 		if (this.connectedClients.length === 2){
 			let i = 0;
@@ -117,15 +105,13 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	// }
 
 	@SubscribeMessage('game-over')
-	playerLeft(@ConnectedSocket() client: Socket): void{
-
-		//update prisma with the scores
-		this.gameService.resetGame();
-
+	gameOver(@ConnectedSocket() client: Socket): void{
+		//update prisma data
 		this.connectedClients.forEach((client)=> {
-			client.emit('game-over', this.gameService.getGameState());
-			client.disconnect();
+			client.emit("game-over");
 		});
+		this.gameService.resetGame();
+		this.connectedClients = [];
 	}
 
 	@SubscribeMessage('updateBallPosition')
@@ -140,7 +126,7 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 
 	@SubscribeMessage('move-player')
 	movePlayer(@MessageBody() movePaddleDto: movePaddleDto, @ConnectedSocket() client: Socket): void{
-		console.log("server side: move-player with id: ", movePaddleDto.playerID, "and moved player of ", movePaddleDto.movedPlayer);
+		// console.log("server side: move-player with id: ", movePaddleDto.playerID, "and moved player of ", movePaddleDto.movedPlayer);
 		if (movePaddleDto.playerID === 1)
 			this.gameService.movePlayer1(movePaddleDto.movedPlayer);
 		else
