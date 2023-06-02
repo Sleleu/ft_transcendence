@@ -103,12 +103,14 @@
 /* range input */
 .neon-range {
 	background-color: transparent;
-	width: 100%;
+	width: 30%;
 	height: 10px;
 	border-radius: 5px;
 	outline: none;
 	box-shadow: 0 0 10px #f975ed, 0 0 10px #f975ed, 0 0 10px #f975ed, 0 0 10px #f975ed;
 	-webkit-appearance: none;
+	max-width: 30%;
+	margin: 30px auto;
   }
 
   .neon-range::-webkit-slider-thumb {
