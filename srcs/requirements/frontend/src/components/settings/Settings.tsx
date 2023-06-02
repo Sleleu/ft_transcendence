@@ -113,7 +113,7 @@ function Settings({ user, changeComponent }: settingsProps) {
 					</Cont>
 					<Cont minWidth='270px' minHeight='340px' width='75vw' height='38vh' alignItems='center'>
 						{selectedOption === "username"  && <SettingsUsername user={user} />}
-						{selectedOption === "avatar"  && <SettingsAvatar />}
+						{selectedOption === "avatar"  && <SettingsAvatar user={user} />}
 						{selectedOption === "block"  && <SettingsBlock />}
 						{selectedOption === "password"  && <SettingsPassword />}
 						{selectedOption === "lock"  && <SettingsAuth />}
