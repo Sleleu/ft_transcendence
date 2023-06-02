@@ -10,10 +10,12 @@ import { SocketsChatGateway } from './sockets-message.gateway';
 import { MessageService } from './message.service';
 import { SocketsFriendsGateway } from './sockets-friends.gateway';
 import { SocketsGameGateway } from './sockets-game.gateway';
+import { SocketsQueueGateway } from './sockets-queue.gateway';
+import { QueueService } from './queue.service';
 
 @Module({
   imports: [JwtModule.register({ secret: 'transcendence_secret' }), FriendModule],
   providers: [SocketsGateway, SocketsChatGateway, SocketsFriendsGateway, SocketsGameGateway,
-     SocketsService, FriendService, MessageService]
+    SocketsService, FriendService, MessageService, SocketsQueueGateway, QueueService]
 })
 export class SocketsModule { }

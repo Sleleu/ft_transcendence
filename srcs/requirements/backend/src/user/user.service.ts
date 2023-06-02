@@ -64,4 +64,10 @@ export class UserService {
         })
         return user
     }
+
+    async deleteBlock(blockId: number) {
+        await this.prismaService.bloqueUser.delete({
+            where: { id: blockId }
+        })
+    }
 }

@@ -20,6 +20,8 @@ import { User } from '../types'
 import Cookies from 'js-cookie';
 import RoomSelect from '../chat/RoomSelect';
 import { io, Socket } from 'socket.io-client';
+import GameChoice from './play/src/GameChoice';
+import Queue from './play/src/Queue';
 
 function Home() {
     const [user, setUser] = useState<User>({ username: '', id: -1, elo: -1, win: -1, loose: -1, createAt: '', updateAt: '', state: 'inexistant' })
@@ -28,7 +30,7 @@ function Home() {
     const [socket, setSocket] = useState<Socket>();
     const navigate = useNavigate()
     const existingRanks: string[] = ['bronze', 'silver', 'gold', 'crack', 'ultime'];
-    const userRank: string =  user.elo > 5000 || user.elo < 0 ? 'ultime' : existingRanks[Math.floor(user.elo / 1000)];
+    const userRank: string = user.elo > 5000 || user.elo < 0 ? 'ultime' : existingRanks[Math.floor(user.elo / 1000)];
 
     const push = (item: string) => {
         setStack([...stack, item])
@@ -50,20 +52,22 @@ function Home() {
     }
 
     const changeComponent = (component: string) => {
-        if (activeComponent !== component)
+        if (activeComponent !== component && !activeComponent.startsWith("queue")) {
             push(activeComponent)
+        }
         setActiveComponent(component)
     }
 
     const api = async () => {
         const data = await fetch("http://localhost:5000/users/profile", {
-			method: "GET",
-			credentials: 'include'})
+            method: "GET",
+            credentials: 'include'
+        })
         if (data.status === 401) {
             navigate('/')
         }
         const userProfile = await data.json();
-		return userProfile;
+        return userProfile;
     }
 
     useEffect(() => {
@@ -74,11 +78,11 @@ function Home() {
         }
         getUser();
 
-        const sock = io('http://localhost:5000', {withCredentials: true});
+        const sock = io('http://localhost:5000', { withCredentials: true });
         setSocket(sock);
 
         return () => {
-        socket?.disconnect();
+            socket?.disconnect();
         };
     }, [])
 
@@ -91,18 +95,23 @@ function Home() {
             return -1
     }
 
-	const handleLogout = async () => {
-		try {
-		  await fetch("http://localhost:5000/users/logout", {
-			method: "GET",
-			credentials: "include",
-		  });
-		  Cookies.remove("Authorization");
-		  navigate('/');
-		} catch (error) {
-		  console.error("Error while disconnect :", error);
-		}
-	  };
+    const extractText = (str: string) => {
+        return str[str.length - 1]
+    }
+
+    const handleLogout = async () => {
+        try {
+            await fetch("http://localhost:5000/users/logout", {
+                method: "GET",
+                credentials: "include",
+            });
+            Cookies.remove("Authorization");
+            navigate('/');
+            socket?.disconnect()
+        } catch (error) {
+            console.error("Error while disconnect :", error);
+        }
+    };
 
     return (
         <div className="baground">
@@ -123,7 +132,7 @@ function Home() {
                         <NavBar
                             changeComponent={changeComponent}
                             front={front}
-							handleLogout={handleLogout}
+                            handleLogout={handleLogout}
                         />
                     </div>}
                     <div className='containerCenter'>
@@ -133,7 +142,7 @@ function Home() {
                         {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} />}
                         {activeComponent === "history" && <History />}
                         {activeComponent === "stat" && <Stats user={user} changeComponent={changeComponent} />}
-                        {activeComponent === "friend" && <Friend changeComponent={changeComponent} socket={socket}/>}
+                        {activeComponent === "friend" && <Friend changeComponent={changeComponent} socket={socket} />}
                         {activeComponent === "chat" && <RoomSelect user={user} socket={socket} />}
 
                         {activeComponent === "leader" && <Classement rank={userRank} changeComponent={changeComponent} />}
@@ -143,8 +152,9 @@ function Home() {
                         {activeComponent === "crackLead" && <Classement rank={'crack'} changeComponent={changeComponent} />}
                         {activeComponent === "ultimeLead" && <Classement rank={'ultime'} changeComponent={changeComponent} />}
                         {activeComponent.startsWith("watch") && <div>{extractId(activeComponent)}</div>}
-
+                        {activeComponent.startsWith("queue") && <Queue mode={extractText(activeComponent)} name={user.username} socket={socket} changeComponent={changeComponent} />}
                         {activeComponent === "rank" && <Rank user={user} changeComponent={changeComponent} />}
+                        {activeComponent === "gameChoice" && <GameChoice changeComponent={changeComponent} />}
                     </div>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, NotFoundException, Put, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, Put, Req, Res, UseGuards, Delete } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { JwtGuard } from 'src/auth/guard';
 import { UserService } from './user.service';
@@ -57,5 +57,11 @@ export class UserController {
 			throw new NotFoundException('User not found');
 		}
 		return this.userService.getBlock(+req.user.id)
+	}
+
+	@Delete('deleteBlock/:blockId')
+	async RmBlock(@Param('blockId') id: number) {
+		console.log('aled')
+		await this.userService.deleteBlock(+id)
 	}
 }
