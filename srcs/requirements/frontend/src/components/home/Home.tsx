@@ -67,7 +67,6 @@ function Home() {
     }
 
     useEffect(() => {
-        console.log("PASSAGE DANS USEEFFECT", user);
         const getUser = async () => {
             const userFromServer = await api()
             setUser(userFromServer)

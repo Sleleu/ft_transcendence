@@ -33,11 +33,18 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		const rooms = this.messagesService.findAllRooms();
 		return rooms;
 	}
+	@SubscribeMessage('owner')
+	async owner(@MessageBody('roomName') roomName: string,) {
+		const owner = await this.messagesService.owner(roomName);
+		if (!owner)
+			throw new ForbiddenException('No owner found');
+		return owner;
+	}
 	@SubscribeMessage('createRoom')
 	async createRoom(@MessageBody() dto: CreateRoomDto,
 	@ConnectedSocket() client: Socket) {
 		const user = this.socketService.getUser(client.id);
-		const exists = await this.messagesService.getRoomByName(dto.name);
+		const exists = await this.messagesService.owner(dto.name);
 		if (exists)
 			throw new ForbiddenException('Room alerady exists');
 		const room = await this.messagesService.createRoom(dto, user.id);

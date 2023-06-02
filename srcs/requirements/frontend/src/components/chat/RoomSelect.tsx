@@ -174,7 +174,7 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
                         </div>
                     </div>
                     <div style={displayBox}>
-                        {rooms.map((room) => <RoomEntry room={room} key={room.id} handleSelect={handleSelect}/>)}
+                        {rooms.map((room) => <RoomEntry room={room} key={room.id} handleSelect={handleSelect} socket={socket}/>)}
                     </div>
                 </div>
             </div>

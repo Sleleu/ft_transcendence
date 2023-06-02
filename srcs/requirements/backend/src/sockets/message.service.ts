@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { CreateRoomDto, MessageObj } from './entities/message.entity';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { User, Message } from '@prisma/client';
+import { User, Message, Room } from '@prisma/client';
 
 @Injectable()
 export class MessageService {
@@ -20,6 +20,22 @@ export class MessageService {
     return user;
   }
 
+  async owner(roomName : string) {
+    const room = await this.prisma.room.findFirst({
+      where : {
+        name : roomName,
+      },
+    });
+    if (!room)
+      throw new ForbiddenException('Room not found');
+    const owner = await this.prisma.user.findUnique({
+      where : { 
+        id : room.ownerId,
+      },
+    });
+    return owner;
+  }
+
   async createRoom(dto: CreateRoomDto, userId: number) {
     const room = await this.prisma.room.create({
       data: {
@@ -28,7 +44,7 @@ export class MessageService {
         password: dto.password, //DEVRAIT ETRE UN HASH
         owner: { connect: { id: userId } },
       }
-    })
+    });
     return room;
   }
   findAllRooms() {

@@ -88,7 +88,7 @@ model Room {
 	type		String
 	password	String?
 
-	ownerId     Int?
+	ownerId     Int
   	owner       User?    @relation("RoomOwner", fields: [ownerId], references: [id])
 	whitelist   User[]   @relation("RoomWhitelist")
 	admin		User[]   @relation("Admin")

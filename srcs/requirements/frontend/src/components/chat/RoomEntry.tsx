@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { Socket } from 'socket.io-client';
 import { CSSProperties } from 'styled-components';
+import { User } from '../types';
 
 interface Room {
     name: string;
@@ -13,9 +15,12 @@ interface Props {
 	room: Room;
 	key: number;
   handleSelect: (id: number, roomName: string, type: string) => void;
+  socket?: Socket;
 }
 
-const RoomEntry:React.FC<Props> = ({room, handleSelect}) => {
+const RoomEntry:React.FC<Props> = ({room, handleSelect, socket}) => {
+
+const [owner, setOwner] = useState<string>('');
 
 const RoomsContainer: CSSProperties = {
   height:'100px',
@@ -45,6 +50,14 @@ const InSalon: CSSProperties = {
 const Block: CSSProperties = {
   display: 'flex', flexDirection:'column', justifyContent: 'space-around',
 }
+
+useEffect(() => {
+  console.log('useEffect room');
+  socket?.emit('owner', {roomName: room.name}, (response:User) => {
+    setOwner(response.username);
+  })
+}, []);
+
   return (
     <div style={RoomsContainer} onClick={() => handleSelect(room.id, room.name, room.type)}>
       <div style={Block}>
@@ -53,7 +66,7 @@ const Block: CSSProperties = {
       </div>
       <div style={Block}>
         <span style={legend}>Owner</span>
-        <span style={Owner}>ownerNameHere</span>
+        <span style={Owner}>{owner}</span>
       </div>
       <div style={Block}>
         <span style={legend}>Status</span>
