@@ -17,7 +17,7 @@ import { QueueService } from './queue.service';
 
 @Module({
   imports: [ScheduleModule.forRoot(), JwtModule.register({ secret: 'transcendence_secret' }), FriendModule],//shima added schedule module for the interval to run
-  providers: [SocketsGateway, SocketsChatGateway, SocketsFriendsGateway, SocketsGameGateway,
-     SocketsService, FriendService, MessageService, GameService]
+  providers: [SocketsGateway, SocketsChatGateway, SocketsFriendsGateway, SocketsGameGateway, SocketsQueueGateway,
+     SocketsService, FriendService, MessageService, GameService, QueueService]
 })
 export class SocketsModule { }

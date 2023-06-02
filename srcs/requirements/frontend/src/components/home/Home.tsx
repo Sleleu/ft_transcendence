@@ -139,7 +139,7 @@ function Home() {
                     <div className='containerCenter'>
 
                         {activeComponent === "play" && <Play changeComponent={changeComponent} />}
-                        {activeComponent === "game" && <Game changeComponent={changeComponent} socket={socket} opponentID={extractId(activeComponent)}/>}
+                        {activeComponent.startsWith("game") && <Game socket={socket} opponentID={extractId(activeComponent)}/>}
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent} />}
                         {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} />}
                         {activeComponent === "history" && <History />}
@@ -156,7 +156,7 @@ function Home() {
                         {activeComponent.startsWith("watch") && <div>{extractId(activeComponent)}</div>}
                         {activeComponent.startsWith("queue") && <Queue mode={extractText(activeComponent)} name={user.username} socket={socket} changeComponent={changeComponent} />}
                         {activeComponent === "rank" && <Rank user={user} changeComponent={changeComponent} />}
-                        {activeComponent === "gameChoice" && <GameChoice changeComponent={changeComponent} />}
+                        {activeComponent === "Choices" && <GameChoice changeComponent={changeComponent} />}
                     </div>
                 </div>
             </div>
