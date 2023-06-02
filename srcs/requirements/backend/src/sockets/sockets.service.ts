@@ -17,6 +17,7 @@ export class SocketsService {
       where: {
         access_token: access_token,
       },
+      include: { friend: true }
     });
     return user;
   }
@@ -42,4 +43,10 @@ export class SocketsService {
     return this.clientToUser[clientId];
   }
 
+  async changeState(userId: number, newState: string) {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { state: newState }
+    })
+  }
 }

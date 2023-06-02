@@ -53,7 +53,7 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
 
   useEffect(() => {
     console.log("client side: joining a room");
-    socket?.emit('join-room', socket.id);
+    socket?.emit('join-room', opponentID);//send the opponent socket
 
     return () => {
       socket?.emit("game-over");

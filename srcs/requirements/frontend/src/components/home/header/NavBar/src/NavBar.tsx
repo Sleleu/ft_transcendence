@@ -2,30 +2,34 @@ import React, { FC } from 'react'
 import '../css/NavBar.css'
 
 interface NavBarProps {
-    changeComponent: (component: string) => void;
-    front: () => void;
-	handleLogout: () => void;
+  changeComponent: (component: string) => void;
+  front: () => void;
+  handleLogout: () => void;
 }
 
-const NavBar: FC<NavBarProps> = ({changeComponent, front, handleLogout }) => {
+const NavBar: FC<NavBarProps> = ({ changeComponent, front, handleLogout }) => {
   return (
     <div className='containerNavBar'>
-        <div
-        onClick={() => front()} 
+      <div
+        onClick={() => front()}
         className='returnLogo'
-        />   
-        <div
-        onClick={() => changeComponent("menue")} 
+        title='return'
+      />
+      <div
+        onClick={() => changeComponent("menue")}
         className='menueLogo'
-        />
-         <div
-        onClick={handleLogout} 
+        title='menue'
+      />
+      <div
+        onClick={handleLogout}
         className='logoutLogo'
-        />
-        <div
-        onClick={() => changeComponent("stat")} 
+        title='log out'
+      />
+      <div
+        onClick={() => changeComponent("stat")}
         className='avatar'
-        />
+        title='stat'
+      />
     </div>
   )
 }

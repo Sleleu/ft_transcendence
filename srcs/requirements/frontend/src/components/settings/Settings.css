@@ -1,5 +1,4 @@
-.center
-{
+.center {
 	top: 10%;
 	position: absolute;
 	min-height: 507px;
@@ -10,8 +9,7 @@
 	justify-content: center;
 }
 
-.display-settings
-{
+.display-settings {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
@@ -23,49 +21,45 @@
 	flex-grow: 1;
 }
 
-.vector-neon
-{	
+.vector-neon {
 	filter: drop-shadow(0px 0px 8px #40ddff);
 }
 
-.btn
-{
+.btn {
 	box-sizing: border-box;
-	
+
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	padding: 5px 40px;
 	background-color: transparent;
-	
+
 	width: 105px;
 	height: 60px;
-	
+
 	border: 0.5px solid #FFFFFF;
 	border-radius: 5px;
 }
 
-.btn-little
-{
+.btn-little {
 	background-color: transparent;
 	border: 0.5px solid #FFFFFF;
 	border-radius: 15px;
 }
 
-.btn:hover, .btn-little:hover
-{
+.btn:hover,
+.btn-little:hover {
 	background-color: rgba(0, 255, 255, 0.30);
 	filter: drop-shadow(0px 0px 2px white);
-	box-shadow: inset 0px ,0px ,0px, 5px red;
+	box-shadow: inset 0px, 0px, 0px, 5px red;
 }
 
-.password-input
-{
+.password-input {
 	padding: 5px 15px;
 	gap: 10px;
 	background: rgba(255, 255, 255, 0.25);
-	border-radius: 10px;	
+	border-radius: 10px;
 }
 
 .password-container {
@@ -73,17 +67,16 @@
 	flex-direction: column;
 	align-items: center;
 	gap: 1rem;
-}  
+}
 
 .password {
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
 }
-  
 
-.password
-{
+
+.password {
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
@@ -92,3 +85,11 @@
 	height: 32px;
 }
 
+.containerBlockOnglet {
+	width: 100%;
+	height: 10%;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}

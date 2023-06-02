@@ -8,14 +8,19 @@ export interface GameState {
 	pause: boolean;
 	playerScore: number;
 	opponentScore: number;
-	}
+}
 
-  export interface BounceBallDto {
+export interface BounceBallDto {
 	deltaX: number;
 	deltaY: number;
-  }
+}
 
-  export interface movePaddleDto {
+export interface movePaddleDto {
 	movedPlayer: number[];
 	playerID: number;
-  }
+}
+
+export interface Opponent {
+	username: string
+	id: number
+}

@@ -4,6 +4,7 @@ import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { FriendService } from 'src/friend/friend.service';
 import { MessageService } from './message.service';
+import { User, Friend } from '@prisma/client';
 
 @WebSocketGateway({ cors: true })
 export class SocketsGateway {
@@ -11,10 +12,10 @@ export class SocketsGateway {
   server: Server;
 
   constructor(
-    private readonly messagesService: SocketsService,
+    private readonly socketService: SocketsService,
     private readonly msg: MessageService,
     private jwtService: JwtService,
-    private friendService: FriendService) {}
+    private friendService: FriendService) { }
 
   afterInit() {
     console.log('WebSocket Gateway initialized');
@@ -25,9 +26,11 @@ export class SocketsGateway {
       const token = client.handshake.headers.cookie?.substring(14);
       if (token) {
         const payload = this.jwtService.verify(token);
-        const user = await this.messagesService.getUserWithToken(token);
-        this.messagesService.identify(user, client.id);
+        const user = await this.socketService.getUserWithToken(token);
+        this.socketService.identify(user, client.id);
         console.log('Client connected:', client.id, ' ->', user.username);
+        this.socketService.changeState(+user.id, 'online')
+        this.refreshFriend(user)
       }
       else {
         console.log('CONNECTION ERROR : token is undefined');
@@ -40,8 +43,36 @@ export class SocketsGateway {
     }
   }
 
-  handleDisconnect(client: Socket) {
-    console.log('Client disconnected:', client.id);
-    this.messagesService.supClient(client.id)
+  async handleDisconnect(client: Socket) {
+    const token = client.handshake.headers.cookie?.substring(14);
+    if (token) {
+      const user: User & { friend: Friend[] } = await this.socketService.getUserWithToken(token);
+      console.log('Client disconnected:', client.id, ' ->', user.username);
+      this.socketService.changeState(+user.id, 'offline')
+      this.refreshFriend(user)
+      this.socketService.supClient(client.id)
+    }
+    else
+      return
+  }
+
+  async refreshFriend(user: User & { friend: Friend[] }) {
+    const friendSockets: { [friendId: number]: Socket } = {};
+    for (const friend of user.friend) {
+      const friendSocketId = this.socketService.findSocketById(friend.friendId);
+      if (friendSocketId) {
+        const friendSocket = this.server.sockets.sockets.get(friendSocketId);
+        if (friendSocket) {
+          friendSockets[friend.friendId] = friendSocket;
+        }
+      }
+    }
+    await new Promise(resolve => setTimeout(resolve, 100));
+    for (const friendId of Object.keys(friendSockets)) {
+      const friendSocket = friendSockets[+friendId];
+      const friendFriend = await this.friendService.getFriendsByUserId(+friendId);
+      friendSocket.emit('receiveFriend', { friends: friendFriend });
+      console.log('req', friendFriend)
+    }
   }
 }

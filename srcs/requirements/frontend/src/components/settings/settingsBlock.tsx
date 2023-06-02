@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { User } from '../types';
 import SettingsBlockOnglet from './settingsBlockOnglet';
 
-interface blocked {
+interface blockedI {
 	senderId: number
 	sender: User
 	recipientId: number
@@ -12,7 +12,8 @@ interface blocked {
 
 const SettingsBlock = () => {
 
-	const [blocked, setBlocked] = useState([])
+	const [blocked, setBlocked] = useState<blockedI[]>([])
+
 	useEffect(() => {
 		const setBlock = async () => {
 			const req = 'http://localhost:5000/users/blockUser'
@@ -23,12 +24,18 @@ const SettingsBlock = () => {
 		setBlock()
 	}, [])
 
-	// const updateBlock = (friendId)
+	const updateBlock = (id: number) => {
+		setBlocked(prevBlocked => {
+			const updatedBlocked = prevBlocked.filter(blocked => blocked.id !== id);
+			return updatedBlocked;
+		});
+	}
 
 	return (
 		<>
+			<p className='text bold'>Blocked User:</p>
 			{blocked.length ?
-				(blocked.map((block: blocked) => <SettingsBlockOnglet key={block.id} block={block} />))
+				(blocked.map((block: blockedI) => <SettingsBlockOnglet key={block.id} block={block} updateBlock={updateBlock} />))
 				:
 				(< p className='text bold'>Blocked User will apear here ! </p>)
 			}

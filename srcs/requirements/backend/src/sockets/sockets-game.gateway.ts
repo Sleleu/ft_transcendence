@@ -1,7 +1,7 @@
 import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer, ConnectedSocket, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { SocketsService } from './sockets.service';
 import { Server, Socket } from 'socket.io';
-import { GameState, BounceBallDto, movePaddleDto} from './dto/game.dto';
+import { GameState, BounceBallDto, movePaddleDto, Opponent} from './dto/game.dto';
 import { Interval } from '@nestjs/schedule';
 import { GameService } from './game.service';
 
@@ -9,7 +9,7 @@ import { GameService } from './game.service';
 export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	private server: Server;
-	private connectedClients: Socket[] = [];
+	private connectedClients: (Socket<any> | undefined)[] = [];
 
 	constructor(
 		private readonly socketService: SocketsService,
@@ -22,7 +22,6 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 
 	handleConnection(client: Socket) {
 		console.log('in game connection:', client.id);
-		// this.joinroom(client);
 	}
 
 	handleDisconnect(client: Socket) {
@@ -37,8 +36,11 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 
 			//update prisma data
 			this.connectedClients.forEach((client)=> {
-				client.emit('game-over', this.gameService.getGameState());
-				this.gameOver(client);
+				if (client)
+				{
+					client.emit('game-over', this.gameService.getGameState());
+					this.gameOver(client);
+				}
 			});
 		}
 		else if (this.connectedClients.length === 2  && !this.gameService.getGameState().pause)
@@ -51,22 +53,31 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 
 	//create an event for player-joining and set the sockets , the event takes the user id
 	@SubscribeMessage('join-room')
-	joinroom(@ConnectedSocket() client: Socket): void{
+	joinroom(@MessageBody() opponentid: number, @ConnectedSocket() client: Socket): void{
 		console.log("server side: joining a room: ");
-		if (this.connectedClients.length < 2)
-		{
-			console.log("adding user to the game room: ");
-			this.connectedClients.push(client);
-		}
-		else if (this.connectedClients.length > 2)
-		{
-			console.log("more than two users not allowed");
-		}
+
+		//must be updated
+		this.connectedClients[0] = client;
+		const opponent = this.socketService.findSocketById(opponentid);
+		if (opponent)
+			this.connectedClients[1] = this.server.sockets.sockets.get(opponent);
+		// if (this.connectedClients.length < 2)
+		// {
+		// 	console.log("adding user to the game room: ");
+		// 	this.connectedClients.push(client);
+		// }
+		// else if (this.connectedClients.length > 2)
+		// {
+		// 	console.log("more than two users not allowed");
+		// }
 		if (this.connectedClients.length === 2){
 			let i = 0;
 			this.connectedClients.forEach((client)=> {
-				client.emit('start', ++i);
-				this.startGame(client);
+				if (client)
+				{
+					client.emit('start', ++i);
+					this.startGame(client);
+				}
 			});
 			console.log("server: starting the game: ");
 		}
@@ -90,7 +101,8 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		this.gameService.pauseGame();
 
 		this.connectedClients.forEach((client)=> {
-			client.emit('pause');
+			if (client)
+				client.emit('pause');
 		});
 	}
 
@@ -108,7 +120,8 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	gameOver(@ConnectedSocket() client: Socket): void{
 		//update prisma data
 		this.connectedClients.forEach((client)=> {
-			client.emit("game-over");
+			if (client)
+				client.emit("game-over");
 		});
 		this.gameService.resetGame();
 		this.connectedClients = [];
@@ -120,7 +133,8 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		console.log("server side: bounce ball gateway emitting from: ", client.id);
 
 		this.connectedClients.forEach((client)=> {
-			client.emit('updateBallPosition', this.gameService.getGameState());
+			if (client)
+				client.emit('updateBallPosition', this.gameService.getGameState());
 		});
 	}
 
@@ -133,7 +147,8 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 			this.gameService.movePlayer2(movePaddleDto.movedPlayer);
 
 		this.connectedClients.forEach((client)=> {
-			client.emit('move-paddles', this.gameService.getGameState());
+			if (client)
+				client.emit('move-paddles', this.gameService.getGameState());
 		});
 	}
 }

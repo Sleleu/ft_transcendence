@@ -1,4 +1,3 @@
-import React from 'react'
 import '../css/FriendOptionOnglet.css'
 import { User } from '../../../types';
 import ConfirmationPopUp from '../../../popUp/ConfirmationPopUp';
