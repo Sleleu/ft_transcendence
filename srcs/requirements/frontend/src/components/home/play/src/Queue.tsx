@@ -23,6 +23,7 @@ const Queue = ({ mode, name, socket, changeComponent }: props) => {
     useEffect(() => {
         const emitStr = 'addQueue' + mode
         const quit = 'quitQueue' + mode
+        console.log("queuing up")
         socket?.emit(emitStr, {})
         socket?.on('vsName', async ({ opponent }: { opponent: Opponent }) => {
             await delay(2000)

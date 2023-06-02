@@ -16,6 +16,7 @@ import { IntraModule } from './intra/intra.module';
 			FriendModule,
 			HistoryModule,
 			SocketsModule,
-			IntraModule,]
+			IntraModule,
+		]
 })
 export class AppModule {}

@@ -7,11 +7,12 @@ interface MenueProps {
 }
 
 const Menue:FC<MenueProps> = ({changeComponent}) => {
+
   return (
     <div className='containerMenue'>
         <div className='containerLeftMenue'>
             <div className='containerTop'>
-                <div 
+                <div
                 className='containerFriend'
                 onClick={() => changeComponent('friend')}
                 >

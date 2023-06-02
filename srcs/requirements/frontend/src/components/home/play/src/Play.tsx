@@ -8,7 +8,7 @@ interface PlayProps {
 const Play:FC<PlayProps> = ({changeComponent}) => {
 
   const click = () => {
-    changeComponent('gameChoice')
+    changeComponent('Choices')
   }
   return (
     <div className='containerPlay' onClick={click}>
