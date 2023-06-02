@@ -43,7 +43,7 @@ const SettingsTitle = () => {
 }
 
 const SettingsOptions = ({setSelectedOption}: SettingsOptionsProps) => {
-	
+
 	const handleOptionClick = (option: string) => {
 		setSelectedOption(option);
 	  };

@@ -18,6 +18,7 @@ import Chat from '../chat/Chat';
 import Friend from '../friend/list/src/friend';
 import { User } from '../types'
 import Cookies from 'js-cookie';
+import Game from './play/src/Game';
 import RoomSelect from '../chat/RoomSelect';
 import { io, Socket } from 'socket.io-client';
 import GameChoice from './play/src/GameChoice';
@@ -138,6 +139,7 @@ function Home() {
                     <div className='containerCenter'>
 
                         {activeComponent === "play" && <Play changeComponent={changeComponent} />}
+                        {activeComponent === "game" && <Game changeComponent={changeComponent} socket={socket} opponentID={extractId(activeComponent)}/>}
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent} />}
                         {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} />}
                         {activeComponent === "history" && <History />}
