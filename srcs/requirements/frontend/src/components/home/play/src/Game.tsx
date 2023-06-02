@@ -16,14 +16,11 @@ const PAUSE = 32; // space
 const PLAY = 13; // ENTER
 
 type GameState = {
-  player: number[];
-  opponent: number[];
+  player1: number[];
+  player2: number[];
   ball: number;
-  ballSpeed: number;
   deltaY: number;
   deltaX: number;
-  opponentDir: boolean;
-  opponentSpeed: number;
   pause: boolean;
   playerScore: number;
   opponentScore: number;
@@ -33,17 +30,14 @@ type GameState = {
 const InitialState = (): GameState => {
   const board = [...Array(PADDLE_BOARD_SIZE)].map((_, pos) => pos);
   return {
-    player: board.map((x) => x * COL_SIZE + PADDLE_EDGE_SPACE),
-    opponent: board.map((x) => (x + 1) * COL_SIZE - (PADDLE_EDGE_SPACE + 1)),
+    player1: board.map((x) => x * COL_SIZE + PADDLE_EDGE_SPACE),
+    player2: board.map((x) => (x + 1) * COL_SIZE - (PADDLE_EDGE_SPACE + 1)),
     ball: Math.round((ROW_SIZE * COL_SIZE) / 2) + ROW_SIZE,
-    ballSpeed: 100,
     deltaX: -1,
     deltaY: -COL_SIZE,
     playerScore: 0,
     opponentScore: 0,
     pause: true,
-    opponentDir: false,
-    opponentSpeed: 300,
     playerID: 0,
   };
 };
@@ -60,6 +54,11 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
   useEffect(() => {
     console.log("client side: joining a room");
     socket?.emit('join-room', socket.id);
+
+    socket?.on('disconnect', () => {
+      console.log("client side: disconnected from the server")
+      resetGame();
+    });
 
     return () => {
       socket?.disconnect();
@@ -79,13 +78,8 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
     setState(gameState);
   });
 
-  socket?.on('game-over', (gameState: GameState) => {
-    console.log("client side event: game over");
-    resetGame();
-  });
-
   socket?.on('start', (_playerID: number) => {
-    console.log("client side event: start");
+    console.log("client side event: start with id of: ", _playerID);
     setState((prevState) => ({
       ...prevState,
       pause: false,
@@ -101,8 +95,8 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
     }));
   });
 
-  socket?.on('reset', () => {
-    console.log("client side event: reset");
+  socket?.on('game-over', () => {
+    console.log("client side event: game-over");
     resetGame();
   });
 
@@ -118,22 +112,13 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
     }));
   });
 
-  socket?.on('move-opponent', (gameState: GameState) => {
-    console.log("client side event: move-opponent");
-    if (state.playerID === 1)
-    {
-      setState((prevState) => ({
-        ...prevState,
-        opponent: gameState.opponent,
-      }));
-    }
-    else
-    {
-      setState((prevState) => ({
-        ...prevState,
-        player: gameState.opponent,
-      }));
-    }
+  socket?.on('move-paddles', (gameState: GameState) => {
+    console.log("client side event: moving paddles");
+    setState((prevState) => ({
+      ...prevState,
+      player1: gameState.player1,
+      player2: gameState.player2,
+    }));
   });
 
   socket?.on('score', (gameState: GameState) => {
@@ -142,10 +127,6 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
       ...prevState,
       playerScore: gameState.playerScore,
     }));
-  });
-
-  socket?.on('game-over', (gameState: GameState) => {
-    console.log("client side event: game-over");
   });
 
   //keyboard events are only for debugging
@@ -187,28 +168,15 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
       const mouseY = event.clientY - containerRect.top;
       let playerBoard;
       if (state.playerID === 1)
-        playerBoard = state.player;
+        playerBoard = state.player1;
       else
-        playerBoard = state.opponent;
+        playerBoard = state.player2;
       const isUp = mouseY < containerRect.height / 2;
       movedPlayer = moveBoard(playerBoard, isUp);
     }
     if (movedPlayer !== null) {
-      socket?.emit('move-player', movedPlayer, state.playerID);
-      if (state.playerID === 1)
-      {
-        setState((prevState) => ({
-            ...prevState,
-            player: movedPlayer,
-        }) as GameState);
-      }
-      else
-      {
-        setState((prevState) => ({
-            ...prevState,
-            opponent: movedPlayer,
-        }) as GameState);
-      }
+      console.log("client: moving my paddle to: ", movedPlayer);
+      socket?.emit('move-player', {movedPlayer: movedPlayer, playerID: state.playerID});
     }
   };
 
@@ -226,8 +194,8 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
   const board = [...Array(ROW_SIZE * COL_SIZE)].map((_, pos) => {
     let val = BACKGROUND;
     if (
-      state.player.indexOf(pos) !== -1 ||
-      state.opponent.indexOf(pos) !== -1
+      state.player1.indexOf(pos) !== -1 ||
+      state.player2.indexOf(pos) !== -1
     ) {
       val = PLAYER;
     } else if (state.ball === pos) {

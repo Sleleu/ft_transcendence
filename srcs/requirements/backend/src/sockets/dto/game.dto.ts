@@ -1,13 +1,10 @@
 
 export interface GameState {
-	player: number[];
-	opponent: number[];
+	player1: number[];
+	player2: number[];
 	ball: number;
-	ballSpeed: number;
 	deltaY: number;
 	deltaX: number;
-	opponentDir: boolean;
-	opponentSpeed: number;
 	pause: boolean;
 	playerScore: number;
 	opponentScore: number;
@@ -16,4 +13,9 @@ export interface GameState {
   export interface BounceBallDto {
 	deltaX: number;
 	deltaY: number;
+  }
+
+  export interface movePaddleDto {
+	movedPlayer: number[];
+	playerID: number;
   }

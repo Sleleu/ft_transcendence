@@ -1,7 +1,7 @@
 import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer, ConnectedSocket, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { SocketsService } from './sockets.service';
 import { Server, Socket } from 'socket.io';
-import { GameState, BounceBallDto } from './dto/game.dto';
+import { GameState, BounceBallDto, movePaddleDto} from './dto/game.dto';
 import { Interval } from '@nestjs/schedule';
 import { GameService } from './game.service';
 
@@ -13,7 +13,7 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 
 	constructor(
 		private readonly socketService: SocketsService,
-		private readonly gameService: GameService //<--- Your Service class
+		private readonly gameService: GameService
 		) {}
 
 	afterInit() {
@@ -27,10 +27,14 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 
 	handleDisconnect(client: Socket) {
 		console.log('game disconnected:', client.id);
+
+		//update prisma data
 		this.connectedClients.forEach((client)=> {
-			client.disconnect();
+			client.emit("game-over");
 		});
-		// this.connectedClients = this.connectedClients.filter((c) => c.id !== client.id);
+		this.gameService.resetGame();
+		this.connectedClients = [];
+		console.log(this.connectedClients.length);
 	}
 
 	@Interval(500)
@@ -39,13 +43,18 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		if (this.gameService.getwinner())
 		{
 			console.log("inside the interval game over");
-			this.server.emit("game-over");
-			this.connectedClients[0].disconnect();
-			this.connectedClients[1].disconnect();
+
+			//update prisma data
+			this.connectedClients.forEach((client)=> {
+				client.emit('game-over', this.gameService.getGameState());
+				client.disconnect();
+			});
+
+			this.gameService.resetGame();
 		}
 		else if (this.connectedClients.length === 2  && !this.gameService.getGameState().pause)
 		{
-			console.log("inside the interval bounce ball");
+			console.log("inside the interval bounce ball with ", this.connectedClients.length, " clients");
 			this.gameService.bounceBall();
 			this.server.emit("updateBallPosition", this.gameService.getGameState());
 		}
@@ -97,13 +106,25 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		});
 	}
 
-	@SubscribeMessage('reset')
-	resetGame(@ConnectedSocket() client: Socket): void{
-		console.log("in socketgatway reset game")
+	// @SubscribeMessage('reset')
+	// resetGame(@ConnectedSocket() client: Socket): void{
+	// 	console.log("in socketgatway reset game")
+	// 	this.gameService.resetGame();
+
+	// 	this.connectedClients.forEach((client)=> {
+	// 		client.emit('reset');
+	// 	});
+	// }
+
+	@SubscribeMessage('game-over')
+	playerLeft(@ConnectedSocket() client: Socket): void{
+
+		//update prisma with the scores
 		this.gameService.resetGame();
 
 		this.connectedClients.forEach((client)=> {
-			client.emit('reset');
+			client.emit('game-over', this.gameService.getGameState());
+			client.disconnect();
 		});
 	}
 
@@ -118,18 +139,15 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	}
 
 	@SubscribeMessage('move-player')
-	movePlayer(@MessageBody() movePlayer: number[], playerID: number, @ConnectedSocket() client: Socket): void{
-		console.log("server side: move-player");
-		if (playerID === 1)
-			this.gameService.movePlayer(movePlayer);
+	movePlayer(@MessageBody() movePaddleDto: movePaddleDto, @ConnectedSocket() client: Socket): void{
+		console.log("server side: move-player with id: ", movePaddleDto.playerID, "and moved player of ", movePaddleDto.movedPlayer);
+		if (movePaddleDto.playerID === 1)
+			this.gameService.movePlayer1(movePaddleDto.movedPlayer);
 		else
-			this.gameService.moveOpponent(movePlayer);
+			this.gameService.movePlayer2(movePaddleDto.movedPlayer);
 
-		const opponentClient = this.connectedClients.find(c => c !== client);
-
-		if (opponentClient)
-			opponentClient.emit('move-opponent', this.gameService.getGameState());
-	
+		this.connectedClients.forEach((client)=> {
+			client.emit('move-paddles', this.gameService.getGameState());
+		});
 	}
-
 }
