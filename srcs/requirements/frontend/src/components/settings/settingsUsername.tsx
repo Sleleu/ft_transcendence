@@ -36,7 +36,6 @@ const SettingsUsername = ({ user}: SettingsUsernameProps) => {
       setSuccess("Username has been successfully updated.");
     } catch (error) {
       if (error instanceof Error) {
-        console.error(error);
         setError(error.message);
       }
     }
@@ -44,19 +43,17 @@ const SettingsUsername = ({ user}: SettingsUsernameProps) => {
 
   return (
     <Cont alignItems='center' padding='0px' margin='0px' width='380px' height='70%'>
-      <p className='text bold medium cyan-stroke'>Your current username :</p>
-      <p className='text medium purple-stroke neon-purple'>{user.gameLogin}</p>
-      <p className='text bold'>If you want to change, please enter a new username :</p>
+      <p className='text medium neon-purple'>USERNAME : {user.gameLogin}</p>
+      <p className='text bold neon-purple'>If you want to change, please enter a new username :</p>
       <input
-        className="text bold password-input"
+        className="text bold username-input"
         type="text"
         value={gameLogin}
-        placeholder="new username"
         onChange={handlegameLogin}
       />
       <br />
       <button 
-        className="btn-little medium text bold cyan-stroke"
+        className="button-username"
         onClick={handleSubmit} >Change Username</button>
       {error && <p className="text bold red neon-red">{error}</p>}
       {success && <p className="text bold green neon-green">{success}</p>}

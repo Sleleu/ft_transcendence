@@ -2,24 +2,17 @@ import React from 'react';
 import { useState } from 'react';
 import './Settings.css'
 import '../../css/Text.css'
-
-/* Side bar svg */
 import settings_svg from '../../img/settings.svg';
 import frog_svg from '../../img/frog.svg';
 import username_svg from '../../img/username.svg';
 import block_svg from '../../img/block.svg';
-import password_svg from '../../img/password.svg';
 import lock_svg from '../../img/lock.svg';
 import {User} from '../types'
-
 import {Cont, HeaderBar} from '../container/container'
-import SettingsPassword from './settingsPassword';
 import SettingsUsername from './settingsUsername';
 import SettingsAuth from './settingsAuth';
 import SettingsAvatar from './settingsAvatar';
 import SettingsBlock from './settingsBlock';
-
-import Play from '../home/play/src/Play';
 
 type ButtonOptionProps = {
 	image?: string;
@@ -59,7 +52,6 @@ const SettingsOptions = ({setSelectedOption}: SettingsOptionsProps) => {
 		<Cont  padding='0px' width='95%' height='10%' borderBottom='1px solid white'>
 			<Option text='Confidentiality'/>
 		</Cont>
-		<ButtonOption image={password_svg} text='Change password' onClick={() => handleOptionClick("password")}/>
 		<ButtonOption image={lock_svg} text='2FA authentication'onClick={() => handleOptionClick("lock")}/>
 		</React.Fragment>
 	);
@@ -116,14 +108,10 @@ function Settings({ user, changeComponent, refreshUser }: settingsProps) {
 						{selectedOption === "username"  && <SettingsUsername user={user} />}
 						{selectedOption === "avatar"  && <SettingsAvatar user={user} refreshUser={refreshUser}/>}
 						{selectedOption === "block"  && <SettingsBlock />}
-						{selectedOption === "password"  && <SettingsPassword />}
 						{selectedOption === "lock"  && <SettingsAuth />}
 					</Cont>
 				</Cont>
 			</Cont>
-			{/* <Cont>
-				<Play changeComponent={changeComponent}/>
-			</Cont> */}
         </div>
     );
 }
