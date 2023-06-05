@@ -31,6 +31,8 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 	const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 	const [isDefaultAvatar, setIsDefaultAvatar] = useState<boolean>(currentAvatarUrl === user.avatar);
 	const [isAvatarUpdated, setIsAvatarUpdated] = useState<boolean>(false);
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
 	const initialState: State = {
 	  image: currentAvatarUrl,
@@ -40,8 +42,8 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 	  rotate: 0,
 	  borderRadius: 50,
 	  preview: null,
-	  width: 100,
-	  height: 100,
+	  width: 110,
+	  height: 110,
 	};
   
 	const [state, setState] = useState<State>(initialState);
@@ -50,9 +52,18 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 	const handleNewImage = (event: ChangeEvent<HTMLInputElement>) => {
 		if (event.target.files && event.target.files.length > 0) {
 		  const file = event.target.files[0];
+
+		  if (!file.type.startsWith('image/')) {
+			setIsDefaultAvatar(false);
+			setErrorMessage('Please select an image file.');
+			return;
+		  }
+
 		  const imageUrl = URL.createObjectURL(file);
 		  setState({ ...state, image: imageUrl });
 		  setIsDefaultAvatar(false);
+		  setIsAvatarUpdated(true);
+		  setErrorMessage(null);
 		}
 	  };  
 
@@ -70,6 +81,11 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 		if (isDefaultAvatar) {
 		  return;
 		}
+		if (!isAvatarUpdated) {
+			setSuccessMessage(null);
+			setErrorMessage('Avatar already updated !');
+			return ;
+		}
 		if (editorRef.current) {
 		  const img = editorRef.current.getImageScaledToCanvas().toDataURL();
 
@@ -79,10 +95,11 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 			  const file = new File([blob], "user_avatar.png", { type: "image/png" });
 			  try {
 				await updateAvatar(file);
-				setIsAvatarUpdated(true);
+				setIsAvatarUpdated(false);
+				setSuccessMessage('Avatar updated successfully !');
 			  } catch (err) {
 				console.error(err);
-				alert('Failed to update avatar.');
+				setErrorMessage('Failed to update avatar.');
 			  }
 			})
 		}
@@ -101,7 +118,7 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 			 rotate={parseFloat(state.rotate.toString())}
 			 borderRadius={state.width / (100 / state.borderRadius)}
 			 image={state.image}
-			 color={[255, 255, 255, 0.3]}
+			 color={[255, 255, 255, 0.1]}
 			 className="editor-canvas"
 		   />
 		 </div>
@@ -131,7 +148,8 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 		 </div>
 		 {isSubmitted && isDefaultAvatar && (
         <p className="text bold neon-red">This is your current avatar</p>)}
-		{isAvatarUpdated && <p className="text bold neon-green">Avatar updated successfully !</p>}
+  		            {errorMessage && <p className="text bold neon-red">{errorMessage}</p>}
+		{successMessage && <p className="text bold neon-green">{successMessage}</p>}
 	   </>
 	 )
 }
