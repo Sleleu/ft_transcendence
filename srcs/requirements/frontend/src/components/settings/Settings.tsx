@@ -95,9 +95,10 @@ const ButtonOption = ({ image, text, onClick}: ButtonOptionProps) => {
 interface settingsProps {
 	user: User;
 	changeComponent: (component: string) => void;
+	refreshUser: () => void;
 }
 
-function Settings({ user, changeComponent }: settingsProps) {
+function Settings({ user, changeComponent, refreshUser }: settingsProps) {
 
 	const [selectedOption, setSelectedOption] = useState('avatar'); // stock l'option selectionnee
 
@@ -113,7 +114,7 @@ function Settings({ user, changeComponent }: settingsProps) {
 					</Cont>
 					<Cont minWidth='270px' minHeight='340px' width='75vw' height='38vh' alignItems='center'>
 						{selectedOption === "username"  && <SettingsUsername user={user} />}
-						{selectedOption === "avatar"  && <SettingsAvatar user={user} />}
+						{selectedOption === "avatar"  && <SettingsAvatar user={user} refreshUser={refreshUser}/>}
 						{selectedOption === "block"  && <SettingsBlock />}
 						{selectedOption === "password"  && <SettingsPassword />}
 						{selectedOption === "lock"  && <SettingsAuth />}

@@ -6,6 +6,7 @@ import { updateAvatar } from "../Api";
 
 interface SettingsAvatarProps {
 	user: User;
+	refreshUser: () => void;
 }
 
 interface Position {
@@ -25,7 +26,7 @@ interface Position {
 	height: number;
   }
 
-const SettingsAvatar = ({user}: SettingsAvatarProps) => {
+const SettingsAvatar = ({user, refreshUser}: SettingsAvatarProps ) => {
 
 	const currentAvatarUrl = user.avatar || '';
 	const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
@@ -33,6 +34,7 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 	const [isAvatarUpdated, setIsAvatarUpdated] = useState<boolean>(false);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+	const editorRef = useRef<AvatarEditor | null>(null);
 
 	const initialState: State = {
 	  image: currentAvatarUrl,
@@ -44,11 +46,14 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 	  preview: null,
 	  width: 110,
 	  height: 110,
-	};
-  
+	}
 	const [state, setState] = useState<State>(initialState);
-	const editorRef = useRef<AvatarEditor | null>(null);
-  
+
+	const resetMessages = () => {
+		setErrorMessage(null);
+		setSuccessMessage(null);
+	}
+
 	const handleNewImage = (event: ChangeEvent<HTMLInputElement>) => {
 		if (event.target.files && event.target.files.length > 0) {
 		  const file = event.target.files[0];
@@ -63,17 +68,21 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 		  setState({ ...state, image: imageUrl });
 		  setIsDefaultAvatar(false);
 		  setIsAvatarUpdated(true);
-		  setErrorMessage(null);
+		  resetMessages();
 		}
 	  };  
 
 	  const handleScale = (event: ChangeEvent<HTMLInputElement>) => {
 		const scale = parseFloat(event.target.value);
 		setState({ ...state, scale });
+		resetMessages();
+		setIsAvatarUpdated(true);
 	  };
 	
 	  const handlePositionChange = (position: Position) => {
 		setState({ ...state, position });
+		resetMessages();
+		setIsAvatarUpdated(true);
 	  };
 
 	  const handleSubmit = async () => {
@@ -82,7 +91,7 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 		  return;
 		}
 		if (!isAvatarUpdated) {
-			setSuccessMessage(null);
+			resetMessages();
 			setErrorMessage('Avatar already updated !');
 			return ;
 		}
@@ -97,6 +106,7 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 				await updateAvatar(file);
 				setIsAvatarUpdated(false);
 				setSuccessMessage('Avatar updated successfully !');
+				refreshUser();
 			  } catch (err) {
 				console.error(err);
 				setErrorMessage('Failed to update avatar.');

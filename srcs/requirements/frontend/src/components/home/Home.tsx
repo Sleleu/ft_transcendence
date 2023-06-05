@@ -146,7 +146,7 @@ useEffect(() => {
 
                         {activeComponent === "play" && <Play changeComponent={changeComponent} />}
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent} />}
-                        {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} />}
+                        {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} refreshUser={getUser} />}
                         {activeComponent === "historic" && <History />}
                         {activeComponent === "stat" && <Stats user={user} changeComponent={changeComponent} />}
                         {activeComponent === "friend" && <Friend changeComponent={changeComponent} />}
