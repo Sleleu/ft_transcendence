@@ -43,7 +43,7 @@ const SettingsUsername = ({ user}: SettingsUsernameProps) => {
   }
 
   return (
-    <Cont alignItems='center' padding='10px' margin='5px' width='380px' height='70%'>
+    <Cont alignItems='center' padding='0px' margin='0px' width='380px' height='70%'>
       <p className='text bold medium cyan-stroke'>Your current username :</p>
       <p className='text medium purple-stroke neon-purple'>{user.gameLogin}</p>
       <p className='text bold'>If you want to change, please enter a new username :</p>
@@ -54,12 +54,12 @@ const SettingsUsername = ({ user}: SettingsUsernameProps) => {
         placeholder="new username"
         onChange={handlegameLogin}
       />
-      {error && <p className="red neon-red">{error}</p>}
-      {success && <p className="green neon-green">{success}</p>}
       <br />
       <button 
         className="btn-little medium text bold cyan-stroke"
         onClick={handleSubmit} >Change Username</button>
+      {error && <p className="text bold red neon-red">{error}</p>}
+      {success && <p className="text bold green neon-green">{success}</p>}
     </Cont>
   );
 }
