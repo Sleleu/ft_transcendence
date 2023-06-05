@@ -6,8 +6,10 @@ import { CSSProperties } from 'styled-components'
 interface props {
     name: string
     changeComponent: (str: string) => void
+    changeMode: () => void
     socket?: Socket
     friendId: number | undefined
+    mode: string
 }
 
 interface FriendProps {
@@ -15,7 +17,7 @@ interface FriendProps {
     id: number
 }
 
-const InvitePlay = ({ name, changeComponent, socket, friendId }: props) => {
+const InvitePlay = ({ name, changeComponent, socket, friendId, mode, changeMode }: props) => {
     const [find, setFind] = useState(false)
     const [vs, setVs] = useState('void')
     const [refuse, setRefuse] = useState(false)
@@ -32,9 +34,26 @@ const InvitePlay = ({ name, changeComponent, socket, friendId }: props) => {
     }
 
     useEffect(() => {
-        socket?.emit('invitePlay', { id: friendId })
+        const launchEmit = async () => {
+            if (mode === 'invite')
+                socket?.emit('invitePlay', { id: friendId })
+            if (mode === 'receive') {
+                socket?.emit('acceptInvitation', { id: friendId })
+                await delay(2000)
+                setFind(true)
+                const data = await fetch("http://localhost:5000/friend/" + friendId, {
+                    method: "GET",
+                    credentials: "include",
+                });
+                const username = await data.text()
+                setVs(username)
+                await delay(3000)
+                const change = 'game' + friendId
+                changeComponent(change)
+            }
+        }
+        launchEmit()
         socket?.on('accepted', async ({ friend }: { friend: FriendProps }) => {
-            console.log('friend', friend)
             await delay(2000)
             setFind(true)
             setVs(friend.username)
@@ -50,6 +69,7 @@ const InvitePlay = ({ name, changeComponent, socket, friendId }: props) => {
         return () => {
             socket?.off('refused')
             socket?.off('accepted')
+            changeMode()
         }
     }, [])
 

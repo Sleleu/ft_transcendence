@@ -143,7 +143,7 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
     if (friendSocketId) {
       const friendSocket = this.server.sockets.sockets.get(friendSocketId)
       if (friendSocket) {
-        const friend = await this.queueService.retUser(+body.id)
+        const friend = await this.queueService.retUser(user.id)
         friendSocket.emit('accepted', { friend });
       }
     }

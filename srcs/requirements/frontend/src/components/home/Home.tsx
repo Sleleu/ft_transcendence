@@ -37,6 +37,7 @@ function Home() {
     const existingRanks: string[] = ['bronze', 'silver', 'gold', 'crack', 'ultime'];
     const userRank: string = user.elo > 5000 || user.elo < 0 ? 'ultime' : existingRanks[Math.floor(user.elo / 1000)];
     const [friendIdInvite, setFriendIdInvite] = useState(-1)
+    const [modeInvite, setModeInvite] = useState('invite')
     const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
     const push = (item: string) => {
@@ -64,11 +65,17 @@ function Home() {
 
     const onConfirm = (confirm: boolean) => {
         if (confirm) {
-            socket?.emit('acceptInvitation', { id: friendIdInvite })
+            setModeInvite('receive')
+            changeComponent('invitePlay' + friendIdInvite)
         }
         if (!confirm) {
             socket?.emit('refuseInvitation', { id: friendIdInvite })
         }
+    }
+
+    const changeMode = () => {
+        if (modeInvite === 'receive')
+            setModeInvite('invite')
     }
 
     const changeComponent = (component: string) => {
@@ -179,7 +186,7 @@ function Home() {
 
                         {visible === true && <ConfirmationPopUp onConfirm={onConfirm} onVisible={onVisible} opacity={true} message={message} />}
                         {activeComponent === "play" && <Play changeComponent={changeComponent} />}
-                        {activeComponent.startsWith("invitePlay") && <InvitePlay changeComponent={changeComponent} name={user.username} socket={socket} friendId={+extractId(activeComponent)} />}
+                        {activeComponent.startsWith("invitePlay") && <InvitePlay changeComponent={changeComponent} name={user.username} socket={socket} friendId={+extractId(activeComponent)} mode={modeInvite} changeMode={changeMode} />}
                         {activeComponent.startsWith("game") && <Game socket={socket} opponentID={extractId(activeComponent)} />}
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent} />}
                         {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} />}
