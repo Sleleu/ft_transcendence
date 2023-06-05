@@ -14,7 +14,7 @@ interface Position {
   }
   
   interface State {
-	image: string | File;
+	image: string;
 	allowZoomOut: boolean;
 	position: Position;
 	scale: number;
@@ -49,11 +49,12 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
   
 	const handleNewImage = (event: ChangeEvent<HTMLInputElement>) => {
 		if (event.target.files && event.target.files.length > 0) {
-		  setState({ ...state, image: event.target.files[0] });
+		  const file = event.target.files[0];
+		  const imageUrl = URL.createObjectURL(file);
+		  setState({ ...state, image: imageUrl });
 		  setIsDefaultAvatar(false);
 		}
-	  };
-	  
+	  };  
 
 	  const handleScale = (event: ChangeEvent<HTMLInputElement>) => {
 		const scale = parseFloat(event.target.value);
@@ -99,7 +100,7 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 			 onPositionChange={handlePositionChange}
 			 rotate={parseFloat(state.rotate.toString())}
 			 borderRadius={state.width / (100 / state.borderRadius)}
-			 image={typeof state.image === 'string' ? state.image : URL.createObjectURL(state.image)}
+			 image={state.image}
 			 color={[255, 255, 255, 0.3]}
 			 className="editor-canvas"
 		   />
