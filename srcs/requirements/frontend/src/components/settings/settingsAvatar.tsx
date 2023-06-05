@@ -153,7 +153,7 @@ const SettingsAvatar = ({user, refreshUser}: SettingsAvatarProps ) => {
 		 />
 		 <div>
 		 <button className="button" onClick={handleSubmit}>
-  		SUBMIT
+  		Submit avatar
 		</button>
 		 </div>
 		 {isSubmitted && isDefaultAvatar && (

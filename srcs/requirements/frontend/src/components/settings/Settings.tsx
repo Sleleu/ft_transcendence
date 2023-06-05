@@ -105,7 +105,7 @@ function Settings({ user, changeComponent, refreshUser }: settingsProps) {
 						<SettingsOptions setSelectedOption={setSelectedOption}/>
 					</Cont>
 					<Cont minWidth='270px' minHeight='340px' width='75vw' height='38vh' alignItems='center'>
-						{selectedOption === "username"  && <SettingsUsername user={user} />}
+						{selectedOption === "username"  && <SettingsUsername user={user} refreshUser={refreshUser} />}
 						{selectedOption === "avatar"  && <SettingsAvatar user={user} refreshUser={refreshUser}/>}
 						{selectedOption === "block"  && <SettingsBlock />}
 						{selectedOption === "lock"  && <SettingsAuth />}

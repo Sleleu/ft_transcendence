@@ -5,9 +5,10 @@ import '../../css/Text.css'
 
 interface SettingsUsernameProps {
   user: User;
+	refreshUser: () => void;
 }
 
-const SettingsUsername = ({ user}: SettingsUsernameProps) => {
+const SettingsUsername = ({ user, refreshUser}: SettingsUsernameProps) => {
 
   const [gameLogin, setgameLogin] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +35,7 @@ const SettingsUsername = ({ user}: SettingsUsernameProps) => {
         return;
       }
       setSuccess("Username has been successfully updated.");
+      refreshUser();
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
