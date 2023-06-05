@@ -7,6 +7,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 interface AuthenticatedUser {
 	id: number;
 	username: string;
+	avatar: string;
 }
 
 interface AuthenticatedRequest extends Request {

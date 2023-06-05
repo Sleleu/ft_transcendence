@@ -42,7 +42,6 @@ async function bootstrap() {
     maxAge: '1d',
     extensions: ['jpg', 'jpeg', 'png', 'gif'],
   }));
-  console.log("YOYOYO", avatarsPath);
 
   await app.listen(5000);
 

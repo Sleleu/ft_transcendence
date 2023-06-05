@@ -2,10 +2,12 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as fs from 'fs';
+import * as path from 'path';
 
 interface AuthenticatedUser {
 	id: number;
 	username: string;
+    avatar: string;
 }
 
 interface MulterFile {
@@ -82,7 +84,7 @@ export class UserService {
     }
 
     async updateAvatar(user: AuthenticatedUser, avatar: MulterFile) {
-        
+
         // create unique id for avatar
         const filename = `${user.id}_${Date.now()}_${avatar.originalname}`;
         const filepath = `./avatars/${filename}`;
@@ -93,8 +95,19 @@ export class UserService {
           where: { id: user.id },
           data: { avatar: avatarUrl },
         });
-    
+
+        // Delete old avatar file
+        if (user.avatar && user.avatar.startsWith('http://localhost:5000/avatars/')) {
+            const oldAvatarFilename = user.avatar.split('/').pop();
+            if (oldAvatarFilename) {
+            const oldAvatarFilepath = path.join('./avatars', oldAvatarFilename);
+            try {
+                await fs.promises.unlink(oldAvatarFilepath);
+            } catch (err) {
+                console.error(`Failed to delete old avatar: ${err}`);
+            }
+            }
+        }
         return updatedUser;
       }
-
 }
