@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { ForbiddenException, HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as fs from 'fs';
@@ -84,6 +84,18 @@ export class UserService {
     }
 
     async updateAvatar(user: AuthenticatedUser, avatar: MulterFile) {
+
+        // size protection
+        const MAX_SIZE = 2 * 1024 * 1024;
+        if (avatar.size > MAX_SIZE) {
+            throw new HttpException('File is too large. Maximum size is 2MB.', 400);
+        }
+
+        // filetype protection
+        const allowedMimes = ['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif'];
+        if (!allowedMimes.includes(avatar.mimetype)) {
+            throw new HttpException('Only jpg, png, and gif image files are allowed.', 400);
+        }
 
         // create unique id for avatar
         const filename = `${user.id}_${Date.now()}_${avatar.originalname}`;

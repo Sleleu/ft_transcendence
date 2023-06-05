@@ -37,7 +37,8 @@ export const updateAvatar = async (file: File) => {
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to update avatar: ${response.statusText}`);
+    const errorJson = await response.json();
+    throw new Error(errorJson.message || 'Unknown error');
   }
 
   return response.json();

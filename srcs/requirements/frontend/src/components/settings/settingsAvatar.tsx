@@ -108,8 +108,8 @@ const SettingsAvatar = ({user, refreshUser}: SettingsAvatarProps ) => {
 				setSuccessMessage('Avatar updated successfully !');
 				refreshUser();
 			  } catch (err) {
-				console.error(err);
-				setErrorMessage('Failed to update avatar.');
+				if (err instanceof Error)
+					setErrorMessage(err.message);
 			  }
 			})
 		}
