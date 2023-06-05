@@ -30,6 +30,7 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 	const currentAvatarUrl = user.avatar || '';
 	const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 	const [isDefaultAvatar, setIsDefaultAvatar] = useState<boolean>(currentAvatarUrl === user.avatar);
+	const [isAvatarUpdated, setIsAvatarUpdated] = useState<boolean>(false);
 
 	const initialState: State = {
 	  image: currentAvatarUrl,
@@ -64,38 +65,34 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 	  };
 
 	  const handleSubmit = async () => {
-		
-		setIsSubmitted(true); // pour afficher état si click sur submit sans avatar
+		setIsSubmitted(true); 
 		if (isDefaultAvatar) {
 		  return;
 		}
 		if (editorRef.current) {
 		  const img = editorRef.current.getImageScaledToCanvas().toDataURL();
-		  setState({ ...state, image: img });
-	  
-		  let blob;
-		  if (typeof state.image === 'string') {
-			blob = await (await fetch(state.image)).blob();
-		  } else {
-			blob = state.image;
-		  }
-		  const file = new File([blob], "user_avatar.png", { type: "image/png" });
-		  try {
-			await updateAvatar(file);
-			alert('Avatar updated successfully!');
-		  } catch (err) {
-			console.error(err);
-			alert('Failed to update avatar.');
-		  }
+
+		  fetch(img)
+			.then(res => res.blob())
+			.then(async (blob) => {
+			  const file = new File([blob], "user_avatar.png", { type: "image/png" });
+			  try {
+				await updateAvatar(file);
+				setIsAvatarUpdated(true);
+			  } catch (err) {
+				console.error(err);
+				alert('Failed to update avatar.');
+			  }
+			})
 		}
-	  };	  
+	  };  	  
 	
 	  return (
 		<>
 		 <div>
 		   <AvatarEditor
 			 ref={editorRef}
-			 scale={parseFloat(state.scale.toString())}
+			 scale={state.scale}
 			 width={state.width}
 			 height={state.height}
 			 position={state.position}
@@ -132,8 +129,8 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 		</button>
 		 </div>
 		 {isSubmitted && isDefaultAvatar && (
-        <p className="text bold neon-red">This is your current avatar</p>
-      )}
+        <p className="text bold neon-red">This is your current avatar</p>)}
+		{isAvatarUpdated && <p className="text bold neon-green">Avatar updated successfully !</p>}
 	   </>
 	 )
 }
