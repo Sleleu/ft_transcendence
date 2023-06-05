@@ -27,8 +27,10 @@ interface Position {
 
 const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 
-	const currentAvatarUrl = user.avatar || ''; 
-  
+	const currentAvatarUrl = user.avatar || '';
+	const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+	const [isDefaultAvatar, setIsDefaultAvatar] = useState<boolean>(currentAvatarUrl === user.avatar);
+
 	const initialState: State = {
 	  image: currentAvatarUrl,
 	  allowZoomOut: false,
@@ -37,18 +39,20 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 	  rotate: 0,
 	  borderRadius: 50,
 	  preview: null,
-	  width: 130,
-	  height: 130,
+	  width: 100,
+	  height: 100,
 	};
   
 	const [state, setState] = useState<State>(initialState);
 	const editorRef = useRef<AvatarEditor | null>(null);
   
 	const handleNewImage = (event: ChangeEvent<HTMLInputElement>) => {
-	  if (event.target.files && event.target.files.length > 0) {
-		setState({ ...state, image: event.target.files[0] });
-	  }
-	}
+		if (event.target.files && event.target.files.length > 0) {
+		  setState({ ...state, image: event.target.files[0] });
+		  setIsDefaultAvatar(false);
+		}
+	  };
+	  
 
 	  const handleScale = (event: ChangeEvent<HTMLInputElement>) => {
 		const scale = parseFloat(event.target.value);
@@ -58,8 +62,13 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 	  const handlePositionChange = (position: Position) => {
 		setState({ ...state, position });
 	  };
-	
+
 	  const handleSubmit = async () => {
+		
+		setIsSubmitted(true); // pour afficher état si click sur submit sans avatar
+		if (isDefaultAvatar) {
+		  return;
+		}
 		if (editorRef.current) {
 		  const img = editorRef.current.getImageScaledToCanvas().toDataURL();
 		  setState({ ...state, image: img });
@@ -70,9 +79,7 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 		  } else {
 			blob = state.image;
 		  }
-	  
-		  const file = new File([blob], "user_avatar.png", { type: "image/png" }); // Vous pouvez changer le nom du fichier et le type comme vous le souhaitez
-		  
+		  const file = new File([blob], "user_avatar.png", { type: "image/png" });
 		  try {
 			await updateAvatar(file);
 			alert('Avatar updated successfully!');
@@ -96,7 +103,7 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 			 rotate={parseFloat(state.rotate.toString())}
 			 borderRadius={state.width / (100 / state.borderRadius)}
 			 image={typeof state.image === 'string' ? state.image : URL.createObjectURL(state.image)}
-			 color={[255, 255, 255, 0.5]}
+			 color={[255, 255, 255, 0.3]}
 			 className="editor-canvas"
 		   />
 		 </div>
@@ -120,10 +127,13 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 		   defaultValue="1"
 		 />
 		 <div>
-		   <button className="button" onClick={handleSubmit}>
-			 SUBMIT
-		   </button>
+		 <button className="button" onClick={handleSubmit}>
+  		SUBMIT
+		</button>
 		 </div>
+		 {isSubmitted && isDefaultAvatar && (
+        <p className="text bold neon-red">This is your current avatar</p>
+      )}
 	   </>
 	 )
 }
