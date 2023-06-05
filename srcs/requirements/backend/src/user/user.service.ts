@@ -1,25 +1,25 @@
-import { ForbiddenException, HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
+import * as fs from 'fs';
+
+interface AuthenticatedUser {
+	id: number;
+	username: string;
+}
+
+interface MulterFile {
+	originalname: string;
+	encoding: string;
+	mimetype: string;
+	buffer: Buffer;
+	size: number;
+  }
 
 @Injectable()
 export class UserService {
     constructor(private prismaService: PrismaService,
 				private jwtService: JwtService) {}
-
-				// async getUsers() {
-				// 	const users = await this.prisma.user.findMany({
-				// 		select: {
-				// 			id: true,
-				// 			state: true,
-				// 			username: true,
-				// 			elo: true,
-				// 			win: true,
-				// 			loose: true,
-				// 		}
-				// 	});
-				// 	return users;
-				// }
 
 	async getUserFromToken(token : string) {
 		//console.log("Passage dans getProfile()")
@@ -80,6 +80,21 @@ export class UserService {
             data: { gameLogin: gameLogin},
         })
     }
+
+    async updateAvatar(user: AuthenticatedUser, avatar: MulterFile) {
+        
+        // create unique id for avatar
+        const filename = `${user.id}_${Date.now()}_${avatar.originalname}`;
+        const filepath = `./avatars/${filename}`;
+
+        await fs.promises.writeFile(filepath, avatar.buffer);
+        const avatarUrl = `http://localhost:5000/avatars/${filename}`;
+        const updatedUser = await this.prismaService.user.update({
+          where: { id: user.id },
+          data: { avatar: avatarUrl },
+        });
     
+        return updatedUser;
+      }
 
 }

@@ -2,6 +2,7 @@ import React, {useState, useRef, ChangeEvent} from "react";
 import { User } from "../types";
 import AvatarEditor from 'react-avatar-editor'
 import './Settings.css'
+import { updateAvatar } from "../Api";
 
 interface SettingsAvatarProps {
 	user: User;
@@ -62,8 +63,25 @@ const SettingsAvatar = ({user}: SettingsAvatarProps) => {
 		if (editorRef.current) {
 		  const img = editorRef.current.getImageScaledToCanvas().toDataURL();
 		  setState({ ...state, image: img });
+	  
+		  let blob;
+		  if (typeof state.image === 'string') {
+			blob = await (await fetch(state.image)).blob();
+		  } else {
+			blob = state.image;
+		  }
+	  
+		  const file = new File([blob], "user_avatar.png", { type: "image/png" }); // Vous pouvez changer le nom du fichier et le type comme vous le souhaitez
+		  
+		  try {
+			await updateAvatar(file);
+			alert('Avatar updated successfully!');
+		  } catch (err) {
+			console.error(err);
+			alert('Failed to update avatar.');
+		  }
 		}
-	  };
+	  };	  
 	
 	  return (
 		<>

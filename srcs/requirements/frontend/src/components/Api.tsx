@@ -27,6 +27,24 @@ export const verifyTwoFACode = async (code : string) => {
   }
 }
 
+export const updateAvatar = async (file: File) => {
+  const avatar = new FormData();
+  avatar.append('avatar', file);
+  console.log("avatar = ", avatar);
+  const response = await fetch('http://localhost:5000/users/update-avatar', {
+    method: 'POST',
+    credentials: 'include',
+    body: avatar
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to update avatar: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
+
 export const getUserProfile = () => baseRequest("/users/profile", "GET");
 
 export const logout = () => baseRequest("/users/logout", "GET");

@@ -110,7 +110,7 @@
 	box-shadow: 0 0 10px #f975ed, 0 0 10px #f975ed, 0 0 10px #f975ed, 0 0 10px #f975ed;
 	-webkit-appearance: none;
 	max-width: 30%;
-	margin: 30px auto;
+	margin: 20px auto;
   }
 
   .neon-range::-webkit-slider-thumb {

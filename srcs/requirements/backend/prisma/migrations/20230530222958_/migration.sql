@@ -6,6 +6,7 @@ CREATE TABLE "users" (
     "state" TEXT NOT NULL DEFAULT 'online',
     "hash" TEXT,
     "username" TEXT NOT NULL,
+    "gameLogin" TEXT,
     "avatar" TEXT,
     "access_token" TEXT,
     "TwoFASecret" TEXT,
@@ -54,6 +55,9 @@ CREATE TABLE "History" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_gameLogin_key" ON "users"("gameLogin");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "friends_userId_friendId_key" ON "friends"("userId", "friendId");
