@@ -122,3 +122,26 @@
 	background-color: rgb(255, 123, 226, 0.5);
 	box-shadow: 0 0 15px #f975ed, 0 0 15px #f975ed, 0 0 15px #f975ed, 0 0 15px #f975ed;
   }
+
+
+  .button-2fa {
+	background-color: rgba(255, 255, 255, 0.1);
+	color: white;
+	border: none;
+	padding: 15px 32px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	margin: 4px 2px;
+	cursor: pointer;
+	border-radius: 10px;
+	font-weight: bolder;
+	font-size: large;
+	box-shadow: 0 0 10px #ffe600, 0 0 10px #ffe600, 0 0 10px #ffe600, 0 0 10px #ffe600;
+	text-shadow: 0 0 5px #ffe600, 0 0 10px #ffe600;
+  }
+
+.button-2fa:hover {
+	background-color: rgba(251, 255, 0, 0.5);
+	box-shadow: 0 0 15px #ffe600, 0 0 15px #ffe600, 0 0 15px #ffe600, 0 0 15px #ffe600;
+  }
