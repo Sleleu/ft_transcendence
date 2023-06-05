@@ -45,8 +45,8 @@ const SettingsUsername = ({ user, refreshUser}: SettingsUsernameProps) => {
 
   return (
     <Cont alignItems='center' padding='0px' margin='0px' width='380px' height='70%'>
-      <p className='text medium neon-purple'>USERNAME : {user.gameLogin}</p>
-      <p className='text bold neon-purple'>If you want to change, please enter a new username :</p>
+      <p className='text medium neon-purple neon-red'>{user.gameLogin}</p>
+      <p className='text bold neon-purple' style={{textAlign: 'center'}}>If you want to change, please enter a new username :</p>
       <input
         className="text bold username-input"
         type="text"
@@ -57,7 +57,7 @@ const SettingsUsername = ({ user, refreshUser}: SettingsUsernameProps) => {
       <button 
         className="button-username"
         onClick={handleSubmit} >Change Username</button>
-      {error && <p className="text bold red neon-red">{error}</p>}
+      {error && <p style={{textAlign: 'center'}} className="text bold red neon-red">{error}</p>}
       {success && <p className="text bold green neon-green">{success}</p>}
     </Cont>
   );

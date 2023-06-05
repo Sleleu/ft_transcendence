@@ -67,7 +67,7 @@ export class UserService {
         if (gameLogin.length < 5 || gameLogin.length > 30) {
             throw new HttpException('Game login must have between 5 and 30 characters', 400);
         }
-        const validCharacters = /^[a-zA-Z0-9_-]+$/
+        const validCharacters = /^[a-zA-Z0-9_-éèàç]+$/
         if (!validCharacters.test(gameLogin)) {
             throw new HttpException('Game login can only contain alphanumeric characters, hyphens and underscores', 400);
         }
