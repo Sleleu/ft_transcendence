@@ -56,20 +56,15 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	joinroom(@MessageBody() opponentid: number, @ConnectedSocket() client: Socket): void{
 		console.log("server side: joining a room: ");
 
-		//must be updated
 		this.connectedClients[0] = client;
-		const opponent = this.socketService.findSocketById(opponentid);
+		const opponent = this.socketService.findSocketById(+opponentid);
+		console.log("opponentid is ", opponentid, opponent);
 		if (opponent)
+		{
+			console.log("found the opponent");
 			this.connectedClients[1] = this.server.sockets.sockets.get(opponent);
-		// if (this.connectedClients.length < 2)
-		// {
-		// 	console.log("adding user to the game room: ");
-		// 	this.connectedClients.push(client);
-		// }
-		// else if (this.connectedClients.length > 2)
-		// {
-		// 	console.log("more than two users not allowed");
-		// }
+		}
+
 		if (this.connectedClients.length === 2){
 			let i = 0;
 			this.connectedClients.forEach((client)=> {
@@ -89,10 +84,6 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	startGame(@ConnectedSocket() client: Socket): void{
 		console.log("in socketgatway start game");
 		this.gameService.startGame();
-
-		// this.connectedClients.forEach((client)=> {
-		// 	client.emit('start');
-		// });
 	}
 
 	@SubscribeMessage('pause')
@@ -105,16 +96,6 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 				client.emit('pause');
 		});
 	}
-
-	// @SubscribeMessage('reset')
-	// resetGame(@ConnectedSocket() client: Socket): void{
-	// 	console.log("in socketgatway reset game")
-	// 	this.gameService.resetGame();
-
-	// 	this.connectedClients.forEach((client)=> {
-	// 		client.emit('reset');
-	// 	});
-	// }
 
 	@SubscribeMessage('game-over')
 	gameOver(@ConnectedSocket() client: Socket): void{

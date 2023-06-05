@@ -19,7 +19,7 @@ const FriendOption = ({ friend, changeComponent, change, socket }: propsOption) 
             <FriendOnglet friend={friend} switchComponent={(id: number) => (id)} />
             {friend.state.startsWith("is") && <FriendOptionOnglet changeComponent={changeComponent} context='watchGame' txt='Watch Game' friend={friend} change={change} socket={socket} />}
             <FriendOptionOnglet changeComponent={changeComponent} context='sendMessage' txt='Send Messages' friend={friend} change={change} socket={socket} />
-            <FriendOptionOnglet changeComponent={changeComponent} context='invitePlay' txt='Invite To play' friend={friend} change={change} socket={socket} />
+            {friend.state === ("online") && <FriendOptionOnglet changeComponent={changeComponent} context='invitePlay' txt='Invite To play' friend={friend} change={change} socket={socket} />}
             <FriendOptionOnglet changeComponent={changeComponent} context='removeFriend' txt='Remove this User' friend={friend} change={change} socket={socket} />
             <FriendOptionOnglet changeComponent={changeComponent} context='block' txt='Block this User' friend={friend} change={change} socket={socket} />
         </div>

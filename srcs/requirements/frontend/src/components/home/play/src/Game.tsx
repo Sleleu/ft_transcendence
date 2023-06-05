@@ -43,14 +43,15 @@ const InitialState = (): GameState => {
 };
 
 interface GameProps {
-  changeComponent: (component: string) => void;
+  // changeComponent: (component: string) => void;
   socket?: Socket;
   opponentID: string | number;
 }
 
-const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
+const Game: React.FC<GameProps> = ({ socket, opponentID}) => {
   const [state, setState] = useState<GameState>(InitialState());
 
+  console.log("inside game component")
   useEffect(() => {
     console.log("client side: joining a room");
     socket?.emit('join-room', opponentID);//send the opponent socket
@@ -93,6 +94,7 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
   socket?.on('game-over', () => {
     console.log("client side event: game-over");
     resetGame();
+    // changeComponent("play");
   });
 
   socket?.on('updateBallPosition', (gameState: GameState) => {

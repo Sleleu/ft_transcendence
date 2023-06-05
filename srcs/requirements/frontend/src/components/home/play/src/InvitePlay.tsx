@@ -1,55 +1,65 @@
 import React, { useEffect, useState } from 'react'
-import { BarWave, Messaging } from "react-cssfx-loading";
-import '../css/Queue.css'
-import { Socket } from 'socket.io-client';
+import { Socket } from 'socket.io-client'
+import { Messaging } from 'react-cssfx-loading'
+import { CSSProperties } from 'styled-components'
 
 interface props {
-    mode: string
     name: string
-    socket?: Socket
     changeComponent: (str: string) => void
+    socket?: Socket
+    friendId: number | undefined
 }
 
-interface Opponent {
+interface FriendProps {
     username: string
     id: number
 }
 
-const Queue = ({ mode, name, socket, changeComponent }: props) => {
+const InvitePlay = ({ name, changeComponent, socket, friendId }: props) => {
     const [find, setFind] = useState(false)
     const [vs, setVs] = useState('void')
+    const [refuse, setRefuse] = useState(false)
     const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+    const background: CSSProperties = {
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(0,0,0,0.7)',
+        zIndex: '999'
+    }
+
     useEffect(() => {
-        const emitStr = 'addQueue' + mode
-        const quit = 'quitQueue' + mode
-        socket?.emit(emitStr, {})
-        socket?.on('vsName', async ({ opponent }: { opponent: Opponent }) => {
+        socket?.emit('invitePlay', { id: friendId })
+        socket?.on('accepted', async ({ friend }: { friend: FriendProps }) => {
+            console.log('friend', friend)
             await delay(2000)
             setFind(true)
-            setVs(opponent.username)
+            setVs(friend.username)
             await delay(3000)
-            const change = 'game' + opponent.id
+            const change = 'game' + friend.id
             changeComponent(change)
         })
+        socket?.on('refused', async () => {
+            setRefuse(true)
+            await delay(3000)
+            changeComponent('friend')
+        })
         return () => {
-            socket?.off('vsName')
-            socket?.emit(quit, {})
+            socket?.off('refused')
+            socket?.off('accepted')
         }
     }, [])
 
-    const modeStr = () => {
-        if (mode === 'n')
-            return 'Normal Mode'
-        else
-            return 'Bonus Mode'
-    }
     return (
         <div className='containerQueue'>
-            {!find ? (<div className='headerQ'>Looking For An Opponent</div>) :
+            {refuse && <div style={background}><div className='refuse'>Your friend declined your invitation</div></div>}
+            {!find ? (<div className='headerQ'>Waiting for Your friend</div>) :
                 (<div className='headerQ'>Match is about to Start</div>)}
             < div className='containerBotQ'>
-                <div className='headerBotQ'>{modeStr()}</div>
+                <div className='headerBotQ'>Normal</div>
                 <div className='containerQ'>
                     <div className='containerName'>
                         <div>{name}</div>
@@ -69,4 +79,4 @@ const Queue = ({ mode, name, socket, changeComponent }: props) => {
     )
 }
 
-export default Queue
+export default InvitePlay

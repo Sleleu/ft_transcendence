@@ -70,8 +70,7 @@ const FriendOptionOnglet = ({ changeComponent, context, txt, friend, change, soc
     }
 
     const invitePlay = () => {
-        const compo = "invitePlay" + friend.id
-        changeComponent(compo)
+        changeComponent('invitePlay' + friend.id)
     }
 
     const block = () => {
