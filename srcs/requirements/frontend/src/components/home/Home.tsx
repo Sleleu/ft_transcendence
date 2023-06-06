@@ -27,6 +27,7 @@ function Home() {
     const userRank: string =  user.elo > 5000 || user.elo < 0 ? 'ultime' : existingRanks[Math.floor(user.elo / 1000)];
     const [twoFAEnabled, setTwoFAEnabled] = useState<boolean>(false);
     const [is2FAVerified, set2FAVerified] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const push = (item: string) => {
         setStack([...stack, item])
@@ -90,8 +91,10 @@ const check2FAEnabled = async () => {
     try {
         const result = await check2FA();
         setTwoFAEnabled(result);
+        setIsLoading(false);
     } catch (error) {
         console.error(error);
+        setIsLoading(false);
     }
 }
 
@@ -103,8 +106,10 @@ const TwoFAVerified = async () => {
     try {
         const result = await check2FAVerified();
         set2FAVerified(result);
+        setIsLoading(false);
     } catch (error) {
         console.error(error);
+        setIsLoading(false);
     }
 }
 
@@ -112,6 +117,9 @@ useEffect(() => {
     TwoFAVerified();
 }, []);
 
+    if (isLoading) {
+        return <div className="baground"/>
+    }
 	if (twoFAEnabled && !is2FAVerified) {
 		return <Verify2FA onVerifySuccess={handle2FASuccess} />;
 	}
