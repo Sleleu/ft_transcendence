@@ -70,10 +70,18 @@ export class TwofaService {
 	}
 
 	async generateTwoFactorAuthenticationSecret(login : string, userId : number) {
-		const secret = authenticator.generateSecret()
-	
+		const user = await this.prismaService.user.findUnique({
+			where: { id: userId },
+		});
+		if (!user) {
+			throw new Error('User not found');
+		}
+		if (user.TwoFAenabled && user.isTwoFAverified && user.TwoFASecret) {
+			const otpauthUrl = authenticator.keyuri(login, 'ft_transcendence', user.TwoFASecret);
+			return otpauthUrl;
+		}
+		const secret = authenticator.generateSecret();
 		const otpauthUrl = authenticator.keyuri(login, 'ft_transcendence', secret);
-	
 		await this.setTwoFASecret(secret, userId);
 
 		return otpauthUrl;
