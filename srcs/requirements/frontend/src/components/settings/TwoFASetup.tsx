@@ -3,6 +3,7 @@ import { useState, useEffect, ChangeEvent } from 'react';
 const TwoFASetup = ({ onVerification }: { onVerification: (isVerified: boolean) => void }) => {
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [twoFACode, setTwoFACode] = useState('');
+  const [isVerified, setIsVerified] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,6 +40,7 @@ const TwoFASetup = ({ onVerification }: { onVerification: (isVerified: boolean) 
       if(response.ok) {
         const data = await response.json();
         alert(data.message);
+        setIsVerified(true);
         onVerification(true);
       } else {
         console.error("Error verifying 2FA code:", response.status, response.statusText);
@@ -51,9 +53,10 @@ const TwoFASetup = ({ onVerification }: { onVerification: (isVerified: boolean) 
 
   return (
     <div>
-      {qrCodeUrl && (
+      {!isVerified && qrCodeUrl && (
         <>
-          <p className='text bold'>Please add this QR code to your Two-Factor Authentication app (like Google Authenticator). The two-factor authentication will be activated once the code is validated.</p>
+          <p className='text bold'>Please add this QR code to your Two-Factor Authentication app (like Google Authenticator). 
+          The two-factor authentication will be activated once the code is validated.</p>
           <img src={qrCodeUrl} alt="QR code" />
           <input type="text" value={twoFACode} onChange={handleCodeChange} placeholder="Enter your 2FA code" />
           <button onClick={verifyCode}>Verify Code</button>

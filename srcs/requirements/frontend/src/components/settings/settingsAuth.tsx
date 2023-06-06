@@ -1,10 +1,9 @@
-import { useState, useEffect, ChangeEvent } from 'react';
-import { enableTwoFA, disableTwoFA, check2FA } from '../Api';
+import { useState, useEffect} from 'react';
+import { disableTwoFA, check2FA } from '../Api';
 import TwoFASetup from './TwoFASetup';
 
 const SettingsAuth = () => {
   const [otpauthUrl, setOtpauthUrl] = useState(null);
-  const [twoFAEnabled, setTwoFAEnabled] = useState(false);
   const [qrVisible, setQrVisible] = useState(false); // New state
   const [twoFAVerified, setTwoFAVerified] = useState(false); // New state
 
@@ -21,7 +20,6 @@ const SettingsAuth = () => {
         console.error("Error fetching 2FA secret:", response.status, response.statusText);
       }
       const isTwoFAenabled : boolean = await check2FA();
-      setTwoFAEnabled(isTwoFAenabled);
       setTwoFAVerified(isTwoFAenabled);
     }
 
@@ -36,7 +34,6 @@ const SettingsAuth = () => {
       else if (code === 'disable') {
         await disableTwoFA();
         alert('Two-factor authentication disabled successfully');
-        setTwoFAEnabled(false);
         setTwoFAVerified(false);
         setQrVisible(false);
       }
@@ -46,13 +43,18 @@ const SettingsAuth = () => {
     }
   };
 
+  const handleVerification = (isVerified: boolean) => {
+    setTwoFAVerified(isVerified);
+    setQrVisible(!isVerified);
+  };
+
   return (
     <>
       { !qrVisible && <p className='text bold neon-yellow'>2FA Authentication</p> }
       { !qrVisible && <p className='text bold' style={{textAlign: 'center'}}>For added security, we highly recommend enabling Two-Factor Authentication.</p> }
       { !qrVisible && !twoFAVerified && <button className='button-2fa' onClick={() => handleTwoFA('enable')}>Enable Two Factor Authentication</button> }
       { twoFAVerified && <button className='button-2fa' onClick={() => handleTwoFA('disable')}>Disable Two Factor Authentication</button> }
-      {qrVisible && <TwoFASetup onVerification={setTwoFAVerified} />}
+      { !twoFAVerified && qrVisible && <TwoFASetup onVerification={handleVerification} />}
     </>
   );
 }
