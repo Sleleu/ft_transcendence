@@ -22,7 +22,21 @@ export class TwofaService {
 			return false;
 	  }
 
-	  async isTwoFAVerified(userId: number) {
+	async enableTwoFA(userId : number) {
+		await this.prismaService.user.update({
+      	where: { id: userId },
+		data : { TwoFAenabled : true }
+		});
+	  }
+
+	async disableTwoFA(userId : number) {
+		await this.prismaService.user.update({
+      	where: { id: userId },
+		data : { TwoFAenabled : false }
+		});
+	  }
+
+	async isTwoFAVerified(userId: number) {
 		const user = await this.prismaService.user.findUnique({
 		  where: { id: userId },
 		});
@@ -34,14 +48,14 @@ export class TwofaService {
 			return false;
 	  }
 
-	  async setTwoFAVerified(userId : number) {
+	async setTwoFAVerified(userId : number) {
 		await this.prismaService.user.update({
       	where: { id: userId },
 		data : { isTwoFAverified : true }
 		});
 	  }
 
-	  async unsetTwoFAVerified(userId : number) {
+	async unsetTwoFAVerified(userId : number) {
 		await this.prismaService.user.update({
       	where: { id: userId },
 		data : { isTwoFAverified : false }
@@ -83,20 +97,6 @@ export class TwofaService {
 		return authenticator.verify({
 		token,
 		secret,
-		});
-	  }
-
-	async enableTwoFA(userId : number) {
-		await this.prismaService.user.update({
-      	where: { id: userId },
-		data : { TwoFAenabled : true }
-		});
-	  }
-
-	async disableTwoFA(userId : number) {
-		await this.prismaService.user.update({
-      	where: { id: userId },
-		data : { TwoFAenabled : false }
 		});
 	  }
 

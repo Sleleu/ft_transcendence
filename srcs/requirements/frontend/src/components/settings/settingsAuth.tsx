@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import { enableTwoFA, disableTwoFA, check2FA } from '../Api';
 import TwoFASetup from './TwoFASetup';
 
 const SettingsAuth = () => {
   const [otpauthUrl, setOtpauthUrl] = useState(null);
   const [twoFAEnabled, setTwoFAEnabled] = useState(false);
+  const [qrVisible, setQrVisible] = useState(false); // New state
+  const [twoFAVerified, setTwoFAVerified] = useState(false); // New state
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,6 +22,7 @@ const SettingsAuth = () => {
       }
       const isTwoFAenabled : boolean = await check2FA();
       setTwoFAEnabled(isTwoFAenabled);
+      setTwoFAVerified(isTwoFAenabled);
     }
 
     fetchData();
@@ -28,14 +31,14 @@ const SettingsAuth = () => {
   const handleTwoFA = async (code : string) => {
     try {
       if (code === 'enable') {
-      await enableTwoFA();
-      alert('Two-factor authentication enabled successfully');
-      setTwoFAEnabled(true);
+        setQrVisible(true);
       }
       else if (code === 'disable') {
         await disableTwoFA();
         alert('Two-factor authentication disabled successfully');
-        setTwoFAEnabled(false);   
+        setTwoFAEnabled(false);
+        setTwoFAVerified(false);
+        setQrVisible(false);
       }
     } catch (error) {
       console.error(error);
@@ -46,11 +49,12 @@ const SettingsAuth = () => {
   return (
     <>
       <p className='text bold'>2F authentication</p>
-      { twoFAEnabled === false && <button className='button-2fa' onClick={() => handleTwoFA('enable')}>Enable Two Factor Authentication</button> }
-	  { twoFAEnabled === true && <button className='button-2fa' onClick={() => handleTwoFA('disable')}>Disable Two Factor Authentication</button> }
-      {twoFAEnabled && <TwoFASetup />}
+      { !twoFAVerified && <button className='button-2fa' onClick={() => handleTwoFA('enable')}>Enable Two Factor Authentication</button> }
+      { twoFAVerified && <button className='button-2fa' onClick={() => handleTwoFA('disable')}>Disable Two Factor Authentication</button> }
+      {qrVisible && <TwoFASetup onVerification={setTwoFAVerified} />}
     </>
   );
 }
+
 
 export default SettingsAuth;

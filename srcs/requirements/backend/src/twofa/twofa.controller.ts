@@ -51,6 +51,18 @@ export class TwofaController {
 		return { message: "2FA enabled successfully" };
 	}
 
+	@Post('confirm-enable-2fa')
+	async confirmEnableTwoFA(@Req() req : Request, @Body('code') code : string) {
+	  const user = await this.getUserFromSession(req);
+	  const isTwoFAValid = await this.twofaService.verifyTwoFactorAuthenticationToken(user.id, code);
+	  if (isTwoFAValid) {
+		await this.twofaService.enableTwoFA(user.id);
+		return { message: "2FA enabled successfully" };
+	  } else {
+		throw new ForbiddenException('Invalid 2FA code');
+	  }
+	}
+
 	@Post('disable-2fa')
 	async disableTwoFA(@Req() req : Request) {
         const user = await this.getUserFromSession(req);
