@@ -1,4 +1,5 @@
 import { useState, useEffect, ChangeEvent } from 'react';
+import AuthCode from 'react-auth-code-input';
 
 const TwoFASetup = ({ onVerification }: { onVerification: (isVerified: boolean) => void }) => {
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
@@ -24,8 +25,10 @@ const TwoFASetup = ({ onVerification }: { onVerification: (isVerified: boolean) 
     fetchData();
   }, []);
 
-  const handleCodeChange = (event : ChangeEvent<HTMLInputElement>) => {
-    setTwoFACode(event.target.value);
+  const handleCodeChange = (code: string) => {
+    setTwoFACode(code);
+    if (code.length < 6)
+      setErrorMessage(null);
   };
 
   const verifyCode = async () => {
@@ -54,12 +57,14 @@ const TwoFASetup = ({ onVerification }: { onVerification: (isVerified: boolean) 
     <div>
       {!isVerified && qrCodeUrl && (
         <>
-          <p className='text bold'>Please add this QR code to your Two-Factor Authentication app (like Google Authenticator). 
+          <p className='text bold' style={{textAlign: 'center'}}>Please add this QR code to your Two-Factor Authentication app. 
           The two-factor authentication will be activated once the code is validated.</p>
-          <img src={qrCodeUrl} alt="QR code" />
-          <input type="text" value={twoFACode} onChange={handleCodeChange} placeholder="Enter your 2FA code" />
-          <button onClick={verifyCode}>Verify Code</button>
-          {errorMessage && <p className="text bold neon-red">{errorMessage}</p>}
+          <div className='twofa-container'>
+          <img src={qrCodeUrl} className="qrCodeImage" width={150} height={150} alt="QR code" />
+          <AuthCode containerClassName="auth-code-container" inputClassName="auth-code-input-cell-settings" allowedCharacters="numeric" onChange={handleCodeChange}/>
+          <button className='button-2fa' onClick={verifyCode}>Verify Code</button>
+          {errorMessage && <p className="text bold neon-red twofa-error">{errorMessage}</p>}
+          </div>
         </>
       )}
     </div>

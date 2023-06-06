@@ -101,7 +101,7 @@
 	-webkit-appearance: none;
   }
 
-  .button-username {
+.button-username {
 	background-color: rgba(255, 255, 255, 0.1);
 	color: white;
 	border: none;
@@ -124,11 +124,22 @@
   }
 
 
-  .button-2fa {
+.twofa-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+}
+
+.twofa-error {
+	margin-top: 0px;
+}
+
+.button-2fa {
 	background-color: rgba(255, 255, 255, 0.1);
 	color: white;
 	border: none;
-	padding: 15px 32px;
+	padding: 10px 32px;
 	text-align: center;
 	text-decoration: none;
 	display: inline-block;
@@ -144,4 +155,23 @@
 .button-2fa:hover {
 	background-color: rgba(251, 255, 0, 0.5);
 	box-shadow: 0 0 15px #ffe600, 0 0 15px #ffe600, 0 0 15px #ffe600, 0 0 15px #ffe600;
+  }
+
+.auth-code-input-cell-settings {
+	width: 11px;
+	height: 11px;
+	background-color: rgba(255, 255, 255, 0.1);
+	border: 1px solid #ffe600;
+	padding: 5px;
+	box-shadow: 0 0 5px #ffe600, 0 0 5px #ffe600, 0 0 5px #ffe600, 0 0 40px #ffe600;
+	color: white;
+	text-align: center;
+	font-weight: bold;
+	font-size: larger;
+	text-shadow: 0 0 5px #ffe600, 0 0 10px #ffe600;
+  }
+
+  .qrCodeImage {
+	border: 1px solid cyan;
+	box-shadow: 0 0 30px cyan;
   }

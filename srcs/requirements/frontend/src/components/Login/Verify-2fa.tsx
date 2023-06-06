@@ -59,7 +59,7 @@ const Verify2FA: React.FC<Verify2FAProps> = ({onVerifySuccess}) => {
 	        <div style={AuthCodeContainer}>
 	          <AuthCode containerClassName="auth-code-container" inputClassName="auth-code-input-cell" allowedCharacters="numeric" onChange={handleInputChange}/>
 	        </div>
-	        <button type="submit" className="button neon-button" >Verify</button>
+	        <button type="submit" className="button neon-button" >Verify Code</button>
 	      </form>
 	      <div style={{width: '80%'}}>
 	        {error && <p className="bold neon-red">{error}</p>}

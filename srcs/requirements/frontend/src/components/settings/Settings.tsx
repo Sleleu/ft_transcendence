@@ -96,7 +96,7 @@ function Settings({ user, changeComponent, refreshUser }: settingsProps) {
 
 	return (
         <div className="center">
-			<Cont width='50vw' height='50vh' direction='column' borderRadius='15px' backgroundColor='rgba(0, 0, 0, 0.75)' minWidth='679px' minHeight='425px'>
+			<Cont width='50vw' height='50vh' direction='column' borderRadius='15px' backgroundColor='rgba(0, 0, 0, 0.75)' minWidth='679px' minHeight='450px'>
 				<HeaderBar borderBottom='1px solid #ffffff'>
 					<SettingsTitle />
 				</HeaderBar>
