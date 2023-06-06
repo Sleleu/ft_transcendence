@@ -48,8 +48,9 @@ const SettingsAuth = () => {
 
   return (
     <>
-      <p className='text bold'>2F authentication</p>
-      { !twoFAVerified && <button className='button-2fa' onClick={() => handleTwoFA('enable')}>Enable Two Factor Authentication</button> }
+      { !qrVisible && <p className='text bold'>2F authentication</p> }
+      { !qrVisible && <p className='text bold'>For added security, we highly recommend enabling Two-Factor Authentication.</p> }
+      { !qrVisible && !twoFAVerified && <button className='button-2fa' onClick={() => handleTwoFA('enable')}>Enable Two Factor Authentication</button> }
       { twoFAVerified && <button className='button-2fa' onClick={() => handleTwoFA('disable')}>Disable Two Factor Authentication</button> }
       {qrVisible && <TwoFASetup onVerification={setTwoFAVerified} />}
     </>

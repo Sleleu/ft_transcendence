@@ -53,6 +53,7 @@ const TwoFASetup = ({ onVerification }: { onVerification: (isVerified: boolean) 
     <div>
       {qrCodeUrl && (
         <>
+          <p className='text bold'>Please add this QR code to your Two-Factor Authentication app (like Google Authenticator). The two-factor authentication will be activated once the code is validated.</p>
           <img src={qrCodeUrl} alt="QR code" />
           <input type="text" value={twoFACode} onChange={handleCodeChange} placeholder="Enter your 2FA code" />
           <button onClick={verifyCode}>Verify Code</button>
