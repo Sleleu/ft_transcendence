@@ -25,6 +25,11 @@ const TwoFASetup = ({ onVerification }: { onVerification: (isVerified: boolean) 
     fetchData();
   }, []);
 
+  const handleFormSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    verifyCode();
+  };
+
   const handleCodeChange = (code: string) => {
     setTwoFACode(code);
     if (code.length < 6)
@@ -61,14 +66,17 @@ const TwoFASetup = ({ onVerification }: { onVerification: (isVerified: boolean) 
           The two-factor authentication will be activated once the code is validated.</p>
           <div className='twofa-container'>
           <img src={qrCodeUrl} className="qrCodeImage" width={150} height={150} alt="QR code" />
-          <AuthCode containerClassName="auth-code-container" inputClassName="auth-code-input-cell-settings" allowedCharacters="numeric" onChange={handleCodeChange}/>
-          <button className='button-2fa' onClick={verifyCode}>Verify Code</button>
+          <form onSubmit={handleFormSubmit}>
+            <AuthCode containerClassName="auth-code-container" inputClassName="auth-code-input-cell-settings" allowedCharacters="numeric" onChange={handleCodeChange}/>
+            <button type="submit" className='button-2fa'>Verify Code</button>
+          </form>
           {errorMessage && <p className="text bold neon-red twofa-error">{errorMessage}</p>}
           </div>
         </>
       )}
     </div>
   );
+  
 };
 
 export default TwoFASetup;
