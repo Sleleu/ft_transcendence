@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { enableTwoFAVerified, verifyTwoFACode } from "../Api";
+import { setTwoFAVerified, verifyTwoFACode } from "../Api";
 import AuthCode from 'react-auth-code-input';
 import { CSSProperties } from "styled-components";
 import './Login.css'
@@ -37,7 +37,7 @@ const Verify2FA: React.FC<Verify2FAProps> = ({onVerifySuccess}) => {
 
     try {
       await verifyTwoFACode(code);
-      await enableTwoFAVerified();
+      await setTwoFAVerified();
       setError(null);
       onVerifySuccess();
     } catch (error) {

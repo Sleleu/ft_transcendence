@@ -34,14 +34,14 @@ export class TwofaService {
 			return false;
 	  }
 
-	  async enableTwoFAVerified(userId : number) {
+	  async setTwoFAVerified(userId : number) {
 		await this.prismaService.user.update({
       	where: { id: userId },
 		data : { isTwoFAverified : true }
 		});
 	  }
 
-	  async disableTwoFAVerified(userId : number) {
+	  async unsetTwoFAVerified(userId : number) {
 		await this.prismaService.user.update({
       	where: { id: userId },
 		data : { isTwoFAverified : false }

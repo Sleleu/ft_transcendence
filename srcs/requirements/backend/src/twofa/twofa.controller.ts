@@ -70,17 +70,17 @@ export class TwofaController {
 		return await this.twofaService.isTwoFAVerified(user.id);
 	}
 
-	@Post('enable-2fa-verified')
+	@Post('set-2fa-verified')
 	async enableTwoFAVerified(@Req() req : Request) {
         const user = await this.getUserFromSession(req);
-		await this.twofaService.enableTwoFAVerified(user.id);
+		await this.twofaService.setTwoFAVerified(user.id);
 		return { message: "2FAVerified is set to true" };
 	}
 
-	@Post('disable-2fa-verified')
+	@Post('unset-2fa-verified')
 	async disableTwoFAVerified(@Req() req : Request) {
         const user = await this.getUserFromSession(req);
-		await this.twofaService.disableTwoFAVerified(user.id);
+		await this.twofaService.unsetTwoFAVerified(user.id);
 		return { message: "2FAVerified is set to false" };
 	}  
 }

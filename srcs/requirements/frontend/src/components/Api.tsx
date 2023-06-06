@@ -51,11 +51,11 @@ export const logout = () => baseRequest("/users/logout", "GET");
 
 export const enableTwoFA = () => baseRequest("/twofa/enable-2fa", "POST");
 
-export const enableTwoFAVerified = () => baseRequest("/twofa/enable-2fa-verified", "POST");
+export const setTwoFAVerified = () => baseRequest("/twofa/set-2fa-verified", "POST");
 
 export const disableTwoFA = () => baseRequest("/twofa/disable-2fa", "POST");
 
-export const disableTwoFAVerified = () => baseRequest("/twofa/disable-2fa-verified", "POST");
+export const unsetTwoFAVerified = () => baseRequest("/twofa/unset-2fa-verified", "POST");
 
 export const check2FA = () => baseRequest("/twofa/check-2fa", "GET");
 

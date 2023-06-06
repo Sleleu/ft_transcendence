@@ -14,7 +14,7 @@ import Stats from '../popup/Stats/Stats';
 import { User } from '../types'
 import Friend from '../friend/list/src/friend';
 import Verify2FA from '../Login/Verify-2fa';
-import { check2FA, check2FAVerified, disableTwoFAVerified, getUserProfile, logout } from '../Api';
+import { check2FA, check2FAVerified, unsetTwoFAVerified, getUserProfile, logout } from '../Api';
 import SelectLogin from '../Login/SelectLogin';
 
 function Home() {
@@ -73,7 +73,7 @@ function Home() {
 
 	const handleLogout = async () => {
 		try {
-          await disableTwoFAVerified();
+          await unsetTwoFAVerified();
 		  await logout();
 		  navigate('/');
 		} catch (error) {
