@@ -4,6 +4,7 @@ const TwoFASetup = ({ onVerification }: { onVerification: (isVerified: boolean) 
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [twoFACode, setTwoFACode] = useState('');
   const [isVerified, setIsVerified] = useState(false);
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,12 +39,10 @@ const TwoFASetup = ({ onVerification }: { onVerification: (isVerified: boolean) 
         credentials: 'include'
       });
       if(response.ok) {
-        const data = await response.json();
-        alert(data.message);
         setIsVerified(true);
         onVerification(true);
       } else {
-        console.error("Error verifying 2FA code:", response.status, response.statusText);
+        setErrorMessage('Invalid 2FA code')
       }
     } catch (error) {
       console.error(error);
@@ -60,6 +59,7 @@ const TwoFASetup = ({ onVerification }: { onVerification: (isVerified: boolean) 
           <img src={qrCodeUrl} alt="QR code" />
           <input type="text" value={twoFACode} onChange={handleCodeChange} placeholder="Enter your 2FA code" />
           <button onClick={verifyCode}>Verify Code</button>
+          {errorMessage && <p className="text bold neon-red">{errorMessage}</p>}
         </>
       )}
     </div>

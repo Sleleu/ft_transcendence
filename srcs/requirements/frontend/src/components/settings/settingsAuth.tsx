@@ -6,6 +6,7 @@ const SettingsAuth = () => {
   const [otpauthUrl, setOtpauthUrl] = useState(null);
   const [qrVisible, setQrVisible] = useState(false); // New state
   const [twoFAVerified, setTwoFAVerified] = useState(false); // New state
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,11 +30,12 @@ const SettingsAuth = () => {
   const handleTwoFA = async (code : string) => {
     try {
       if (code === 'enable') {
+        setSuccessMessage(null);
         setQrVisible(true);
       }
       else if (code === 'disable') {
         await disableTwoFA();
-        alert('Two-factor authentication disabled successfully');
+        setSuccessMessage('Two-Factor Authentication successfully disabled');
         setTwoFAVerified(false);
         setQrVisible(false);
       }
@@ -46,6 +48,7 @@ const SettingsAuth = () => {
   const handleVerification = (isVerified: boolean) => {
     setTwoFAVerified(isVerified);
     setQrVisible(!isVerified);
+    setSuccessMessage('Two-Factor Authentication successfully enabled')
   };
 
   return (
@@ -55,6 +58,7 @@ const SettingsAuth = () => {
       { !qrVisible && !twoFAVerified && <button className='button-2fa' onClick={() => handleTwoFA('enable')}>Enable Two Factor Authentication</button> }
       { twoFAVerified && <button className='button-2fa' onClick={() => handleTwoFA('disable')}>Disable Two Factor Authentication</button> }
       { !twoFAVerified && qrVisible && <TwoFASetup onVerification={handleVerification} />}
+      {successMessage && <p className="text bold neon-green">{successMessage}</p>}
     </>
   );
 }
