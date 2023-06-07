@@ -27,12 +27,9 @@ interface Position {
   }
 
 const SelectAvatar: React.FC<SelectLoginProps> = ({user, refreshUser}) => {
-	const [isDefaultAvatar, setIsDefaultAvatar] = useState<boolean>(false);
+  const [isDefaultAvatar, setIsDefaultAvatar] = useState<boolean>(false);
 	const editorRef = useRef<AvatarEditor | null>(null);
-	const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
-	const [isAvatarUpdated, setIsAvatarUpdated] = useState<boolean>(false);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
 	const initialState: State = {
 	  image: '',
@@ -50,20 +47,13 @@ const SelectAvatar: React.FC<SelectLoginProps> = ({user, refreshUser}) => {
   const handleScale = (event: ChangeEvent<HTMLInputElement>) => {
 		const scale = parseFloat(event.target.value);
 		setState({ ...state, scale });
-    resetMessages();
-    setIsAvatarUpdated(true);
+    setErrorMessage(null);
 	  };
 	
 	  const handlePositionChange = (position: Position) => {
 		setState({ ...state, position });
-    resetMessages();
-    setIsAvatarUpdated(true);
+    setErrorMessage(null);
 	  };
-
-    const resetMessages = () => {
-      setErrorMessage(null);
-      setSuccessMessage(null);
-    }
 
     const handleNewImage = (event: ChangeEvent<HTMLInputElement>) => {
       if (event.target.files && event.target.files.length > 0) {
@@ -77,8 +67,7 @@ const SelectAvatar: React.FC<SelectLoginProps> = ({user, refreshUser}) => {
         const imageUrl = URL.createObjectURL(file);
         setState({ ...state, image: imageUrl });
         setIsDefaultAvatar(false);
-        setIsAvatarUpdated(true);
-        resetMessages();
+        setErrorMessage(null);
       }
       };
 
@@ -94,14 +83,13 @@ const SelectAvatar: React.FC<SelectLoginProps> = ({user, refreshUser}) => {
       }
 
       const handleSubmit = async () => {
-        setIsSubmitted(true); 
         if (isDefaultAvatar) {
           return;
         }
-        if (!isAvatarUpdated) {
-          resetMessages();
-          setErrorMessage('Avatar already updated !');
-          return ;
+        if (!state.image) {
+          setErrorMessage(null);
+          setErrorMessage('No avatar selected!');
+          return;
         }
         if (editorRef.current) {
           const img = editorRef.current.getImageScaledToCanvas().toDataURL();
@@ -112,7 +100,6 @@ const SelectAvatar: React.FC<SelectLoginProps> = ({user, refreshUser}) => {
             const file = new File([blob], "user_avatar.png", { type: "image/png" });
             try {
             await updateAvatar(file);
-            setIsAvatarUpdated(false);
             await setAvatarSelected();
             refreshUser();
             } catch (err) {
@@ -126,11 +113,11 @@ const SelectAvatar: React.FC<SelectLoginProps> = ({user, refreshUser}) => {
   return (
     <div className="baground">
       <div className='containerFullPage'>
-        <div className='container'>
+        <div className='container-avatar'>
           <div className='selectAvatar-container'>
             <h4>You can set your 42 profile image as avatar</h4>
-            <img className='avatar-login' src={user.avatar} />
-            <button className='button' onClick={handle42AvatarSelected}>Select 42 avatar</button>
+            <img className='avatar-select' src={user.avatar} />
+            <button className='button-avatar' onClick={handle42AvatarSelected}>Select 42 avatar</button>
             <h4>Or upload a new avatar</h4>
               <AvatarEditor
               ref={editorRef}
@@ -145,7 +132,7 @@ const SelectAvatar: React.FC<SelectLoginProps> = ({user, refreshUser}) => {
               color={[255, 255, 255, 0.3]}
               className="editor-canvas"
               />
-            <label className="btn-little text bold medium cyan-stroke">
+            <label className="btn-little-avatar text bold cyan-stroke">
                   <input
                     name="upload-img-input"
                     type="file"
@@ -164,12 +151,13 @@ const SelectAvatar: React.FC<SelectLoginProps> = ({user, refreshUser}) => {
                 step="0.01"
                 defaultValue="1"
               />
-              <button className='button' onClick={handleSubmit}>Submit avatar</button>
-              {isSubmitted && isDefaultAvatar && (
-              <p className="text bold neon-red">This is your current avatar</p>)}
-  		        {errorMessage && <p className="text bold neon-red">{errorMessage}</p>}
-		          {successMessage && <p className="text bold neon-green">{successMessage}</p>}
-              <button className='button' onClick={handleSkip}>Skip this step</button>
+              <button className='button-avatar' onClick={handleSubmit}>Submit avatar</button>
+  		        {errorMessage && <p className="text bold neon-red error-message">{errorMessage}</p>}
+              <div className='skip-button'>
+              <h4>Or skip this step, a default avatar will be set</h4>
+                <button className='button-avatar' onClick={handleSkip}>Skip this step</button>
+              </div>
+              <h5 className='neon-yellow'>You will be able to change your avatar in the parameters later !</h5>        
           </div>
         </div>
       </div>
