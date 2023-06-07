@@ -97,7 +97,7 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 	  if (!room)
 		throw new ForbiddenException('No room found');
 	  this.messagesService.disconnectedUser(room.id, user.id);
-	  console.log(joinDto.name, 'left room :', joinDto.roomName);
+	//   console.log(joinDto.name, 'left room :', joinDto.roomName);
 	}
 
 
