@@ -20,6 +20,7 @@ model User {
 	username 				String @unique
 	gameLogin				String? @unique
 	avatar					String?
+	avatarSelected			Boolean @default(false)
 	access_token			String?
 	TwoFASecret				String?
 	TwoFAenabled			Boolean @default(false)

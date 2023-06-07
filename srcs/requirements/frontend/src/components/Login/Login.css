@@ -138,3 +138,10 @@
 	  text-align: center;
 	  box-shadow: 0 0 5px #ff00f2, 0 0 5px #f700ff, 0 0 5px #ea00ff, 0 0 40px #ea00ff;
   }
+
+.selectAvatar-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+}
