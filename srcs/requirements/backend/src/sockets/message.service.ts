@@ -36,6 +36,29 @@ export class MessageService {
     return owner;
   }
 
+  async connectedUser(roomId: number, userId: number)
+  {
+    return this.prisma.room.update({
+      where: { id: roomId },
+      data: { connected: { connect: { id: userId } } },
+    });
+  }
+  async disconnectedUser(roomId: number, userId: number)
+  {
+    return this.prisma.room.update({
+      where: { id: roomId },
+      data: { connected: { disconnect: { id: userId } } },
+    });
+  }
+  async isConnected(roomId: number, userId: number) {
+    const room = await this.prisma.room.findUnique({
+      where : {id: roomId},
+      include: { connected: true },
+    });
+    const isConnected = room?.connected.some((user) => user.id === userId);
+    return isConnected;
+  }
+
   async createRoom(dto: CreateRoomDto, userId: number) {
     const room = await this.prisma.room.create({
       data: {
@@ -135,11 +158,11 @@ export class MessageService {
     return message;
   }
 
-  async getMessagesByRoom(roomId: number): Promise<Message[]> {
-    return this.prisma.message.findMany({
+  async getMessagesByRoom(roomId: number) {
+  const messages = this.prisma.message.findMany({
       where: { roomId },
       orderBy: { createdAt: 'asc' },
     });
+    return messages;
   }
-
 }

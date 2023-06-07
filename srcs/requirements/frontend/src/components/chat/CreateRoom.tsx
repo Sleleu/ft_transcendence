@@ -44,7 +44,6 @@ const CreateRoom:React.FC<Props> = ({socket, setRooms, setCreateRoom, user}) => 
         console.log('CREATEROOM');
         socket?.emit('createRoom', { name:roomText, type:checkbox, password:password,},
         (response: Room) => {
-            setRooms((prevRooms) => [...prevRooms, response]);
             setRoomText("");
             setCreateRoom(false);
             console.log('ROOM CREATED');

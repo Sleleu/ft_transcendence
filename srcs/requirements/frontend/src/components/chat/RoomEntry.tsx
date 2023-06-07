@@ -52,7 +52,6 @@ const Block: CSSProperties = {
 }
 
 useEffect(() => {
-  console.log('useEffect room');
   socket?.emit('owner', {roomName: room.name}, (response:User) => {
     setOwner(response.username);
   })

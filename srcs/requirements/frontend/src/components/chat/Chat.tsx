@@ -18,7 +18,7 @@ interface Props {
     roomId: number;
     roomName: string;
     socket: Socket | undefined;
-    leaveRoom: (roomName:string) => void;
+    leaveRoom: (roomName:string, kick?:boolean) => void;
     changeComponent: (component: string) => void;
 }
 
@@ -33,8 +33,6 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom, change
 
     const [typing, setTyping] = useState<string>("");
     const [hover, setHover] = useState<boolean>(false);
-    const [adminText, setAdminText] = useState<string>("");
-    const [adminButton, setAdminButton] = useState<string>("");
 
     const Container: CSSProperties = {
         width: '100%',
@@ -133,7 +131,7 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom, change
     }
 
     useEffect(() => {
-        socket?.emit('findRoomMessages', {roomId: roomId}, (response: MessageObj[]) => {
+        socket?.emit('findRoomMessages', {id: roomId}, (response: MessageObj[]) => {
         setMessages(response);
         });
         socket?.emit('getWhitelist', {roomName: roomName}, () => {
@@ -147,11 +145,15 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom, change
             setWhitelist(users);
         })
 
-        socket?.on('kickUser', () => {
-            changeComponent('home');
+        socket?.on('kickUser', (response) => {
+            console.log('KICK = ', response.name, roomName);
+            leaveRoom(response.name, true);
         })
 
         return () => {
+            socket?.emit('leave', {name: name, roomName:roomName}, () => {
+            console.log(name, ' left room ', roomName);
+            })
             socket?.off('message');
         };
 
@@ -198,21 +200,6 @@ const handleHover = () => {
     setHover(!hover);
 };
 
-const adminType = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAdminText(event.target.value);
-}
-const adminSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (adminButton === '+')
-        socket?.emit('promoteAdmin', {target : adminText, roomName: roomName});
-    else if (adminButton === '-')
-        socket?.emit('demoteAdmin', {target : adminText, roomName: roomName});
-    else if (adminButton === 'ban')
-        socket?.emit('ban', {target : adminText, roomName: roomName});
-    else if (adminButton === 'unban')
-        socket?.emit('unban', {target : adminText, roomName: roomName});
-}
-
     const handleUserClick = (user: User, event: React.MouseEvent<HTMLSpanElement>) => {
         setSelectedUser(user);
         setPopupPosition({ x: event.clientX, y: event.clientY });
@@ -221,17 +208,8 @@ const adminSubmit = (e: React.FormEvent) => {
     return (
         <div style={Container}>
             <div style={topBar}>
-                {/* NAVBAR DU CHAT */}
                 <span style={RoomName}>{roomName}</span>
                 <div style={leaveButton} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => leaveRoom(roomName)}>LEAVE ROOM</div>
-                <form onSubmit={adminSubmit}>
-                    <input value={adminText}
-                     onChange={adminType}></input>
-                    <button onClick={() => {setAdminButton('+')}}>+</button>
-                    <button onClick={() => {setAdminButton('-')}}>-</button>
-                    <button onClick={() => {setAdminButton('ban')}}>ban</button>
-                    <button onClick={() => {setAdminButton('unban')}}>unban</button>
-                </form>
             </div>
             <div style={middleBlock}>
                 <div style={leftBlock}>

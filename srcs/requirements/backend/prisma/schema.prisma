@@ -34,6 +34,7 @@ model User {
 	whitelistedRooms        Room[]               @relation("RoomWhitelist")
 	adminRooms         		Room[]               @relation("Admin")
 	bannedRooms         	Room[]               @relation("Banned")
+	connectedRooms         	Room[]               @relation("Connected")
 	@@map("users")
 }
 
@@ -93,6 +94,7 @@ model Room {
 	whitelist   User[]   @relation("RoomWhitelist")
 	admin		User[]   @relation("Admin")
 	banned		User[]   @relation("Banned")
+	connected	User[]	@relation("Connected")
 
 	messages	Message[]
 }

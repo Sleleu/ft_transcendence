@@ -65,7 +65,7 @@ CREATE TABLE "Room" (
     "name" TEXT NOT NULL,
     "type" TEXT NOT NULL,
     "password" TEXT,
-    "ownerId" INTEGER,
+    "ownerId" INTEGER NOT NULL,
 
     CONSTRAINT "Room_pkey" PRIMARY KEY ("id")
 );
@@ -99,6 +99,12 @@ CREATE TABLE "_Banned" (
     "B" INTEGER NOT NULL
 );
 
+-- CreateTable
+CREATE TABLE "_Connected" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 
@@ -123,6 +129,12 @@ CREATE UNIQUE INDEX "_Banned_AB_unique" ON "_Banned"("A", "B");
 -- CreateIndex
 CREATE INDEX "_Banned_B_index" ON "_Banned"("B");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "_Connected_AB_unique" ON "_Connected"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_Connected_B_index" ON "_Connected"("B");
+
 -- AddForeignKey
 ALTER TABLE "friends" ADD CONSTRAINT "friends_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -145,7 +157,7 @@ ALTER TABLE "bloqueUser" ADD CONSTRAINT "bloqueUser_recipientId_fkey" FOREIGN KE
 ALTER TABLE "History" ADD CONSTRAINT "History_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Room" ADD CONSTRAINT "Room_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Room" ADD CONSTRAINT "Room_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Message" ADD CONSTRAINT "Message_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "Room"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -167,3 +179,9 @@ ALTER TABLE "_Banned" ADD CONSTRAINT "_Banned_A_fkey" FOREIGN KEY ("A") REFERENC
 
 -- AddForeignKey
 ALTER TABLE "_Banned" ADD CONSTRAINT "_Banned_B_fkey" FOREIGN KEY ("B") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_Connected" ADD CONSTRAINT "_Connected_A_fkey" FOREIGN KEY ("A") REFERENCES "Room"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_Connected" ADD CONSTRAINT "_Connected_B_fkey" FOREIGN KEY ("B") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -44,21 +44,25 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 	async createRoom(@MessageBody() dto: CreateRoomDto,
 	@ConnectedSocket() client: Socket) {
 		const user = this.socketService.getUser(client.id);
-		const exists = await this.messagesService.owner(dto.name);
+		const exists = await this.messagesService.getRoomByName(dto.name);
 		if (exists)
 			throw new ForbiddenException('Room alerady exists');
 		const room = await this.messagesService.createRoom(dto, user.id);
 		this.messagesService.addWhitelistUser(room.id, user.id);
 		this.messagesService.promoteAdmin(room.id, user.id);
-		console.log(room);
+		this.server.emit('newRoom', room);
 		return room;
 	}
 	@SubscribeMessage('join')
 	async joinRoom(@MessageBody() dto:JoinRoomDto, @ConnectedSocket() client: Socket) {
+		try {
 		const room = await this.messagesService.getRoomByName(dto.roomName);
 		if (!room)
 			throw new ForbiddenException('Room does not exist');
 		const user = this.socketService.getUser(client.id);
+		const banned = await this.messagesService.isBanned(room.id, user.id)
+		if (banned)
+			throw new ForbiddenException('Access to room forbidden : user banned');
 		if (room.type === 'private')
 		{
 		  const whitelisted = this.messagesService.searchWhiteList(room.id, user.id)
@@ -71,29 +75,35 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 			throw new ForbiddenException('Wrong password provided');
 		}
 		client.join(dto.roomName);
+		console.log(user.username, 'joined room :', dto.roomName);
 		if (room.type === 'protected' || room.type === 'public')
 		{
 			const whitelisted = await this.messagesService.searchWhiteList(room.id, user.id)
 			if (!whitelisted)
-			{
-				console.log('WHITELISTING');
 				this.messagesService.addWhitelistUser(room.id, user.id);
-			}
-			else
-				console.log('NOT WHITELISTING');
 		}
-		console.log(user.username, 'joined room :', dto.roomName);
+		this.messagesService.connectedUser(room.id, user.id);
+		client.emit('joinSuccess', {id: room.id, roomName: room.name});
+	} catch (e) {
+		client.emit('joinError', { message: e.message });
 	}
+	}
+
 	@SubscribeMessage('leave')
-	leaveRoom(@MessageBody() joinDto: JoinRoomDto, @ConnectedSocket() client: Socket) {
+	async leaveRoom(@MessageBody() joinDto: JoinRoomDto, @ConnectedSocket() client: Socket) {
 	  client.leave(joinDto.roomName);
+	  const user = this.socketService.getUser(client.id);
+	  const room = await this.messagesService.getRoomByName(joinDto.roomName);
+	  if (!room)
+		throw new ForbiddenException('No room found');
+	  this.messagesService.disconnectedUser(room.id, user.id);
 	  console.log(joinDto.name, 'left room :', joinDto.roomName);
 	}
 
 
 	@SubscribeMessage('findRoomMessages')
-	findRoom(@MessageBody('roomId') roomId: number,) {
-	  const messages = this.messagesService.getMessagesByRoom(roomId);
+	findRoom(@MessageBody('id') id: number) {
+	  const messages = this.messagesService.getMessagesByRoom(id);
 	  return messages;
 	}
 	@SubscribeMessage('createMessage')
@@ -175,6 +185,15 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		if (targetIsBanned)
 			throw new ForbiddenException('Target Alerady Banned');
 		this.messagesService.ban(room.id, userTarget.id);
+		const kickedId = this.socketService.findSocketById(userTarget.id);
+		if (!kickedId)
+			throw new ForbiddenException('Invalid target client ID');
+		const kickedClient = this.server.sockets.sockets.get(kickedId);
+		if (!kickedClient)
+			throw new ForbiddenException('Invalid target');
+		const isConnected = await this.messagesService.isConnected(room.id, userTarget.id);
+		if (isConnected)
+			kickedClient.emit('kickUser', {name: room.name});
 	}
 	@SubscribeMessage('unban')
 	async unban(@MessageBody('target') target: string,
@@ -198,7 +217,7 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 	}
 
 	@SubscribeMessage('kick')
-	async kick(@MessageBody('target') targetId: number,
+	async kick(@MessageBody('targetId') targetId: number,
 	@MessageBody('roomName') roomName: string,
 	@ConnectedSocket() client: Socket)
 	{
@@ -215,9 +234,10 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		const kickedClient = this.server.sockets.sockets.get(kickedId);
 		if (!kickedClient)
 			throw new ForbiddenException('Invalid target');
-		kickedClient.emit('kickUser');
+		const isConnected = await this.messagesService.isConnected(room.id, targetId);
+		if (isConnected)
+			kickedClient.emit('kickUser', {name: room.name});
 	}
-
 
 
 	@SubscribeMessage('getWhitelist')

@@ -8,6 +8,7 @@ import Room from './RoomEntry';
 import RoomEntry from './RoomEntry';
 import retLogo from '../../img/navBar/returnLogo.png'
 import firendLogo from '../../img/menue/friend.png'
+import Message from './Message';
 
 interface Room {
     name: string;
@@ -34,6 +35,9 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
 
     const [createRoom, setCreateRoom] = useState<boolean>(false);
 
+    const [showPopup, setShowPopup] = useState(false);
+    const[popMsg, setPopMsg] = useState('');
+
     useEffect(() => {
         socket?.emit('findAllRooms', {}, (response: Room[]) => setRooms(response));
         socket?.on('disconnect', () => {
@@ -44,17 +48,37 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
             console.log('Connection error:', error);
         });
 
+        socket?.on('joinError', (response) => {
+            console.log(response);
+            setPopMsg(response.message);
+            setShowPopup(true);
+        })
+        socket?.on('joinSuccess', (response) => {
+            setRoomName(response.roomName);
+            setCurrentRoom(response.id);
+        })
+        socket?.on('newRoom', (room: Room) => {
+            console.log(room);
+            setRooms((prevRooms) => [...prevRooms, room]);
+        })
+
+        const handleClickOutside = (event:MouseEvent) => {
+            if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+              setShowPopup(false);
+            }
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+
     }, []);
+
+    const popupRef = useRef<HTMLDivElement>(null);
 
     const handleConnect = () => {
         socket?.emit('connectToChat', {name: username}, () => {})
     }
-
-    // socket?.on('connect', () => {
-    //     handleConnect();
-    //     console.log('Connected to Socket.IO server');
-    // });
-
 
     const Container: CSSProperties = {
         width: '90%',
@@ -133,26 +157,47 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
         width: '35%',
         minWidth:'33px',
     }
+    const popupStyle : CSSProperties = {
+        width: '50%', height : '15%',
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        border: '2px solid #fff', backgroundColor: '#000',
+        padding: '10px',
+        borderRadius: '5px',
+
+        color: '#fff', fontWeight: '800', fontSize: '36px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+    }
+    const closePopup : CSSProperties = {
+        cursor: 'pointer',
+        fontSize: '50px',
+        color: '#fff',
+    }
 
     const handleSelect = (id: number, roomName: string, type: string) => {
-        //Si type === protected, demande un password !
         socket?.emit('join', {name: username, roomName:roomName}, () => {
             console.log(username, ' joined room ', id);
         })
-        setRoomName(roomName);
-        setCurrentRoom(id);
     };
+
 
     const handleHover = () => {
         setHover(!hover);
     };
 
-    const leaveRoom = (roomName: string) => {
-        socket?.emit('leave', {name: username, roomName:roomName}, () => {
-            console.log(username, ' left room ', roomName);
-        })
+    const leaveRoom = (roomName: string, kick?:boolean) => {
         setRoomName("");
         setCurrentRoom(-1);
+        if (kick === true)
+        {
+            setPopMsg(`You got kicked from room ${roomName}`);
+            setShowPopup(true);
+        }
     }
 
   return (
@@ -176,6 +221,16 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
                     <div style={displayBox}>
                         {rooms.map((room) => <RoomEntry room={room} key={room.id} handleSelect={handleSelect} socket={socket}/>)}
                     </div>
+                    {showPopup && (
+                    <div className="popup" ref={popupRef} style={popupStyle}>
+                    <div className="popup-content">
+                        <span className="close" onClick={() => setShowPopup(false)} style={closePopup}>
+                        &times;
+                        </span>
+                        <p>{popMsg}.</p>
+                    </div>
+                    </div>
+      )}
                 </div>
             </div>
             :
