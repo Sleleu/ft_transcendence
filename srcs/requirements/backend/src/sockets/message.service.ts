@@ -58,6 +58,13 @@ export class MessageService {
     const isConnected = room?.connected.some((user) => user.id === userId);
     return isConnected;
   }
+  async getConnected(roomId: number) {
+    const rooms = await this.prisma.room.findUnique({
+      where : {id: roomId},
+      include: { connected: true },
+    });
+    return rooms?.connected;
+  }
 
   async createRoom(dto: CreateRoomDto, userId: number) {
     const room = await this.prisma.room.create({
@@ -124,6 +131,27 @@ export class MessageService {
     });
     const ban = room?.banned.some((user) => user.id === userId);
     return ban;
+  }
+
+  async mute(roomId: number, userId: number) {
+    return this.prisma.room.update({
+      where: { id: roomId },
+      data: { muted: { connect: { id: userId } } },
+    });
+  }
+  async unmute(roomId: number, userId: number) {
+    return this.prisma.room.update({
+      where: { id: roomId },
+      data: { muted: { disconnect: { id: userId } } },
+    });
+  }
+  async isMuted(roomId: number, userId: number) {
+    const room = await this.prisma.room.findUnique({
+      where : {id: roomId},
+      include: { muted: true },
+    });
+    const mute = room?.muted.some((user) => user.id === userId);
+    return mute;
   }
 
   async promoteAdmin(roomId: number, userId: number) {

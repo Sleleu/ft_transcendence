@@ -35,6 +35,7 @@ model User {
 	adminRooms         		Room[]               @relation("Admin")
 	bannedRooms         	Room[]               @relation("Banned")
 	connectedRooms         	Room[]               @relation("Connected")
+	mutedRooms         		Room[]               @relation("Muted")
 	@@map("users")
 }
 
@@ -95,6 +96,7 @@ model Room {
 	admin		User[]   @relation("Admin")
 	banned		User[]   @relation("Banned")
 	connected	User[]	@relation("Connected")
+	muted		User[]	@relation("Muted")
 
 	messages	Message[]
 }

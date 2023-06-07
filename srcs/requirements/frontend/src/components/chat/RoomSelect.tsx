@@ -58,7 +58,6 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
             setCurrentRoom(response.id);
         })
         socket?.on('newRoom', (room: Room) => {
-            console.log(room);
             setRooms((prevRooms) => [...prevRooms, room]);
         })
 

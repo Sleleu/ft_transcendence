@@ -60,19 +60,21 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedUser, sock
 	};
 
 	const handleSendMessage = () => {
-    // Implement your logic for sending a message to the user
+        socket?.emit('createRoom', { name:user.username, type:'private'},
+        (response: Room) => {});
+        socket?.emit('join', {roomName:roomName}, () => {});
   };
 
   const handleInviteToPlay = () => {
-    // Implement your logic for inviting the user to play
+    // inviting the user to play
   };
 
   const handleAddFriend = () => {
-    // Implement your logic for adding the user as a friend
+    // adding the user as a friend
   };
 
   const handleBlock = () => {
-    // Implement your logic for blocking the user
+    //  blocking the user
   };
 
   const handleBan = () => {
@@ -84,7 +86,7 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedUser, sock
   };
 
   const handleMute = () => {
-    // Implement your logic for muting the user
+    socket?.emit('miute', {targetId: user.id, roomName: roomName});
   };
 
   const handlePromoteAdmin = () => {
