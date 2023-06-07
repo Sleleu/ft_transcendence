@@ -20,6 +20,10 @@ interface PopupProps {
 const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedUser, socket, roomName }) => {
 
 	const [isVisible, setIsVisible] = useState(true);
+	const [ban, setBan] = useState('Ban');
+	const [mute, setMute] = useState('Mute');
+	const [admin, setAdmin] = useState('Promote as admin');
+	const [clientAdmin, setClientAdmin] = useState(true); //false by default
 
 	const popupStyle: React.CSSProperties = {
 		position: 'fixed',
@@ -58,8 +62,28 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedUser, sock
 		transition: 'background-color 0.3s ease',
 		boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)',
 	};
+ 
+  useEffect(() => {
 
-	const handleSendMessage = () => {
+    socket?.emit('popupInfos', { id:user.id, roomName:roomName},
+    ({ban, mute, admin, clientAdmin}) => {
+      if (ban === true)
+        setBan('Unban');
+      if (mute === true)
+        setMute('Unmute');
+      if (admin === true)
+        setAdmin('Demote admin');
+      if (clientAdmin !== true)
+        setClientAdmin(false);
+    });
+
+
+    return () => {
+    };
+
+  }, []);
+	
+  const handleSendMessage = () => {
         socket?.emit('createRoom', { name:user.username, type:'private'},
         (response: Room) => {});
         socket?.emit('join', {roomName:roomName}, () => {});
@@ -104,10 +128,10 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedUser, sock
       <button style={Buttons} onClick={handleInviteToPlay}>Invite to Play</button>
       <button style={Buttons} onClick={handleAddFriend}>Add Friend</button>
       <button style={Buttons} onClick={handleBlock}>Block</button>
-      <button style={Buttons} onClick={handleBan}>Ban</button>
-      <button style={Buttons} onClick={handleKick}>Kick</button>
-      <button style={Buttons} onClick={handleMute}>Mute</button>
-      <button style={Buttons} onClick={handlePromoteAdmin}>Promote as Admin</button>
+      {clientAdmin && <button style={Buttons} onClick={handleBan}>{ban}</button>}
+      {clientAdmin && <button style={Buttons} onClick={handleKick}>Kick</button>}
+      {clientAdmin && <button style={Buttons} onClick={handleMute}>{mute}</button>}
+      {clientAdmin && <button style={Buttons} onClick={handlePromoteAdmin}>{admin}</button>}
     </div>
   );
 };

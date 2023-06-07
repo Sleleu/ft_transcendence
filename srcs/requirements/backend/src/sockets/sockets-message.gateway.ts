@@ -301,6 +301,24 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		this.server.to(roomName).emit('connected', users);
 	}
 
+	@SubscribeMessage('popupInfos')
+	async popupInfos(@MessageBody('id') id: number, @MessageBody('roomName') id: number,
+	@ConnectedSocket() client: Socket) {
+		const user = this.socketService.getUser(client.id);
+		const room = await this.messagesService.getRoomByName(roomName);
+		if (!room)
+			throw new ForbiddenException('Room does not exist');
+		const target = await this.messagesService.searchUser(target);
+		if (!target)
+			throw new ForbiddenException('Target does not exist');
+		const isClientAdmin = await this.messagesService.isAdmin(room.id, user.id);
+		const isAdmin = await this.messagesService.isAdmin(room.id, target.id);
+		const isBanned = await this.messagesService.isBanned(room.id, target.id);
+		const isMuted = await this.messagesService.isMuted(room.id, target.id);
+		return ({ban: isBanned, mute: isMuted, admin: isAdmin, clientAdmin: isClientAdmin});
+	}
+
+
 	//Ne fonctionne plus pour le moment
 	@SubscribeMessage('typing')
 	async typing(@MessageBody() dto: TypingDto, @ConnectedSocket() client: Socket) {
