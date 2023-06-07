@@ -65,4 +65,15 @@ export class UserController {
 		const id = req.user.id;
 		return this.userService.setAvatarSelected(id);
 	}
+
+	@Put('set-default-avatar')
+	async setDefaultAvatar(@Req() req: AuthenticatedRequest) {
+	  if (!req.user) {
+		throw new NotFoundException('User not found');
+	  }
+	  const id = req.user.id;
+	  await this.userService.setDefaultAvatar(id);
+	  return { message: 'Default avatar set successfully.' };
+	}
+	
 }

@@ -2,7 +2,7 @@ import React, { ChangeEvent, useRef, useState } from 'react';
 import './Login.css';
 import { User } from '../types';
 import AvatarEditor from 'react-avatar-editor';
-import { setAvatarSelected, updateAvatar } from '../Api';
+import { setAvatarSelected, setDefaultAvatar, updateAvatar } from '../Api';
 
 interface SelectLoginProps {
   user: User;
@@ -83,7 +83,7 @@ const SelectAvatar: React.FC<SelectLoginProps> = ({user, refreshUser}) => {
       };
 
       const handleSkip = async () => {
-        // await setDefaultAvatar();
+        await setDefaultAvatar();
         await setAvatarSelected();
         refreshUser();
       }
@@ -169,7 +169,7 @@ const SelectAvatar: React.FC<SelectLoginProps> = ({user, refreshUser}) => {
               <p className="text bold neon-red">This is your current avatar</p>)}
   		        {errorMessage && <p className="text bold neon-red">{errorMessage}</p>}
 		          {successMessage && <p className="text bold neon-green">{successMessage}</p>}
-              <button className='button' type="submit">Skip this step</button>
+              <button className='button' onClick={handleSkip}>Skip this step</button>
           </div>
         </div>
       </div>

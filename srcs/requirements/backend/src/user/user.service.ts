@@ -135,8 +135,7 @@ export class UserService {
     }
 
     async setDefaultAvatar(id: number) {
-        const defaultAvatarUrl = 'http://localhost:5000/avatars/default_avatar.jpeg'; // this should be the correct path to your default avatar
-      
+        const defaultAvatarUrl = 'http://localhost:5000/avatars/default_avatar.jpeg';
         const user = await this.prismaService.user.update({
           where: {id: id},
           data: { avatar: defaultAvatarUrl },
