@@ -56,4 +56,13 @@ export class UserController {
 	async updateAvatar(@Req() req: AuthenticatedRequest, @UploadedFile() avatar: MulterFile) {
 	  return await this.userService.updateAvatar(req.user, avatar);
 	}
+
+	@Put('set-avatar-selected')
+	async setAvatarSelected(@Req() req: AuthenticatedRequest) {
+		if (!req.user) {
+			throw new NotFoundException('User not found');
+		}
+		const id = req.user.id;
+		return this.userService.setAvatarSelected(id);
+	}
 }

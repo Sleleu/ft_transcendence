@@ -1,4 +1,4 @@
-import { ForbiddenException, HttpException, Injectable } from '@nestjs/common';
+import { ForbiddenException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as fs from 'fs';
@@ -121,5 +121,29 @@ export class UserService {
             }
         }
         return updatedUser;
+      }
+    
+      async setAvatarSelected(id: number) {
+        const user = await this.prismaService.user.update({
+            where: {id: id},
+            data: { avatarSelected: true },
+        });
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+        return user;
+    }
+
+    async setDefaultAvatar(id: number) {
+        const defaultAvatarUrl = 'http://localhost:5000/avatars/default_avatar.jpeg'; // this should be the correct path to your default avatar
+      
+        const user = await this.prismaService.user.update({
+          where: {id: id},
+          data: { avatar: defaultAvatarUrl },
+        });
+      
+        if (!user) {
+          throw new NotFoundException('User not found');
+        }
       }
 }

@@ -125,7 +125,7 @@ useEffect(() => {
 		return <Verify2FA onVerifySuccess={handle2FASuccess} />;
 	}
     if (user.avatarSelected === false) {
-        return <SelectAvatar user={user} onAvatarSelected={getUser}  />;
+        return <SelectAvatar user={user} refreshUser={getUser} />;
     }
 	if (user.gameLogin === null)
 	{

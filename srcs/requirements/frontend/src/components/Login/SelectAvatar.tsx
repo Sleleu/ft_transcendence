@@ -2,11 +2,11 @@ import React, { ChangeEvent, useRef, useState } from 'react';
 import './Login.css';
 import { User } from '../types';
 import AvatarEditor from 'react-avatar-editor';
-import { updateAvatar } from '../Api';
+import { setAvatarSelected, updateAvatar } from '../Api';
 
 interface SelectLoginProps {
   user: User;
-  onAvatarSelected: () => void; 
+  refreshUser: () => void; 
 }
 
 interface Position {
@@ -26,7 +26,7 @@ interface Position {
 	height: number;
   }
 
-const SelectAvatar: React.FC<SelectLoginProps> = ({user, onAvatarSelected}) => {
+const SelectAvatar: React.FC<SelectLoginProps> = ({user, refreshUser}) => {
 	const [isDefaultAvatar, setIsDefaultAvatar] = useState<boolean>(false);
 	const editorRef = useRef<AvatarEditor | null>(null);
 	const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
@@ -80,7 +80,18 @@ const SelectAvatar: React.FC<SelectLoginProps> = ({user, onAvatarSelected}) => {
         setIsAvatarUpdated(true);
         resetMessages();
       }
-      };  
+      };
+
+      const handleSkip = async () => {
+        // await setDefaultAvatar();
+        await setAvatarSelected();
+        refreshUser();
+      }
+    
+      const handle42AvatarSelected = async () => {
+        await setAvatarSelected();
+        refreshUser();
+      }
 
       const handleSubmit = async () => {
         setIsSubmitted(true); 
@@ -102,8 +113,8 @@ const SelectAvatar: React.FC<SelectLoginProps> = ({user, onAvatarSelected}) => {
             try {
             await updateAvatar(file);
             setIsAvatarUpdated(false);
-            setSuccessMessage('Avatar updated successfully !');
-            onAvatarSelected();
+            await setAvatarSelected();
+            refreshUser();
             } catch (err) {
             if (err instanceof Error)
               setErrorMessage(err.message);
@@ -119,6 +130,7 @@ const SelectAvatar: React.FC<SelectLoginProps> = ({user, onAvatarSelected}) => {
           <div className='selectAvatar-container'>
             <h4>You can set your 42 profile image as avatar</h4>
             <img className='avatar-login' src={user.avatar} />
+            <button className='button' onClick={handle42AvatarSelected}>Select 42 avatar</button>
             <h4>Or upload a new avatar</h4>
               <AvatarEditor
               ref={editorRef}

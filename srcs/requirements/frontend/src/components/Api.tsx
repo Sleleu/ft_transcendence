@@ -44,6 +44,20 @@ export const updateAvatar = async (file: File) => {
   return response.json();
 };
 
+export const setAvatarSelected = async () => {
+  const response = await fetch(`http://localhost:5000/users/set-avatar-selected`, {
+    method: 'PUT',
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    const errorJson = await response.json();
+    throw new Error(errorJson.message || 'Unknown error');
+  }
+  return response.json();
+};
+
+
 
 export const getUserProfile = () => baseRequest("/users/profile", "GET");
 
