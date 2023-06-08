@@ -6,12 +6,14 @@ import { Interval } from '@nestjs/schedule';
 import { GameService } from './game.service';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { profile } from 'console';
 
 @WebSocketGateway({ cors: true })
 export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	private server: Server;
 	private connectedClients: (Socket<any> | undefined)[] = [];
+	private playerIDs: string[];
 	// private gameModes = {
 	// 	normal: 1000,
 	// 	fast: 500
@@ -69,14 +71,24 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	// 	}
 	// }
 
-	@Interval(200)
+	@Interval(500)
 	updateGameStateInterval(): void{
-		if (this.gameService.getwinner())
+		if (this.gameService.getwinner() && this.connectedClients[1] && this.connectedClients[0])
 		{
 			console.log("inside the interval game over");
 			//update prisma data
-			// this.prismaService.
-			this.prismaService.user.findFirst()
+			//need to double check not sure
+			const player2 = this.socketService.getUser(this.connectedClients[1]?.id);
+			const player1 = this.socketService.getUser(this.connectedClients[0]?.id);
+			
+			if (this.gameService.getGameState().playerScore > this.gameService.getGameState().opponentScore){
+				player1.win++;
+				player2.loose++;
+			} else if (this.gameService.getGameState().playerScore < this.gameService.getGameState().opponentScore){
+				player1.loose++;
+				player2.win++;
+			}
+
 			this.connectedClients.forEach((client)=> {
 				if (client)
 				{
@@ -109,6 +121,7 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		{
 			console.log("found the opponent");
 			this.connectedClients[1] = this.server.sockets.sockets.get(opponent);
+			
 		}
 
 		if (this.connectedClients.length === 2){
