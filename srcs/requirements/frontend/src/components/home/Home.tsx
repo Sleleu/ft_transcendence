@@ -7,11 +7,11 @@ import { AgnosticNonIndexRouteObject } from '@remix-run/router';
 import NavBar from './header/NavBar/src/NavBar';
 import Play from './play/src/Play';
 import Menue from './menue/src/Menue';
-import History from '../popup/History/History';
-import Rank from '../popup/Rank/Rank';
-import Classement from '../popup/Rank/Classement';
+import History from '../popUp/History/History';
+import Rank from '../popUp/Rank/Rank';
+import Classement from '../popUp/Rank/Classement';
 import Settings from '../settings/Settings';
-import Stats from '../popup/Stats/Stats';
+import Stats from '../popUp/Stats/Stats';
 import Login from '../Login/Login';
 import CreateAccount from '../Login/CreateAccount';
 import Chat from '../chat/Chat';
@@ -23,6 +23,7 @@ import RoomSelect from '../chat/RoomSelect';
 import { io, Socket } from 'socket.io-client';
 import GameChoice from './play/src/GameChoice';
 import Queue from './play/src/Queue';
+import GameOver from './play/src/Game-over';
 
 function Home() {
     const [user, setUser] = useState<User>({ username: '', id: -1, elo: -1, win: -1, loose: -1, createAt: '', updateAt: '', state: 'inexistant' })
@@ -139,7 +140,8 @@ function Home() {
                     <div className='containerCenter'>
 
                         {activeComponent === "play" && <Play changeComponent={changeComponent} />}
-                        {activeComponent.startsWith("game") && <Game socket={socket} opponentID={extractId(activeComponent)}/>}
+                        {activeComponent.startsWith("game") && <Game changeComponent={changeComponent} socket={socket} opponentID={extractId(activeComponent)}/>}
+                        {activeComponent === "GameOver" && <GameOver changeComponent={changeComponent} />}
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent} />}
                         {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} />}
                         {activeComponent === "history" && <History />}

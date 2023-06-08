@@ -76,6 +76,20 @@ export class GameService {
 		return scoreRange.includes(pos % COL_SIZE);
 	}
 
+	updateScores(): void{
+		if (this.isScore(this.gameState.ball))
+		{
+			console.log("somebody scored");
+			if (this.gameState.deltaX !== -1) {
+				this.gameState.playerScore++;
+				console.log("player scores");
+			} else {
+				this.gameState.opponentScore++;
+				console.log("opponent scores");
+			}
+		}
+	}
+
 	getwinner(): boolean{
 		if (this.gameState.playerScore === 1 || this.gameState.opponentScore === 1)
 			return true;
@@ -84,11 +98,10 @@ export class GameService {
 
 	bounceBall():void{
 
-		const newstate = this.gameState.ball + this.gameState.deltaY + this.gameState.deltaX;
+		const newstate = this.gameState.ball + this.gameState.deltaY + this.gameState.deltaX ;
 
 		if (this.rightleftEdge(newstate)) {
 			// console.log("service: rightleft edge");
-			// this.resetGame();
 			this.gameState.ball = Math.round((ROW_SIZE * COL_SIZE) / 2) + ROW_SIZE;
 		}
 		else if (this.topbottomEdge(newstate)) {
@@ -112,24 +125,24 @@ export class GameService {
 			this.gameState.ball = newstate;
 		}
 		// Check if a score occurs
-		if (this.isScore(this.gameState.ball))
-		{
-			console.log("somebody scored");
-		  if (this.gameState.deltaX !== -1) {
-			this.gameState.playerScore++;
-			console.log("player scores");
-		  } else {
-			this.gameState.opponentScore++;
-			console.log("opponent scores");
-		  }
-		  if (this.getwinner())
-		  {
-			//technicall game over the screen should change
-			this.gameState.pause = true;
-		  	this.resetGame();
-		  }
-		  return;
-		}
+		// if (this.isScore(this.gameState.ball))
+		// {
+		// 	console.log("somebody scored");
+		//   if (this.gameState.deltaX !== -1) {
+		// 	this.gameState.playerScore++;
+		// 	console.log("player scores");
+		//   } else {
+		// 	this.gameState.opponentScore++;
+		// 	console.log("opponent scores");
+		//   }
+		//   if (this.getwinner())
+		//   {
+		// 	//technicall game over the screen should change
+		// 	this.gameState.pause = true;
+		//   	this.resetGame();
+		//   }
+		//   return;
+//		}
 	}
 
 	private topbottomEdge(pos: number): boolean {

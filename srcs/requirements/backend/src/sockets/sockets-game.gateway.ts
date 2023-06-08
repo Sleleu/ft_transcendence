@@ -4,16 +4,25 @@ import { Server, Socket } from 'socket.io';
 import { GameState, BounceBallDto, movePaddleDto, Opponent} from './dto/game.dto';
 import { Interval } from '@nestjs/schedule';
 import { GameService } from './game.service';
+import { Prisma } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @WebSocketGateway({ cors: true })
 export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	private server: Server;
 	private connectedClients: (Socket<any> | undefined)[] = [];
+	// private gameModes = {
+	// 	normal: 1000,
+	// 	fast: 500
+	// };
+	// private interval: NodeJS.Timeout | undefined;
+	// private currentGameMode = 'normal';
 
 	constructor(
 		private readonly socketService: SocketsService,
-		private readonly gameService: GameService
+		private readonly gameService: GameService,
+		private readonly prismaService: PrismaService
 		) {}
 
 	afterInit() {
@@ -28,13 +37,46 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		console.log('game disconnected:', client.id);
 	}
 
-	@Interval(500)
+	// startGameInterval(): void {
+	// 	const intervalDuration = this.gameModes['normal'];
+	// 	this.interval = setInterval(() => {
+	// 	  if (this.gameService.getwinner())
+	// 	{
+	// 		console.log("inside the interval game over");
+
+	// 		//update prisma data
+	// 		this.connectedClients.forEach((client)=> {
+	// 			if (client)
+	// 			{
+	// 				client.emit('game-over', this.gameService.getGameState());
+	// 				this.gameOver(client);
+	// 			}
+	// 		});
+	// 	}
+	// 	else if (this.connectedClients.length === 2  && !this.gameService.getGameState().pause)
+	// 	{
+	// 		console.log("inside the interval bounce ball with ", this.connectedClients.length, " clients");
+	// 		this.gameService.bounceBall();
+	// 		this.server.emit("updateBallPosition", this.gameService.getGameState());
+	// 	}
+	// 	}, intervalDuration);
+	// }
+
+	// stopGameInterval(): void {
+	// 	if (this.interval) {
+	// 	  clearInterval(this.interval);
+	// 	  this.interval = undefined;
+	// 	}
+	// }
+
+	@Interval(200)
 	updateGameStateInterval(): void{
 		if (this.gameService.getwinner())
 		{
 			console.log("inside the interval game over");
-
 			//update prisma data
+			// this.prismaService.
+			this.prismaService.user.findFirst()
 			this.connectedClients.forEach((client)=> {
 				if (client)
 				{
@@ -47,7 +89,11 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		{
 			console.log("inside the interval bounce ball with ", this.connectedClients.length, " clients");
 			this.gameService.bounceBall();
-			this.server.emit("updateBallPosition", this.gameService.getGameState());
+			this.gameService.updateScores();
+			this.connectedClients.forEach((client)=> {
+				if (client)
+					client.emit('updateBallPosition', this.gameService.getGameState());
+			});	
 		}
 	}
 
@@ -84,6 +130,7 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	startGame(@ConnectedSocket() client: Socket): void{
 		console.log("in socketgatway start game");
 		this.gameService.startGame();
+		// this.startGameInterval();
 	}
 
 	@SubscribeMessage('pause')

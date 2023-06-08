@@ -2,10 +2,13 @@ import React, { useEffect, useState, CSSProperties } from 'react';
 import Box, { BACKGROUND, PLAYER, BALL } from './box';
 import { io, Socket } from 'socket.io-client';
 import '../css/Game.css'
+import GameOver from './Game-over';
 
 /* size */
 const ROW_SIZE = 10;
 const COL_SIZE = 20;
+
+let previousMouseY = 0;
 
 /* paddle */
 const PADDLE_BOARD_SIZE = 3;
@@ -43,21 +46,20 @@ const InitialState = (): GameState => {
 };
 
 interface GameProps {
-  // changeComponent: (component: string) => void;
+  changeComponent: (component: string) => void;
   socket?: Socket;
   opponentID: string | number;
 }
 
-const Game: React.FC<GameProps> = ({ socket, opponentID}) => {
+const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
   const [state, setState] = useState<GameState>(InitialState());
 
-  console.log("inside game component")
   useEffect(() => {
     console.log("client side: joining a room");
     socket?.emit('join-room', opponentID);//send the opponent socket
 
     return () => {
-      socket?.emit("game-over");
+      socket?.emit("GameOver");
     };
   }, []);
 
@@ -94,11 +96,11 @@ const Game: React.FC<GameProps> = ({ socket, opponentID}) => {
   socket?.on('game-over', () => {
     console.log("client side event: game-over");
     resetGame();
-    // changeComponent("play");
+    changeComponent("GameOver");
   });
 
   socket?.on('updateBallPosition', (gameState: GameState) => {
-    console.log("client side event: updateBallPosition ", socket.id);
+    // console.log("client side event: updateBallPosition ", socket.id);
     setState((prevState) => ({
       ...prevState,
       deltaX: gameState.deltaX,
@@ -110,39 +112,13 @@ const Game: React.FC<GameProps> = ({ socket, opponentID}) => {
   });
 
   socket?.on('move-paddles', (gameState: GameState) => {
-    console.log("client side event: moving paddles");
+    // console.log("client side event: moving paddles");
     setState((prevState) => ({
       ...prevState,
       player1: gameState.player1,
       player2: gameState.player2,
     }));
   });
-
-  socket?.on('score', (gameState: GameState) => {
-    console.log("client side event: score");
-    setState((prevState) => ({
-      ...prevState,
-      playerScore: gameState.playerScore,
-    }));
-  });
-
-  // //keyboard events are only for debugging
-  // const keyInput = (event : KeyboardEvent) => {
-  //   const{ key } = event;
-  //   console.log("calling keyinput");
-  //   switch (key) {
-  //     case "Enter":
-  //       console.log("PLAY keyinput");
-  //       socket?.emit('start');
-  //       break;
-  //     case " ":
-  //       console.log("pause keyinput");
-  //       socket?.emit('pause');
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // };
 
   const moveBoard = (playerBoard: number[], isUp: boolean) => {
     const playerEdge = isUp ? playerBoard[0] : playerBoard[PADDLE_BOARD_SIZE - 1];
@@ -168,21 +144,25 @@ const Game: React.FC<GameProps> = ({ socket, opponentID}) => {
         playerBoard = state.player1;
       else
         playerBoard = state.player2;
-      const isUp = mouseY < containerRect.height / 2;
+      // const middlePosition = (playerBoard[0] + playerBoard[PADDLE_BOARD_SIZE - 1]) / 2;
+      const mouseYDifference = mouseY - previousMouseY;
+
+      const isUp = mouseYDifference < 0;
+
+      console.log("going up?: ", isUp, " with middle position of: ", mouseYDifference," , " , mouseY);
+      previousMouseY = mouseY;
       movedPlayer = moveBoard(playerBoard, isUp);
     }
     if (movedPlayer !== null) {
-      console.log("client: moving my paddle to: ", movedPlayer);
+      // console.log("client: moving my paddle to: ", movedPlayer);
       socket?.emit('move-player', {movedPlayer: movedPlayer, playerID: state.playerID});
     }
   };
 
   useEffect(() => {
-    // document.addEventListener('keydown', keyInput);
     document.addEventListener('mousemove', handleMouseMove);
 
     return () => {
-      // document.removeEventListener('keydown', keyInput);
       document.removeEventListener('mousemove', handleMouseMove);
 
     };
