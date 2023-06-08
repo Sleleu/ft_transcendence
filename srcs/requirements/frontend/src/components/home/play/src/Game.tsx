@@ -14,10 +14,6 @@ let previousMouseY = 0;
 const PADDLE_BOARD_SIZE = 3;
 const PADDLE_EDGE_SPACE = 1;
 
-/* buttons */
-// const PAUSE = 32; // space
-// const PLAY = 13; // ENTER
-
 type GameState = {
   player1: number[];
   player2: number[];
