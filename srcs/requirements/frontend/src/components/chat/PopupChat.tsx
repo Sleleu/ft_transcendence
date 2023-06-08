@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { User } from '../types';
 import { Socket } from 'socket.io-client';
 
@@ -15,15 +15,32 @@ interface PopupProps {
   setSelectedUser: React.Dispatch<React.SetStateAction<User | null>>;
   socket?: Socket;
   roomName: string;
+  clientName: string;
+  leaveRoom: (roomName: string, kick?: boolean) => void;
 }
 
-const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedUser, socket, roomName }) => {
+interface popupInfo {
+  ban: boolean;
+  mute: boolean;
+  admin: boolean;
+  clientAdmin: boolean;
+}
+
+interface Room {
+  name: string;
+  id: number;
+  type: string;
+  owner?: string;
+  inSalon?: string;
+}
+
+const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedUser, socket, roomName, clientName, leaveRoom }) => {
 
 	const [isVisible, setIsVisible] = useState(true);
 	const [ban, setBan] = useState('Ban');
 	const [mute, setMute] = useState('Mute');
 	const [admin, setAdmin] = useState('Promote as admin');
-	const [clientAdmin, setClientAdmin] = useState(true); //false by default
+	const [clientAdmin, setClientAdmin] = useState(false);
 
 	const popupStyle: React.CSSProperties = {
 		position: 'fixed',
@@ -66,15 +83,15 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedUser, sock
   useEffect(() => {
 
     socket?.emit('popupInfos', { id:user.id, roomName:roomName},
-    ({ban, mute, admin, clientAdmin}) => {
-      if (ban === true)
+    (response: popupInfo) => {
+      if (response.ban === true)
         setBan('Unban');
-      if (mute === true)
+      if (response.mute === true)
         setMute('Unmute');
-      if (admin === true)
+      if (response.admin === true)
         setAdmin('Demote admin');
-      if (clientAdmin !== true)
-        setClientAdmin(false);
+      if (response.clientAdmin === true)
+        setClientAdmin(true);
     });
 
 
@@ -84,9 +101,9 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedUser, sock
   }, []);
 	
   const handleSendMessage = () => {
-        socket?.emit('createRoom', { name:user.username, type:'private'},
-        (response: Room) => {});
-        socket?.emit('join', {roomName:roomName}, () => {});
+    leaveRoom(roomName);
+    socket?.emit('leave', {roomName: roomName, name: clientName});
+    socket?.emit('createDirectMessage', {targetId: user.id});
   };
 
   const handleInviteToPlay = () => {
@@ -102,20 +119,29 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedUser, sock
   };
 
   const handleBan = () => {
-	socket?.emit('ban', {target : user.username, roomName: roomName});
-};
+    if (ban === 'Ban')
+	    socket?.emit('ban', {targetId : user.id, roomName: roomName});
+    else if (ban === 'Unban')
+      socket?.emit('unban', {targetId : user.id, roomName: roomName});
+  };
 
   const handleKick = () => {
     socket?.emit('kick', {targetId: user.id, roomName: roomName});
   };
 
   const handleMute = () => {
-    socket?.emit('miute', {targetId: user.id, roomName: roomName});
+    if (mute === 'Mute')
+      socket?.emit('mute', {targetId: user.id, roomName: roomName});
+    else if (mute === 'Unmute')
+      socket?.emit('unmute', {targetId: user.id, roomName: roomName});
   };
 
   const handlePromoteAdmin = () => {
-	socket?.emit('promoteAdmin', {target : user.username, roomName: roomName});
-};
+    if (admin === 'Promote as admin')
+	    socket?.emit('promoteAdmin', {targetId : user.id, roomName: roomName});
+    else if (admin === 'Demote admin')
+      socket?.emit('demoteAdmin', {targetId : user.id, roomName: roomName});
+  };
 
   const handleClickOutside = () => {
     setSelectedUser(null);

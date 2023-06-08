@@ -19,6 +19,14 @@ export class MessageService {
     });
     return user;
   }
+  async searchUserId(id : number) {
+    const user = await this.prisma.user.findUnique({
+      where : {
+        id : id,
+      },
+    });
+    return user;
+  }
 
   async owner(roomName : string) {
     const room = await this.prisma.room.findFirst({
@@ -76,7 +84,14 @@ export class MessageService {
       }
     });
     return room;
+  } 
+   async deleteRoom(roomId: number) {
+    const room = await this.prisma.room.delete({
+      where : {id: roomId},
+    });
+    return room;
   }
+  
   findAllRooms() {
     const rooms = this.prisma.room.findMany();
     return rooms;
@@ -192,5 +207,58 @@ export class MessageService {
       orderBy: { createdAt: 'asc' },
     });
     return messages;
+  }
+
+  async findDirectMsg(idA: number, idB: number) {
+    const directIdA: string = idA.toString() + idB.toString();
+    const roomA = await this.prisma.room.findFirst({
+      where: {directId: directIdA},
+    })
+    if (roomA)
+    return roomA;
+    const directIdB: string = idB.toString() + idA.toString();
+    const roomB = await this.prisma.room.findFirst({
+      where: {directId: directIdB},
+    })
+    if (roomB)
+      return roomB;
+    return null;
+  }
+  async createDirectMsg(userA: User, userB: User) {
+    const exists = await this.findDirectMsg(userA.id, userB.id);
+    if (exists)
+      return exists;
+    const name = userA.username + ' - ' + userB.username; 
+    const directId: string = userA.id.toString() + userB.id.toString();
+    const room = await this.prisma.room.create({
+      data: {
+        name: name,
+        type: 'direct',
+        owner: { connect: { id: userA.id } },
+        directId: directId,
+      }
+    });
+    if (room)
+    {
+      this.addWhitelistUser(room.id, userA.id);
+      this.addWhitelistUser(room.id, userB.id);
+    }
+    return room;
+  }
+
+  async getRoomsForUser(user: User): Promise<Room[]> {
+    const rooms = await this.prisma.room.findMany({
+      where: {
+        OR: [
+          { type: { notIn: ['private', 'direct'] } },
+          { whitelist: { some: { id: user.id } } }, 
+        ],
+      },
+      include: {
+        whitelist: true, 
+      },
+    });
+  
+    return rooms;
   }
 }

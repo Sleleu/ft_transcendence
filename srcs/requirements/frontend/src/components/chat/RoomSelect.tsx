@@ -38,6 +38,9 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
     const [showPopup, setShowPopup] = useState(false);
     const[popMsg, setPopMsg] = useState('');
 
+    const [showPublic, setShowPublic] = useState(false);
+    const [salonButton, setSalonButton] = useState('PUBLIC SALON');
+
     useEffect(() => {
         socket?.emit('findAllRooms', {}, (response: Room[]) => setRooms(response));
         socket?.on('disconnect', () => {
@@ -70,8 +73,10 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
             document.removeEventListener('mousedown', handleClickOutside);
             };
         }
-
     }, []);
+
+    const privateRooms = rooms.filter(room => room.type === 'private' || room.type === 'direct');
+    const publicRooms = rooms.filter(room => room.type !== 'private' && room.type !== 'direct');
 
     const popupRef = useRef<HTMLDivElement>(null);
 
@@ -80,110 +85,35 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
     }
 
     const Container: CSSProperties = {
-        width: '90%',
-        height:'95%',
-        margin: '5px',
-
-        background: 'rgba(0, 0, 0, 0.6)',
-        border: '4px solid',
-        borderRadius: '15px',
-
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-around',
+        width: '90%', height:'95%', background: 'rgba(0, 0, 0, 0.6)', border: '4px solid', borderRadius: '15px', display: 'flex', flexDirection: 'column', justifyContent: 'space-around',
     }
-    const middleBlock: CSSProperties = {
-        width: '98%',
-        height:'90%',
-        margin: '5px',
-
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-around',
+    const middleBlock: CSSProperties = { width: '98%', height:'90%', margin: '5px', display: 'flex', flexDirection: 'row', justifyContent: 'space-around',
     }
-    const leftBlock: CSSProperties = {
-        width: '70%',
-        height:'95%',
-        margin: '5px',
-
-        // backgroundColor: 'red',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-around',
+    const leftBlock: CSSProperties = { width: '70%', height:'95%', margin: '5px', display: 'flex', flexDirection: 'column', justifyContent: 'space-around',
     }
-    const navBarChat: CSSProperties = {
-        height:'10%',
-
-        // backgroundColor: 'red',
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-around',
+    const navBarChat: CSSProperties = { height:'10%', display: 'flex', flexDirection: 'row', justifyContent: 'space-around',
+    }
+    const displayBox: CSSProperties = { width: '90%', height: '80%', margin: '10px', padding: '20px', borderRadius: '30px', border: '2px solid #fff', backgroundColor: '#000', display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: 'auto',
+    }
+    const buttons: CSSProperties = { width: '20%', height : '80%', borderRadius: '30px', alignSelf: 'center', border: '2px solid #fff', backgroundColor: '#000', color: '#fff', fontWeight: '800', fontSize: '18px', cursor: 'pointer',
+    }
+    const returnButton: CSSProperties = { width: '10%', height : '80%', borderRadius: '30px', alignSelf: 'center', border: '2px solid #fff', backgroundColor: '#000', color: '#fff', fontWeight: '800', fontSize: '18px', cursor: 'pointer',
+    }
+    const returnLogo : CSSProperties = { marginLeft: '30%', marginTop: '10px', width: '35%', minWidth:'33px',
+    }
+    const friendLogo : CSSProperties = { marginLeft: '27%', marginTop: '10px', width: '35%', minWidth:'33px',
+    }
+    const popupStyle : CSSProperties = { width: '50%', height : '15%', position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', border: '2px solid #fff', backgroundColor: '#000', padding: '10px', borderRadius: '5px', color: '#fff', fontWeight: '800', fontSize: '36px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center',
+    }
+    const closePopup : CSSProperties = { cursor: 'pointer', fontSize: '50px', color: '#fff',
     }
 
-    const displayBox: CSSProperties = {
-        width: '90%', height: '80%',
-        margin: '10px',
-        padding: '20px',
-        borderRadius: '30px',
-        border: '2px solid #fff', backgroundColor: '#000',
-        display: 'flex',
-        flexDirection: 'column', justifyContent: 'center',
-        overflow: 'auto',
-    }
-    const buttons: CSSProperties = {
-        width: '20%', height : '80%',
-        borderRadius: '30px', alignSelf: 'center',
-        border: '2px solid #fff', backgroundColor: '#000',
-        color: '#fff', fontWeight: '800', fontSize: '18px',
-        cursor: 'pointer',
-    }
-    const returnButton: CSSProperties = {
-        width: '10%', height : '80%',
-        borderRadius: '30px', alignSelf: 'center',
-        border: '2px solid #fff', backgroundColor: '#000',
-        color: '#fff', fontWeight: '800', fontSize: '18px',
-        cursor: 'pointer',
-    }
-    const returnLogo : CSSProperties = {
-        marginLeft: '30%',
-        marginTop: '10px',
-        width: '35%',
-        minWidth:'33px',
-    }
-    const friendLogo : CSSProperties = {
-        marginLeft: '27%',
-        marginTop: '10px',
-        width: '35%',
-        minWidth:'33px',
-    }
-    const popupStyle : CSSProperties = {
-        width: '50%', height : '15%',
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        border: '2px solid #fff', backgroundColor: '#000',
-        padding: '10px',
-        borderRadius: '5px',
-
-        color: '#fff', fontWeight: '800', fontSize: '36px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-    }
-    const closePopup : CSSProperties = {
-        cursor: 'pointer',
-        fontSize: '50px',
-        color: '#fff',
-    }
 
     const handleSelect = (id: number, roomName: string, type: string) => {
         socket?.emit('join', {name: username, roomName:roomName}, () => {
             console.log(username, ' joined room ', id);
         })
     };
-
 
     const handleHover = () => {
         setHover(!hover);
@@ -199,6 +129,14 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
         }
     }
 
+    const handleSalonButton = () => {
+        if (salonButton === 'PUBLIC SALON')
+            setSalonButton('PRIVATE SALON')
+        else
+            setSalonButton('PUBLIC SALON')
+        setShowPublic(!showPublic);
+    }
+
   return (
         <div style={Container}>
             { currentRoom < 0 ?
@@ -206,8 +144,8 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
             <div style={middleBlock}>
                 <div style={leftBlock}>
                     <div style={navBarChat}>
-                        <button style={buttons}
-                        >PUBLIC SALON</button>
+                        <button style={buttons} onClick={handleSalonButton}
+                        >{salonButton}</button>
                         <button style={buttons}
                         onClick={() => setCreateRoom(true)}>CREATE ROOM</button>
                         <div style={returnButton}>
@@ -218,7 +156,8 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
                         </div>
                     </div>
                     <div style={displayBox}>
-                        {rooms.map((room) => <RoomEntry room={room} key={room.id} handleSelect={handleSelect} socket={socket}/>)}
+                        {showPublic && publicRooms.map((room) => <RoomEntry room={room} key={room.id} handleSelect={handleSelect} socket={socket}/>)}
+                        {showPublic === false && privateRooms.map((room) => <RoomEntry room={room} key={room.id} handleSelect={handleSelect} socket={socket}/>)}
                     </div>
                     {showPopup && (
                     <div className="popup" ref={popupRef} style={popupStyle}>
@@ -229,7 +168,7 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
                         <p>{popMsg}.</p>
                     </div>
                     </div>
-      )}
+                    )}
                 </div>
             </div>
             :

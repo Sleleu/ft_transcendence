@@ -89,6 +89,7 @@ model Room {
 	name     	String
 	type		String
 	password	String?
+	directId	String?
 
 	ownerId     Int
   	owner       User?    @relation("RoomOwner", fields: [ownerId], references: [id])

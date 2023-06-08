@@ -39,6 +39,9 @@ const Owner: CSSProperties = {
 const Salon: CSSProperties = {
   fontWeight: '600', color:'#00ccdd',
 }
+const Conversation: CSSProperties = {
+  fontWeight: '600', color:'#5ff', fontSize: '36px',
+}
 const Type: CSSProperties = {
   color: (room.type === 'public') ? '#00ee13'
   : (room.type === 'protected') ? '#eeaa00'
@@ -59,22 +62,27 @@ useEffect(() => {
 
   return (
     <div style={RoomsContainer} onClick={() => handleSelect(room.id, room.name, room.type)}>
-      <div style={Block}>
+      {room.type !== 'direct' && <div style={Block}>
       <span style={legend}>Salon Name</span>
         <span style={Salon}>{room.name}</span>
-      </div>
-      <div style={Block}>
+      </div>}
+      {room.type !== 'direct' && <div style={Block}>
         <span style={legend}>Owner</span>
         <span style={Owner}>{owner}</span>
-      </div>
-      <div style={Block}>
+      </div>}
+      {room.type !== 'direct' && <div style={Block}>
         <span style={legend}>Status</span>
         <span style={Type}>{room.type.toUpperCase()}</span>
-      </div>
-      <div style={Block}>
+      </div>}
+      {room.type !== 'direct' && <div style={Block}>
         <span style={legend}>In salon</span>
         <span style={InSalon}>-42</span>
-      </div>
+      </div>}
+
+      {room.type === 'direct' && <div style={Block}>
+      {/* <span style={legend}>Conversation</span> */}
+        <span style={Conversation}>{room.name}</span>
+      </div>}
     </div>
   )
 }

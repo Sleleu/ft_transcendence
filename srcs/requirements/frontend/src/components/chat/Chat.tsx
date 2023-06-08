@@ -20,9 +20,10 @@ interface Props {
     socket: Socket | undefined;
     leaveRoom: (roomName:string, kick?:boolean) => void;
     changeComponent: (component: string) => void;
+    directMsg?: boolean;
 }
 
-const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom, changeComponent}) => {
+const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom, changeComponent, directMsg}) => {
 
     const [messages, setMessages] = useState<MessageObj []>([]);
     const [whitelist, setWhitelist] = useState<User[]>([]);
@@ -33,6 +34,11 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom, change
 
     const [typing, setTyping] = useState<string>("");
     const [hover, setHover] = useState<boolean>(false);
+
+    const [showPopup, setShowPopup] = useState(false);
+    const[popMsg, setPopMsg] = useState('');
+
+    const [showAdmin, setShowAdmin] = useState(false);
 
     const Container: CSSProperties = {
         width: '100%',
@@ -129,6 +135,27 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom, change
     const RoomName: CSSProperties = {
         fontSize: '48px', fontWeight:'800', color: '#fff',
     }
+    const popupStyle : CSSProperties = {
+        width: '50%', height : '15%',
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        border: '2px solid #fff', backgroundColor: '#000',
+        padding: '10px',
+        borderRadius: '5px',
+
+        color: '#fff', fontWeight: '800', fontSize: '36px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+    }
+    const closePopup : CSSProperties = {
+        cursor: 'pointer',
+        fontSize: '50px',
+        color: '#fff',
+    }
 
     useEffect(() => {
         socket?.emit('findRoomMessages', {id: roomId}, (response: MessageObj[]) => {
@@ -136,6 +163,11 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom, change
         });
         socket?.emit('getWhitelist', {roomName: roomName}, () => {
             });
+        socket?.emit('isAdmin', {roomName:roomName},
+        (response: boolean) => {
+            if (response === true)
+                setShowAdmin(true);
+        });
 
         socket?.on('message', (message: MessageObj) => {
             setMessages((prevMessages) => [...prevMessages, message]);
@@ -146,9 +178,25 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom, change
         })
 
         socket?.on('kickUser', (response) => {
-            console.log('KICK = ', response.name, roomName);
             leaveRoom(response.name, true);
         })
+        socket?.on('msgError', (response) => {
+            setPopMsg(response.message);
+            setShowPopup(true);
+            setMessageText('');
+        })
+
+    
+
+        const handleClickOutside = (event:MouseEvent) => {
+            if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+              setShowPopup(false);
+            }
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
 
         return () => {
             socket?.emit('leave', {name: name, roomName:roomName}, () => {
@@ -156,9 +204,10 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom, change
             })
             socket?.off('message');
         };
-
+        
     }, []);
-
+    
+    const popupRef = useRef<HTMLDivElement>(null);
 
 socket?.on('typing', ({name, isTyping}) => {
    if (isTyping) {
@@ -200,15 +249,22 @@ const handleHover = () => {
     setHover(!hover);
 };
 
-    const handleUserClick = (user: User, event: React.MouseEvent<HTMLSpanElement>) => {
-        setSelectedUser(user);
-        setPopupPosition({ x: event.clientX, y: event.clientY });
-    };
+const handleUserClick = (user: User, event: React.MouseEvent<HTMLSpanElement>) => {
+    setSelectedUser(user);
+    setPopupPosition({ x: event.clientX, y: event.clientY });
+};
+
+const handleDelete = () => {
+    socket?.emit('deleteRoom', {roomName:roomName}, () => {
+        leaveRoom(roomName);
+    });
+}
 
     return (
         <div style={Container}>
             <div style={topBar}>
                 <span style={RoomName}>{roomName}</span>
+                {showAdmin && <div style={leaveButton} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => handleDelete()}>DELETE ROOM</div>}
                 <div style={leaveButton} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => leaveRoom(roomName)}>LEAVE ROOM</div>
             </div>
             <div style={middleBlock}>
@@ -225,11 +281,21 @@ const handleHover = () => {
                     </form>
                 </div>
                 <div style={rightBlock}>
-                    {whitelist.map((user) => <WhitelistEntry user={user} handleUserClick={handleUserClick} key={user.id}/>)}
+                    {whitelist.map((user) => <WhitelistEntry user={user} handleUserClick={handleUserClick} key={user.id} roomId={roomId} socket={socket}/>)}
                 </div>
                 <div>
-                 {selectedUser && <PopupChat user={selectedUser} position={popupPosition} setSelectedUser={setSelectedUser} socket={socket} roomName={roomName}/>}
+                 {selectedUser && <PopupChat user={selectedUser} position={popupPosition} setSelectedUser={setSelectedUser} socket={socket} roomName={roomName} clientName={name} leaveRoom={leaveRoom}/>}
                 </div>
+                {showPopup && (
+                    <div className="popup" ref={popupRef} style={popupStyle}>
+                    <div className="popup-content">
+                        <span className="close" onClick={() => setShowPopup(false)} style={closePopup}>
+                        &times;
+                        </span>
+                        <p>{popMsg}</p>
+                    </div>
+                    </div>
+                )}
             </div>
         </div>
     );
