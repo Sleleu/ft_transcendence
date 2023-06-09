@@ -23,6 +23,12 @@ export class FriendController {
         return friends;
     }
 
+    @Get(':friendId')
+    async getFriend(@Req() req: newReq, @Param('friendId') friendId: number) {
+        return await this.friendService.getUserById(+friendId)
+    }
+
+
     @Post('send/:friendId')
     async sendFriendReq(@Req() req: newReq, @Param('friendId') friendId: number) {
         const request = await this.friendService.createFriendRequest(+req.user.id, +friendId)

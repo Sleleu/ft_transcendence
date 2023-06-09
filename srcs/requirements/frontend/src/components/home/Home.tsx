@@ -23,15 +23,22 @@ import RoomSelect from '../chat/RoomSelect';
 import { io, Socket } from 'socket.io-client';
 import GameChoice from './play/src/GameChoice';
 import Queue from './play/src/Queue';
+import InvitePlay from './play/src/InvitePlay';
+import ConfirmationPopUp from '../popUp/ConfirmationPopUp';
 
 function Home() {
     const [user, setUser] = useState<User>({ username: '', id: -1, elo: -1, win: -1, loose: -1, createAt: '', updateAt: '', state: 'inexistant' })
     const [activeComponent, setActiveComponent] = useState<string>('play')
     const [stack, setStack] = useState<string[]>([]);
     const [socket, setSocket] = useState<Socket>();
+    const [message, setMessage] = useState('void')
+    const [visible, setVisible] = useState(false)
     const navigate = useNavigate()
     const existingRanks: string[] = ['bronze', 'silver', 'gold', 'crack', 'ultime'];
     const userRank: string = user.elo > 5000 || user.elo < 0 ? 'ultime' : existingRanks[Math.floor(user.elo / 1000)];
+    const [friendIdInvite, setFriendIdInvite] = useState(-1)
+    const [modeInvite, setModeInvite] = useState('invite')
+    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
     const push = (item: string) => {
         setStack([...stack, item])
@@ -52,8 +59,27 @@ function Home() {
         pop()
     }
 
+    const onVisible = (state: boolean) => {
+        setVisible(state)
+    }
+
+    const onConfirm = (confirm: boolean) => {
+        if (confirm) {
+            setModeInvite('receive')
+            changeComponent('invitePlay' + friendIdInvite)
+        }
+        if (!confirm) {
+            socket?.emit('refuseInvitation', { id: friendIdInvite })
+        }
+    }
+
+    const changeMode = () => {
+        if (modeInvite === 'receive')
+            setModeInvite('invite')
+    }
+
     const changeComponent = (component: string) => {
-        if (activeComponent !== component && !activeComponent.startsWith("queue")) {
+        if (activeComponent !== component && !activeComponent.startsWith("queue") && !activeComponent.startsWith('invitePlay')) {
             push(activeComponent)
         }
         setActiveComponent(component)
@@ -81,11 +107,33 @@ function Home() {
 
         const sock = io('http://localhost:5000', { withCredentials: true });
         setSocket(sock);
+        sock.on('invitePlayReq', async ({ friendId }: { friendId: number }) => {
+            setFriendIdInvite(friendId)
+            getMessage(friendId)
+            setVisible(true)
+        })
 
         return () => {
             socket?.disconnect();
+            socket?.off('invitePlayReq')
         };
     }, [])
+
+
+    const fecthMessage = async (id: number) => {
+        const data = await fetch("http://localhost:5000/friend/" + id, {
+            method: "GET",
+            credentials: "include",
+        });
+        const username = await data.text()
+        return username
+    }
+
+    const getMessage = async (id: number) => {
+        const message = await fecthMessage(id)
+        const txt = 'Player ' + message + '  invite you to play'
+        setMessage(txt)
+    }
 
     const extractId = (str: string) => {
         const regex = /\d+/g;
@@ -117,8 +165,6 @@ function Home() {
     return (
         <div className="baground">
             <div className='containerFullPage'>
-                {/* {activeComponent === "login" && <Login changeComponent={changeComponent} />} */}
-
                 <div className='containerRectangle'>
                     <div className='rectangleLeft' />
                     <div className='rectangleRight' />
@@ -138,8 +184,10 @@ function Home() {
                     </div>}
                     <div className='containerCenter'>
 
+                        {visible === true && <ConfirmationPopUp onConfirm={onConfirm} onVisible={onVisible} opacity={true} message={message} />}
                         {activeComponent === "play" && <Play changeComponent={changeComponent} />}
-                        {activeComponent.startsWith("game") && <Game socket={socket} opponentID={extractId(activeComponent)}/>}
+                        {activeComponent.startsWith("invitePlay") && <InvitePlay changeComponent={changeComponent} name={user.username} socket={socket} friendId={+extractId(activeComponent)} mode={modeInvite} changeMode={changeMode} />}
+                        {activeComponent.startsWith("game") && <Game socket={socket} opponentID={extractId(activeComponent)} />}
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent} />}
                         {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} />}
                         {activeComponent === "history" && <History />}
