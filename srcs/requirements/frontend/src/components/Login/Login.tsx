@@ -1,5 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react'
-import { CSSProperties } from 'react'
+import React, {useState} from 'react'
 import CreateAccount from './CreateAccount';
 import LogPage from './LogPage';
 import '../home/Home.css'

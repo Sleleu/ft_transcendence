@@ -19,4 +19,5 @@ export interface User42 {
 	login: string,
 	avatar: string,
 	id: number,
+	twoFactorAuthenticationSecret: string;
 }

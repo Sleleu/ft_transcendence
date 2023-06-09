@@ -1,17 +1,26 @@
-import { Body, Controller, Get, NotFoundException, Param, Put, Req, Res, UseGuards, Delete } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { JwtGuard } from 'src/auth/guard';
 import { UserService } from './user.service';
-import { get } from 'http';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 interface AuthenticatedUser {
 	id: number;
 	username: string;
+	avatar: string;
 }
 
 interface AuthenticatedRequest extends Request {
 	user: AuthenticatedUser;
 }
+
+interface MulterFile {
+	originalname: string;
+	encoding: string;
+	mimetype: string;
+	buffer: Buffer;
+	size: number;
+  }
 
 @UseGuards(JwtGuard)
 @Controller('users')
@@ -23,7 +32,6 @@ export class UserController {
 		if (!req.user) {
 			throw new NotFoundException('User not found');
 		}
-		// console.log("passage dans /users/profile : ", { user: req.user })
 		return (req.user);
 	}
 
@@ -41,14 +49,14 @@ export class UserController {
 		return res.status(200).send({ message: 'User logged out' });
 	}
 
-	@Put('update-username')
-	async updateUsername(@Req() req: AuthenticatedRequest, @Body('newUsername') newUsername: string) {
+	@Put('update-gameLogin')
+	async updategGameLogin(@Req() req: AuthenticatedRequest, @Body('gameLogin') gameLogin: string) {
 		if (!req.user) {
 			throw new NotFoundException('User not found');
 		}
-		// console.log({ user: req.user })
+		console.log({ user: req.user }) 
 		const id = req.user.id;
-		return this.userService.updateUsername(id, newUsername);
+		return this.userService.updateGameLogin(id, gameLogin);
 	}
 
 	@Get('blockUser')
@@ -64,4 +72,30 @@ export class UserController {
 		console.log('aled')
 		await this.userService.deleteBlock(+id)
 	}
+
+	@Post('update-avatar')
+	@UseInterceptors(FileInterceptor('avatar'))
+	async updateAvatar(@Req() req: AuthenticatedRequest, @UploadedFile() avatar: MulterFile) {
+	  return await this.userService.updateAvatar(req.user, avatar);
+	}
+
+	@Put('set-avatar-selected')
+	async setAvatarSelected(@Req() req: AuthenticatedRequest) {
+		if (!req.user) {
+			throw new NotFoundException('User not found');
+		}
+		const id = req.user.id;
+		return this.userService.setAvatarSelected(id);
+	}
+
+	@Put('set-default-avatar')
+	async setDefaultAvatar(@Req() req: AuthenticatedRequest) {
+	  if (!req.user) {
+		throw new NotFoundException('User not found');
+	  }
+	  const id = req.user.id;
+	  await this.userService.setDefaultAvatar(id);
+	  return { message: 'Default avatar set successfully.' };
+	}
+	
 }

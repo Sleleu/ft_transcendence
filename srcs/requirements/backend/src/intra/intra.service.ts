@@ -1,4 +1,3 @@
-import { HttpService } from '@nestjs/axios';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -50,7 +49,9 @@ export class IntraService {
 				email: response.data.email,
 				login: response.data.login,
 				avatar: response.data.image.link,
-				id: response.data.id}
+				id: response.data.id,
+				twoFactorAuthenticationSecret: '',
+			}
 			//console.log('response.data : ', response.data);
 			// console.log('User : ', User);
 			if (!User){

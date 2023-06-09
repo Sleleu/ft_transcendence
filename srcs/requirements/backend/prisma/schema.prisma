@@ -18,8 +18,13 @@ model User {
 	state					String	@default("online")
 	hash 					String?
 	username 				String @unique
+	gameLogin				String? @unique
 	avatar					String?
+	avatarSelected			Boolean @default(false)
 	access_token			String?
+	TwoFASecret				String?
+	TwoFAenabled			Boolean @default(false)
+	isTwoFAverified			Boolean @default(false)
 	elo 					Int @default(400)
 	win 					Int @default(0)
 	loose 					Int @default(0)

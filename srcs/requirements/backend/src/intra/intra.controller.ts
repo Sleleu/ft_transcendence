@@ -1,6 +1,6 @@
-import { Controller, Get, Query, Res, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Query, Res, HttpException, HttpStatus, Req, Post, ForbiddenException, Body } from '@nestjs/common';
 import { IntraService } from './intra.service';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { ApiToken } from './intra.interface';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -31,16 +31,12 @@ export class IntraController {
 				if (await this.intraService.createUser(IntraProfile) == false)
 					throw new HttpException('Cannot create new user from createUser()', HttpStatus.FORBIDDEN);
 			}
-			console.log("Profile intra after callback : ", IntraProfile);
-
-			// get jwt pour l'ajouter au profil
 
 			const User = await this.prismaService.user.findUnique({
 				where : {
 					username : IntraProfile.login,
 				}
 			})
-
 			if (!User)
 				throw new HttpException('Cannot create new user from createUser()', HttpStatus.FORBIDDEN);
 			const JwtToken = await this.intraService.getJwtToken(User?.id, User?.username)
@@ -55,11 +51,27 @@ export class IntraController {
 					access_token : JwtToken,
 				}
 			})
-
+			
 			// redirect home
 			res.cookie('Authorization', JwtToken, {
 				httpOnly: true
 			});
 			res.redirect('http://localhost:3000/home');
+	}
+
+	@Get('verify-session')
+	async verifySession(@Req() req : Request) {
+	  const sessionId = req.cookies.Authorization
+		console.log("verify session cookie :", req.cookies.Authorization)
+	  const session = await this.prismaService.user.findFirst({
+		where: {
+			access_token: sessionId
+		},
+	  });
+	  if (session) {
+		return true;
+	  } else {
+		throw new HttpException('Invalid session', HttpStatus.UNAUTHORIZED);
+	  }
 	}
 }
