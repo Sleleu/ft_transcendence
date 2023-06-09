@@ -23,7 +23,7 @@ import { io, Socket } from 'socket.io-client';
 import GameChoice from './play/src/GameChoice';
 import Queue from './play/src/Queue';
 import InvitePlay from './play/src/InvitePlay';
-import ConfirmationPopUp from '../popUp/ConfirmationPopUp';
+import ConfirmationPopUp from '../popup/ConfirmationPopUp';
 import Verify2FA from '../Login/Verify-2fa';
 import { check2FA, check2FAVerified, unsetTwoFAVerified, getUserProfile, logout } from '../Api';
 import SelectLogin from '../Login/SelectLogin';
