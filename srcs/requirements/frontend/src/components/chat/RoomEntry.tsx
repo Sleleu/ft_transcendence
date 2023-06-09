@@ -2,6 +2,15 @@ import React, { useEffect, useState } from 'react'
 import { Socket } from 'socket.io-client';
 import { CSSProperties } from 'styled-components';
 import { User } from '../types';
+import msgGrey from '../../img/msgGrey.png'
+import msgGreen from '../../img/msgGreen.png'
+
+interface MessageObj {
+  id: number;
+  name: string;
+  text: string;
+  roomId: number;
+}
 
 interface Room {
     name: string;
@@ -21,14 +30,14 @@ interface Props {
 const RoomEntry:React.FC<Props> = ({room, handleSelect, socket}) => {
 
 const [owner, setOwner] = useState<string>('');
+const [newMsg, setNewMsg] = useState<boolean>(false);
 
 const RoomsContainer: CSSProperties = {
-  height:'100px',
-  margin: '7px',
-  color: '#fff', fontSize:'24px',
-  border: '1px solid white', borderRadius: '30px',
-  cursor: 'pointer',
-  display: 'flex', justifyContent: 'space-around',
+  height:'100px', margin: '7px', color: '#fff', fontSize:'24px',
+  border: newMsg ? '1px solid #0f0' : '1px solid #fff',
+  // border: '1px solid #fff',
+  boxShadow: newMsg ? 'inset 0 0 30px #0a0' : 'null',
+  borderRadius: '30px', cursor: 'pointer', display: 'flex', justifyContent: 'space-around',
 }
 const legend: CSSProperties = {
   fontSize: '18px', fontStyle: 'italic',
@@ -53,11 +62,24 @@ const InSalon: CSSProperties = {
 const Block: CSSProperties = {
   display: 'flex', flexDirection:'column', justifyContent: 'space-around',
 }
+const MSG: CSSProperties = {
+  height: '40%',
+  alignSelf: 'center',
+}
 
 useEffect(() => {
   socket?.emit('owner', {roomName: room.name}, (response:User) => {
     setOwner(response.username);
   })
+
+  socket?.on('newMessage', (message: MessageObj) => {
+    if (message.roomId === room.id)
+      setNewMsg(true);
+  })
+  socket?.on('joinSuccess', (response) => {
+    if (response.id === room.id)
+      setNewMsg(false);
+    })
 }, []);
 
   return (
@@ -74,13 +96,14 @@ useEffect(() => {
         <span style={legend}>Status</span>
         <span style={Type}>{room.type.toUpperCase()}</span>
       </div>}
-      {room.type !== 'direct' && <div style={Block}>
+      {/* {room.type !== 'direct' && <div style={Block}>
         <span style={legend}>In salon</span>
         <span style={InSalon}>-42</span>
-      </div>}
+      </div>} */}
+      {!newMsg && <img src={msgGrey} style={MSG}></img>}
+      {newMsg && <img src={msgGreen} style={MSG}></img>}
 
       {room.type === 'direct' && <div style={Block}>
-      {/* <span style={legend}>Conversation</span> */}
         <span style={Conversation}>{room.name}</span>
       </div>}
     </div>

@@ -125,6 +125,7 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		throw new ForbiddenException('You are muted from this room !');
 	  const message = await this.messagesService.createMessage(dto, user.username);
 	  this.server.to(dto.roomName).emit('message', message);
+	  this.server.emit('newMessage', message);
 	  return message;
 	} catch (e) {
 		client.emit('msgError', { message: e.message });

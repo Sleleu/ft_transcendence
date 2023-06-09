@@ -180,6 +180,7 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom, change
         socket?.on('kickUser', (response) => {
             leaveRoom(response.name, true);
         })
+
         socket?.on('msgError', (response) => {
             setPopMsg(response.message);
             setShowPopup(true);
