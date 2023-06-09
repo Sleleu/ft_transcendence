@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { User } from '../types'
 import { CSSProperties } from 'styled-components'
-import ConfirmationPopUp from '../popUp/ConfirmationPopUp'
+import ConfirmationPopUp from '../popup/ConfirmationPopUp'
 
 interface props {
     block: blocked
