@@ -79,6 +79,8 @@ const FriendOptionOnglet = ({ changeComponent, context, txt, friend, change, soc
     }
 
     const sendMessage = () => {
+        changeComponent('chat');
+        socket?.emit('createDirectMessage', {targetId: friend.id});
     }
 
     const watchGame = () => {
