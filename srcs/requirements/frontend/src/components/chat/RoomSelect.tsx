@@ -18,6 +18,12 @@ interface Room {
     inSalon?: string;
 }
 
+interface PassObj {
+    id: number; 
+    roomName: string; 
+    type: string;
+}
+
 interface Props {
     user: User;
     socket?: Socket;
@@ -40,6 +46,10 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
 
     const [showPublic, setShowPublic] = useState(false);
     const [salonButton, setSalonButton] = useState('PUBLIC SALON');
+
+    const [showPass, setShowPass] = useState(false);
+    const [pass, setPass] = useState('');
+    const [passInfo, setPassInfo] = useState<PassObj>();
 
     useEffect(() => {
         socket?.emit('findAllRooms', {}, (response: Room[]) => setRooms(response));
@@ -107,15 +117,44 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
     }
     const popupStyle : CSSProperties = { width: '50%', height : '15%', position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', border: '2px solid #fff', backgroundColor: '#000', padding: '10px', borderRadius: '5px', color: '#fff', fontWeight: '800', fontSize: '36px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center',
     }
+    const passStyle : CSSProperties = { width: '20%', height : '15%', position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', border: '2px solid #fff', backgroundColor: '#000', padding: '10px', borderRadius: '5px', color: '#fff', fontWeight: '800', fontSize: '36px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center',
+    }
+    const passInput: CSSProperties = {
+        alignSelf: 'center',
+        width: '56%',
+        height: '1%',
+        borderRadius: '15px',
+        padding: '20px 30px',
+        fontSize: '25px',
+        border: 'none',
+        boxShadow: 'inset 0 0 7px black',
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        zIndex: 1, margin: '20px',
+    }
     const closePopup : CSSProperties = { cursor: 'pointer', fontSize: '50px', color: '#fff',
     }
 
 
     const handleSelect = (id: number, roomName: string, type: string) => {
-        socket?.emit('join', {name: username, roomName:roomName}, () => {
+        if (type === 'protected' && showPass === false)
+        {
+            setPassInfo({id: id, roomName:roomName, type:type});
+            setShowPass(true);
+            return ;
+        }
+        console.log(pass);
+        socket?.emit('join', {name: username, roomName:roomName, password: pass}, () => {
             console.log(username, ' joined room ', id);
         })
+        setPass('');
+        setShowPass(false);
     };
+
+    const handleSubmitPass = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (passInfo)
+            handleSelect(passInfo?.id, passInfo?.roomName, passInfo?.type);
+    }
 
     const handleHover = () => {
         setHover(!hover);
@@ -138,6 +177,10 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
             setSalonButton('PUBLIC SALON')
         setShowPublic(!showPublic);
     }
+
+    const handlePassTyping = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setPass(event.target.value);
+    };
 
   return (
         <div style={Container}>
@@ -171,6 +214,11 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
                     </div>
                     </div>
                     )}
+                    {showPass && <form style={passStyle} onSubmit={handleSubmitPass}>
+                        <div onClick={() => setShowPass(false)} style={closePopup}>X</div>
+                        <input placeholder='Password' value={pass} onChange={handlePassTyping} style={passInput}></input>
+                        <button style={buttons}>Submit</button>
+                    </form>}
                 </div>
             </div>
             :
