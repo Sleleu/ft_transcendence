@@ -100,12 +100,12 @@ useEffect(() => {
         <span style={legend}>In salon</span>
         <span style={InSalon}>-42</span>
       </div>} */}
-      {!newMsg && <img src={msgGrey} style={MSG}></img>}
-      {newMsg && <img src={msgGreen} style={MSG}></img>}
-
       {room.type === 'direct' && <div style={Block}>
         <span style={Conversation}>{room.name}</span>
       </div>}
+      {!newMsg && <img src={msgGrey} style={MSG}></img>}
+      {newMsg && <img src={msgGreen} style={MSG}></img>}
+
     </div>
   )
 }

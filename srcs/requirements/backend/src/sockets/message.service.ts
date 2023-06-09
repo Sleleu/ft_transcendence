@@ -86,10 +86,11 @@ export class MessageService {
     return room;
   } 
    async deleteRoom(roomId: number) {
-    const room = await this.prisma.room.delete({
-      where : {id: roomId},
+    return this.prisma.room.update({
+      where: { id: roomId },
+      data: { active: false },
     });
-    return room;
+
   }
   
   findAllRooms() {
@@ -249,6 +250,7 @@ export class MessageService {
   async getRoomsForUser(user: User): Promise<Room[]> {
     const rooms = await this.prisma.room.findMany({
       where: {
+        active: true,
         OR: [
           { type: { notIn: ['private', 'direct'] } },
           { whitelist: { some: { id: user.id } } }, 

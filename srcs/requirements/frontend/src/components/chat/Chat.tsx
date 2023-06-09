@@ -256,8 +256,8 @@ const handleUserClick = (user: User, event: React.MouseEvent<HTMLSpanElement>) =
 };
 
 const handleDelete = () => {
+    leaveRoom(roomName);
     socket?.emit('deleteRoom', {roomName:roomName}, () => {
-        leaveRoom(roomName);
     });
 }
 

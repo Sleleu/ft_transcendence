@@ -86,6 +86,7 @@ model Room {
 	id       	Int       @id @default(autoincrement())
 	createdAt   DateTime @default(now())
 
+	active		Boolean	@default(true)
 	name     	String
 	type		String
 	password	String?
@@ -109,6 +110,6 @@ model Message {
 	name		String
 	text		String
 
-	room      	Room     @relation(fields: [roomId], references: [id])
+	room      	Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
   	roomId    	Int
 }

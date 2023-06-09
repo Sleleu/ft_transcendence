@@ -391,6 +391,7 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		if (!room)
 			throw new ForbiddenException('Room cannot be created');
 		client.join(room.name);
+		this.server.emit('newRoom', room);
 		client.emit('joinSuccess', {id: room.id, roomName: room.name});
 	}
 
@@ -407,6 +408,8 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		if (!verifyClient)
 			throw new ForbiddenException('Client is not an admin');
 		this.messagesService.deleteRoom(room.id);
+		this.server.emit('deleted', room.id);
+		this.server.to(roomName).emit('kickUser', {name: room.name});
 		} catch (e) {
 		client.emit('msgError', { message: e.message });
 	}

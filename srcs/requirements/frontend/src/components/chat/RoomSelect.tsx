@@ -63,7 +63,9 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
         socket?.on('newRoom', (room: Room) => {
             setRooms((prevRooms) => [...prevRooms, room]);
         })
-
+        socket?.on('deleted', (roomId: number) => {
+            setRooms((prevRooms) => prevRooms.filter(room => room.id !== roomId));
+        })
         const handleClickOutside = (event:MouseEvent) => {
             if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
               setShowPopup(false);
