@@ -3,7 +3,6 @@ import './Home.css'
 import { useNavigate } from "react-router-dom"
 import { useState, useEffect } from 'react';
 import Name from './header/NameLeft/src/Name';
-import { AgnosticNonIndexRouteObject } from '@remix-run/router';
 import NavBar from './header/NavBar/src/NavBar';
 import Play from './play/src/Play';
 import Menue from './menue/src/Menue';
@@ -24,9 +23,14 @@ import { io, Socket } from 'socket.io-client';
 import GameChoice from './play/src/GameChoice';
 import Queue from './play/src/Queue';
 import InvitePlay from './play/src/InvitePlay';
-import ConfirmationPopUp from '../popup/ConfirmationPopUp';
+import ConfirmationPopUp from '../popUp/ConfirmationPopUp';
+import Verify2FA from '../Login/Verify-2fa';
+import { check2FA, check2FAVerified, unsetTwoFAVerified, getUserProfile, logout } from '../Api';
+import SelectLogin from '../Login/SelectLogin';
+import SelectAvatar from '../Login/SelectAvatar';
 
 function Home() {
+
     const [user, setUser] = useState<User>({ username: '', id: -1, elo: -1, win: -1, loose: -1, createAt: '', updateAt: '', state: 'inexistant' })
     const [activeComponent, setActiveComponent] = useState<string>('play')
     const [stack, setStack] = useState<string[]>([]);
@@ -34,8 +38,11 @@ function Home() {
     const [message, setMessage] = useState('void')
     const [visible, setVisible] = useState(false)
     const navigate = useNavigate()
-    const existingRanks: string[] = ['bronze', 'silver', 'gold', 'crack', 'ultime'];
-    const userRank: string = user.elo > 5000 || user.elo < 0 ? 'ultime' : existingRanks[Math.floor(user.elo / 1000)];
+    const existingRanks: string[] = ['bronze', 'silver', 'gold', 'crack', 'ultime']; 
+    const userRank: string =  user.elo > 5000 || user.elo < 0 ? 'ultime' : existingRanks[Math.floor(user.elo / 1000)];
+    const [twoFAEnabled, setTwoFAEnabled] = useState<boolean>(false);
+    const [is2FAVerified, set2FAVerified] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [friendIdInvite, setFriendIdInvite] = useState(-1)
     const [modeInvite, setModeInvite] = useState('invite')
     const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -85,25 +92,14 @@ function Home() {
         setActiveComponent(component)
     }
 
-    const api = async () => {
-        const data = await fetch("http://localhost:5000/users/profile", {
-            method: "GET",
-            credentials: 'include'
-        })
-        if (data.status === 401) {
-            navigate('/')
-        }
-        const userProfile = await data.json();
-        return userProfile;
+    const getUser = async () => {
+        const userFromServer = await getUserProfile();
+        setUser(userFromServer)
     }
 
     useEffect(() => {
-        const getUser = async () => {
-            const userFromServer = await api()
-            setUser(userFromServer)
-        }
-        getUser();
-
+        getUser()
+        
         const sock = io('http://localhost:5000', { withCredentials: true });
         setSocket(sock);
         sock.on('invitePlayReq', async ({ friendId }: { friendId: number }) => {
@@ -147,19 +143,66 @@ function Home() {
         return str[str.length - 1]
     }
 
-    const handleLogout = async () => {
-        try {
-            await fetch("http://localhost:5000/users/logout", {
-                method: "GET",
-                credentials: "include",
-            });
-            Cookies.remove("Authorization");
-            navigate('/');
-            socket?.disconnect()
-        } catch (error) {
-            console.error("Error while disconnect :", error);
-        }
-    };
+	const handleLogout = async () => {
+		try {
+          await unsetTwoFAVerified();
+		  await logout();
+		  navigate('/');
+          socket?.disconnect()
+		} catch (error) {
+		  console.error("Error while disconnect :", error);
+		}
+	  };
+
+const handle2FASuccess = () => {
+    set2FAVerified(true);
+}
+
+
+const check2FAEnabled = async () => {
+    try {
+        const result = await check2FA();
+        setTwoFAEnabled(result);
+        setIsLoading(false);
+    } catch (error) {
+        console.error(error);
+        setIsLoading(false);
+    }
+}
+
+useEffect(() => {
+    check2FAEnabled();
+}, []);
+
+const TwoFAVerified = async () => {
+    try {
+        const result = await check2FAVerified();
+        set2FAVerified(result);
+        setIsLoading(false);
+    } catch (error) {
+        console.error(error);
+        setIsLoading(false);
+    }
+}
+
+useEffect(() => {
+    TwoFAVerified();
+}, []);
+
+    if (isLoading) {
+        return <div className="baground"/>
+    }
+	if (twoFAEnabled && !is2FAVerified) {
+		return <Verify2FA onVerifySuccess={handle2FASuccess} />;
+	}
+    if (user.avatarSelected === false) {
+        return <SelectAvatar user={user} refreshUser={getUser} />;
+    }
+	if (user.gameLogin === null)
+	{
+		return <SelectLogin user={user} onLoginUpdated={getUser}  />;
+	}
+
 
     return (
         <div className="baground">
@@ -176,6 +219,7 @@ function Home() {
                             changeComponent={changeComponent}
                         />
                         <NavBar
+							user={user}
                             changeComponent={changeComponent}
                             front={front}
                             handleLogout={handleLogout}
@@ -188,8 +232,8 @@ function Home() {
                         {activeComponent.startsWith("invitePlay") && <InvitePlay changeComponent={changeComponent} name={user.username} socket={socket} friendId={+extractId(activeComponent)} mode={modeInvite} changeMode={changeMode} />}
                         {activeComponent.startsWith("game") && <Game socket={socket} opponentID={extractId(activeComponent)} />}
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent} />}
-                        {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} />}
-                        {activeComponent === "history" && <History />}
+                        {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} refreshUser={getUser} />}
+                        {activeComponent === "historic" && <History />}
                         {activeComponent === "stat" && <Stats user={user} changeComponent={changeComponent} />}
                         {activeComponent === "friend" && <Friend changeComponent={changeComponent} socket={socket}/>}
                         {activeComponent === "chat" && <RoomSelect user={user} socket={socket} changeComponent={changeComponent}/>}

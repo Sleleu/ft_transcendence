@@ -1,5 +1,8 @@
 export interface User {
   username: string;
+  avatar?: string;
+  avatarSelected?: boolean;
+  gameLogin?: string;
   id: number;
   elo: number;
   win: number;

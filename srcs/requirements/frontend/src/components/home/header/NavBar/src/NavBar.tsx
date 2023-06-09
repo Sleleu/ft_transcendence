@@ -1,13 +1,15 @@
 import React, { FC } from 'react'
 import '../css/NavBar.css'
+import { User } from '../../../../types';
 
 interface NavBarProps {
-  changeComponent: (component: string) => void;
-  front: () => void;
-  handleLogout: () => void;
+	user: User
+    changeComponent: (component: string) => void;
+    front: () => void;
+	handleLogout: () => void;
 }
 
-const NavBar: FC<NavBarProps> = ({ changeComponent, front, handleLogout }) => {
+const NavBar: FC<NavBarProps> = ({user, changeComponent, front, handleLogout }) => {
   return (
     <div className='containerNavBar'>
       <div
@@ -23,10 +25,10 @@ const NavBar: FC<NavBarProps> = ({ changeComponent, front, handleLogout }) => {
       <div
         onClick={handleLogout}
         className='logoutLogo'
-        title='log out'
-      />
-      <div
+        />
+        <div
         onClick={() => changeComponent("stat")}
+		style={{backgroundImage: `url(${user.avatar})`}}
         className='avatar'
         title='stat'
       />

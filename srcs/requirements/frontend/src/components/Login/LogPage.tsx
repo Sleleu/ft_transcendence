@@ -99,6 +99,7 @@ const LogPage: React.FC<Props> = ({ updateToken, setPage }) => {
     const handleClick = (button: string) => {
         setClick(button);
     };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setInputLog('');

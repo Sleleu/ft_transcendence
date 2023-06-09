@@ -6,8 +6,13 @@ CREATE TABLE "users" (
     "state" TEXT NOT NULL DEFAULT 'online',
     "hash" TEXT,
     "username" TEXT NOT NULL,
+    "gameLogin" TEXT,
     "avatar" TEXT,
+    "avatarSelected" BOOLEAN NOT NULL DEFAULT false,
     "access_token" TEXT,
+    "TwoFASecret" TEXT,
+    "TwoFAenabled" BOOLEAN NOT NULL DEFAULT false,
+    "isTwoFAverified" BOOLEAN NOT NULL DEFAULT false,
     "elo" INTEGER NOT NULL DEFAULT 400,
     "win" INTEGER NOT NULL DEFAULT 0,
     "loose" INTEGER NOT NULL DEFAULT 0,
@@ -115,6 +120,9 @@ CREATE TABLE "_Muted" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_gameLogin_key" ON "users"("gameLogin");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "friends_userId_friendId_key" ON "friends"("userId", "friendId");

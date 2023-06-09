@@ -19,8 +19,9 @@ const Name = ({ user, changeComponent }: { user: User, changeComponent: (compone
     return 32
   }
 
+  const login = user.gameLogin ? user.gameLogin : 'undefined';
   const nameSize = {
-    fontSize: `calc(${calculSize(user.username)}px + 1.5vh)`
+    fontSize: `calc(${calculSize(login)}px + 1.5vh)`
   }
 
   const NamePars = (name: string) => {
@@ -35,7 +36,7 @@ const Name = ({ user, changeComponent }: { user: User, changeComponent: (compone
         <div className='containerTextName'
           onClick={() => changeComponent('stat')}
         >
-          <h1 className='nameText' style={nameSize}>{NamePars(user.username)}</h1>
+          <h1 className='nameText' style={nameSize}>{NamePars(login)}</h1>
         </div>
         <RankBarUnderName
           elo={user.elo}
