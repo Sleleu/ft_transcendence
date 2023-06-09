@@ -62,10 +62,12 @@ CREATE TABLE "History" (
 CREATE TABLE "Room" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "active" BOOLEAN NOT NULL DEFAULT true,
     "name" TEXT NOT NULL,
     "type" TEXT NOT NULL,
     "password" TEXT,
-    "ownerId" INTEGER,
+    "directId" TEXT,
+    "ownerId" INTEGER NOT NULL,
 
     CONSTRAINT "Room_pkey" PRIMARY KEY ("id")
 );
@@ -99,11 +101,26 @@ CREATE TABLE "_Banned" (
     "B" INTEGER NOT NULL
 );
 
+-- CreateTable
+CREATE TABLE "_Connected" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_Muted" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "friends_userId_friendId_key" ON "friends"("userId", "friendId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Room_name_key" ON "Room"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_RoomWhitelist_AB_unique" ON "_RoomWhitelist"("A", "B");
@@ -122,6 +139,18 @@ CREATE UNIQUE INDEX "_Banned_AB_unique" ON "_Banned"("A", "B");
 
 -- CreateIndex
 CREATE INDEX "_Banned_B_index" ON "_Banned"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_Connected_AB_unique" ON "_Connected"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_Connected_B_index" ON "_Connected"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_Muted_AB_unique" ON "_Muted"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_Muted_B_index" ON "_Muted"("B");
 
 -- AddForeignKey
 ALTER TABLE "friends" ADD CONSTRAINT "friends_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -145,10 +174,10 @@ ALTER TABLE "bloqueUser" ADD CONSTRAINT "bloqueUser_recipientId_fkey" FOREIGN KE
 ALTER TABLE "History" ADD CONSTRAINT "History_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Room" ADD CONSTRAINT "Room_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Room" ADD CONSTRAINT "Room_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Message" ADD CONSTRAINT "Message_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "Room"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Message" ADD CONSTRAINT "Message_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "Room"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_RoomWhitelist" ADD CONSTRAINT "_RoomWhitelist_A_fkey" FOREIGN KEY ("A") REFERENCES "Room"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -167,3 +196,15 @@ ALTER TABLE "_Banned" ADD CONSTRAINT "_Banned_A_fkey" FOREIGN KEY ("A") REFERENC
 
 -- AddForeignKey
 ALTER TABLE "_Banned" ADD CONSTRAINT "_Banned_B_fkey" FOREIGN KEY ("B") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_Connected" ADD CONSTRAINT "_Connected_A_fkey" FOREIGN KEY ("A") REFERENCES "Room"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_Connected" ADD CONSTRAINT "_Connected_B_fkey" FOREIGN KEY ("B") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_Muted" ADD CONSTRAINT "_Muted_A_fkey" FOREIGN KEY ("A") REFERENCES "Room"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_Muted" ADD CONSTRAINT "_Muted_B_fkey" FOREIGN KEY ("B") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

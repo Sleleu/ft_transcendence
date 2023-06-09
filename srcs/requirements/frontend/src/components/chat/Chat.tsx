@@ -2,6 +2,9 @@ import React, {useState, useEffect, useRef} from 'react'
 import { io, Socket } from 'socket.io-client';
 import Message from './Message';
 import { CSSProperties } from 'styled-components';
+import { User } from '../types';
+import WhitelistEntry from './WhiteListEntry';
+import PopupChat from './PopupChat';
 
 interface MessageObj {
     id: number;
@@ -15,18 +18,27 @@ interface Props {
     roomId: number;
     roomName: string;
     socket: Socket | undefined;
-    leaveRoom: (roomName:string) => void;
+    leaveRoom: (roomName:string, kick?:boolean) => void;
+    changeComponent: (component: string) => void;
+    directMsg?: boolean;
 }
 
-const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom}) => {
+const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom, changeComponent, directMsg}) => {
 
     const [messages, setMessages] = useState<MessageObj []>([]);
+    const [whitelist, setWhitelist] = useState<User[]>([]);
     const [messageText, setMessageText] = useState<string>("");
+
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
+    const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
+
     const [typing, setTyping] = useState<string>("");
     const [hover, setHover] = useState<boolean>(false);
-    const [adminText, setAdminText] = useState<string>("");
-    const [adminButton, setAdminButton] = useState<string>("");
-    
+
+    const [showPopup, setShowPopup] = useState(false);
+    const[popMsg, setPopMsg] = useState('');
+
+    const [showAdmin, setShowAdmin] = useState(false);
 
     const Container: CSSProperties = {
         width: '100%',
@@ -65,7 +77,7 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom}) => {
 
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-around',
+        justifyContent: 'flex-start',
     }
     const leftBlock: CSSProperties = {
         width: '70%',
@@ -121,22 +133,82 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom}) => {
         cursor: hover ? 'pointer' : 'auto',
     }
     const RoomName: CSSProperties = {
-        fontSize: '48px', fontWeight:'800', color: '#ee55ff',
+        fontSize: '48px', fontWeight:'800', color: '#fff',
+    }
+    const popupStyle : CSSProperties = {
+        width: '50%', height : '15%',
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        border: '2px solid #fff', backgroundColor: '#000',
+        padding: '10px',
+        borderRadius: '5px',
+
+        color: '#fff', fontWeight: '800', fontSize: '36px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+    }
+    const closePopup : CSSProperties = {
+        cursor: 'pointer',
+        fontSize: '50px',
+        color: '#fff',
     }
 
     useEffect(() => {
-        socket?.emit('findRoomMessages', {roomId: roomId}, (response: MessageObj[]) => {
+        socket?.emit('findRoomMessages', {id: roomId}, (response: MessageObj[]) => {
         setMessages(response);
+        });
+        socket?.emit('getWhitelist', {roomName: roomName}, () => {
+            });
+        socket?.emit('isAdmin', {roomName:roomName},
+        (response: boolean) => {
+            if (response === true)
+                setShowAdmin(true);
         });
 
         socket?.on('message', (message: MessageObj) => {
-        setMessages((prevMessages) => [...prevMessages, message]);
+            setMessages((prevMessages) => [...prevMessages, message]);
         });
-        return () => {
-            socket?.off('message');
-          };
-        }, []);
 
+        socket?.on('whitelist', (users: User[]) => {
+            setWhitelist(users);
+        })
+
+        socket?.on('kickUser', (response) => {
+            leaveRoom(response.name, true);
+        })
+
+        socket?.on('msgError', (response) => {
+            setPopMsg(response.message);
+            setShowPopup(true);
+            setMessageText('');
+        })
+
+    
+
+        const handleClickOutside = (event:MouseEvent) => {
+            if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+              setShowPopup(false);
+            }
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+
+        return () => {
+            socket?.emit('leave', {name: name, roomName:roomName}, () => {
+            console.log(name, ' left room ', roomName);
+            })
+            socket?.off('message');
+        };
+        
+    }, []);
+    
+    const popupRef = useRef<HTMLDivElement>(null);
 
 socket?.on('typing', ({name, isTyping}) => {
    if (isTyping) {
@@ -178,34 +250,23 @@ const handleHover = () => {
     setHover(!hover);
 };
 
-const adminType = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAdminText(event.target.value);
+const handleUserClick = (user: User, event: React.MouseEvent<HTMLSpanElement>) => {
+    setSelectedUser(user);
+    setPopupPosition({ x: event.clientX, y: event.clientY });
+};
+
+const handleDelete = () => {
+    leaveRoom(roomName);
+    socket?.emit('deleteRoom', {roomName:roomName}, () => {
+    });
 }
-const adminSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (adminButton === '+')
-        socket?.emit('promoteAdmin', {target : adminText, roomName: roomName});
-    else if (adminButton === '-')
-        socket?.emit('demoteAdmin', {target : adminText, roomName: roomName});
-    else if (adminButton === 'ban')
-        socket?.emit('ban', {target : adminText, roomName: roomName});
-    else if (adminButton === 'unban')
-        socket?.emit('unban', {target : adminText, roomName: roomName});
-}
+
     return (
         <div style={Container}>
             <div style={topBar}>
-                {/* NAVBAR DU CHAT */}
                 <span style={RoomName}>{roomName}</span>
+                {showAdmin && <div style={leaveButton} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => handleDelete()}>DELETE ROOM</div>}
                 <div style={leaveButton} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => leaveRoom(roomName)}>LEAVE ROOM</div>
-                <form onSubmit={adminSubmit}>
-                    <input value={adminText}
-                     onChange={adminType}></input>
-                    <button onClick={() => {setAdminButton('+')}}>+</button>
-                    <button onClick={() => {setAdminButton('-')}}>-</button>
-                    <button onClick={() => {setAdminButton('ban')}}>ban</button>
-                    <button onClick={() => {setAdminButton('unban')}}>unban</button>
-                </form>
             </div>
             <div style={middleBlock}>
                 <div style={leftBlock}>
@@ -221,8 +282,21 @@ const adminSubmit = (e: React.FormEvent) => {
                     </form>
                 </div>
                 <div style={rightBlock}>
-                    {/* AMIS */}
+                    {whitelist.map((user) => <WhitelistEntry user={user} handleUserClick={handleUserClick} key={user.id} roomId={roomId} socket={socket}/>)}
                 </div>
+                <div>
+                 {selectedUser && <PopupChat user={selectedUser} position={popupPosition} setSelectedUser={setSelectedUser} socket={socket} roomName={roomName} clientName={name} leaveRoom={leaveRoom}/>}
+                </div>
+                {showPopup && (
+                    <div className="popup" ref={popupRef} style={popupStyle}>
+                    <div className="popup-content">
+                        <span className="close" onClick={() => setShowPopup(false)} style={closePopup}>
+                        &times;
+                        </span>
+                        <p>{popMsg}</p>
+                    </div>
+                    </div>
+                )}
             </div>
         </div>
     );

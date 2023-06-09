@@ -34,6 +34,8 @@ model User {
 	whitelistedRooms        Room[]               @relation("RoomWhitelist")
 	adminRooms         		Room[]               @relation("Admin")
 	bannedRooms         	Room[]               @relation("Banned")
+	connectedRooms         	Room[]               @relation("Connected")
+	mutedRooms         		Room[]               @relation("Muted")
 	@@map("users")
 }
 
@@ -84,15 +86,19 @@ model Room {
 	id       	Int       @id @default(autoincrement())
 	createdAt   DateTime @default(now())
 
-	name     	String
+	active		Boolean	@default(true)
+	name     	String 	@unique
 	type		String
 	password	String?
+	directId	String?
 
-	ownerId     Int?
+	ownerId     Int
   	owner       User?    @relation("RoomOwner", fields: [ownerId], references: [id])
 	whitelist   User[]   @relation("RoomWhitelist")
 	admin		User[]   @relation("Admin")
 	banned		User[]   @relation("Banned")
+	connected	User[]	@relation("Connected")
+	muted		User[]	@relation("Muted")
 
 	messages	Message[]
 }
@@ -104,6 +110,6 @@ model Message {
 	name		String
 	text		String
 
-	room      	Room     @relation(fields: [roomId], references: [id])
+	room      	Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
   	roomId    	Int
 }

@@ -98,7 +98,6 @@ function Home() {
     }
 
     useEffect(() => {
-        console.log("PASSAGE DANS USEEFFECT", user);
         const getUser = async () => {
             const userFromServer = await api()
             setUser(userFromServer)
@@ -192,8 +191,8 @@ function Home() {
                         {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} />}
                         {activeComponent === "history" && <History />}
                         {activeComponent === "stat" && <Stats user={user} changeComponent={changeComponent} />}
-                        {activeComponent === "friend" && <Friend changeComponent={changeComponent} socket={socket} />}
-                        {activeComponent === "chat" && <RoomSelect user={user} socket={socket} />}
+                        {activeComponent === "friend" && <Friend changeComponent={changeComponent} socket={socket}/>}
+                        {activeComponent === "chat" && <RoomSelect user={user} socket={socket} changeComponent={changeComponent}/>}
 
                         {activeComponent === "leader" && <Classement rank={userRank} changeComponent={changeComponent} />}
                         {activeComponent === "bronzeLead" && <Classement rank={'bronze'} changeComponent={changeComponent} />}
