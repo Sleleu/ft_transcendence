@@ -54,7 +54,10 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 			const room = await this.messagesService.createRoom(dto, user.id);
 			this.messagesService.addWhitelistUser(room.id, user.id);
 			this.messagesService.promoteAdmin(room.id, user.id);
-			this.server.emit('newRoom', room);
+			if (room.type === 'private')
+				client.emit('newRoom', room);
+			else
+				this.server.emit('newRoom', room);
 			return room;
 		}
 		catch (e) {
@@ -409,7 +412,14 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 			if (!room)
 				throw new ForbiddenException('Room cannot be created');
 			client.join(room.name);
-			this.server.emit('newRoom', room);
+			const friendId = this.socketService.findSocketById(targetId);
+			if (!friendId)
+				throw new ForbiddenException('Invalid target client ID');
+			const friendClient = this.server.sockets.sockets.get(friendId);
+			if (!friendClient)
+				throw new ForbiddenException('Invalid target');
+			client.emit('newRoom', room);
+			friendClient.emit('newRoom', room);
 			client.emit('joinSuccess', {id: room.id, roomName: room.name});
 		}		
 	}
@@ -450,6 +460,13 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 			throw new ForbiddenException('Target does not exist');	
 		this.messagesService.addWhitelistUser(room.id, friendId);
 		this.server.to(roomName).emit('newUserInChat', target);
+		const friendSocket = this.socketService.findSocketById(friendId);
+		if (!friendSocket)
+			throw new ForbiddenException('Invalid target client ID');
+		const friendClient = this.server.sockets.sockets.get(friendSocket);
+		if (!friendClient)
+			throw new ForbiddenException('Invalid target');
+		friendClient.emit('newRoom', room);
 	}
 
 	//Ne fonctionne plus pour le moment
