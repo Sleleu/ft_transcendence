@@ -46,7 +46,8 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 	async createRoom(@MessageBody() dto: CreateRoomDto,
 	@ConnectedSocket() client: Socket) {
 		try {
-
+			if (dto.name.length > 7)
+				throw new ForbiddenException('Room name too long');
 			const user = this.socketService.getUser(client.id);
 			const exists = await this.messagesService.getRoomByName(dto.name);
 			if (exists)

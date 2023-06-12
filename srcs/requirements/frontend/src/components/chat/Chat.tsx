@@ -50,6 +50,7 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom, change
         flexDirection: 'column',
         justifyContent: 'space-around',
     }
+    
     const middleBlock: CSSProperties = {
         width: '98%',
         height:'90%',
@@ -129,11 +130,34 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom, change
         fontSize: '20px', fontWeight: '500', color: '#fff',
         cursor: hover ? 'pointer' : 'auto',
     }
-    const leaveButton: CSSProperties = {
+    const ReturnButtonStyle : CSSProperties = {
+        alignSelf: 'center', backgroundColor: '#000', width: '25%', height: '8%', textAlign: 'center',
+        fontSize: '20px', fontWeight: '600px', fontFamily: 'Montserrat, sans-serif', color: '#fff', border: '3px solid #a0a', borderRadius: '20px', cursor:'pointer',
+        boxShadow: 'inset 0 0 50px #a0a',
+    }
+    const LeaveButton: CSSProperties = {
         borderRadius: '30px', width: '140px',
-        border: '2px solid #fff', backgroundColor: '#000',
+        backgroundColor: '#000',
         fontSize: '28px', fontWeight: '500', color: '#fff', textAlign: 'center',
         cursor: hover ? 'pointer' : 'auto', minHeight: '50px', minWidth: '120px',
+        boxShadow: 'inset 0 0 50px #0aa',
+        border: '3px solid #0aa'
+    }
+    const DeleteButton: CSSProperties = {
+        borderRadius: '30px', width: '140px',
+        backgroundColor: '#000',
+        fontSize: '28px', fontWeight: '500', color: '#fff', textAlign: 'center',
+        cursor: hover ? 'pointer' : 'auto', minHeight: '50px', minWidth: '120px',
+        boxShadow: 'inset 0 0 50px #d00',
+        border: '3px solid #d00'
+    }
+    const InviteButton: CSSProperties = {
+        borderRadius: '30px', width: '140px',
+        backgroundColor: '#000',
+        fontSize: '28px', fontWeight: '500', color: '#fff', textAlign: 'center',
+        cursor: hover ? 'pointer' : 'auto', minHeight: '50px', minWidth: '120px',
+        boxShadow: 'inset 0 0 50px #a0a',
+        border: '3px solid #a0a'
     }
     const RoomName: CSSProperties = {
         fontSize: '48px', fontWeight:'800', color: '#fff', width:'30%',
@@ -311,9 +335,9 @@ const onVisible = (state: boolean) => {
             {visible === true && <ConfirmationPopUp onConfirm={onConfirm} onVisible={onVisible} opacity={true} message={confirmMessage} />}
             <div style={topBar}>
                 <span style={RoomName}>{roomName}</span>
-                <div style={leaveButton} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => leaveRoom(roomName)}>LEAVE</div>
-                {showAdmin && <div style={leaveButton} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => handleDelete()}>DELETE</div>}
-                <div style={leaveButton} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => setInvite(!invite)}>{invite ? 'SALON' : 'INVITE'}</div>
+                <div style={LeaveButton} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => leaveRoom(roomName)}>LEAVE</div>
+                {showAdmin && <div style={DeleteButton} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => handleDelete()}>DELETE</div>}
+                <div style={InviteButton} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => setInvite(!invite)}>{invite ? 'SALON' : 'INVITE'}</div>
             </div>
             <div style={middleBlock}>
                 <div style={leftBlock}>

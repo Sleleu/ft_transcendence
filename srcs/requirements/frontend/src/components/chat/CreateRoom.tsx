@@ -21,6 +21,7 @@ const CreateRoom:React.FC<Props> = ({socket, setRooms, setCreateRoom, user}) => 
         display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignSelf: 'center',
         width: '50%', height:'70%',
         background: 'rgba(0, 0, 0, 0.8)',
+        padding: '20px',
     }
     const FormStyle: CSSProperties = {
         display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignContent: 'center',
