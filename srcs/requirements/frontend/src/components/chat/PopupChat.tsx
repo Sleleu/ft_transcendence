@@ -146,7 +146,7 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedUser, sock
   };
 
   const handleClickOutside = () => {
-    setSelectedUser(null);
+      setSelectedUser(null);
   };
 
   return (

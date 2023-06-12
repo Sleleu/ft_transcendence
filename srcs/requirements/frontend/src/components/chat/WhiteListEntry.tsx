@@ -9,13 +9,14 @@ interface Props {
 	key: number;
   roomId: number;
   socket: Socket | undefined;
+  clientName: string;
 }
 
-const WhitelistEntry:React.FC<Props> = ({user, handleUserClick, roomId, socket}) => {
+const WhitelistEntry:React.FC<Props> = ({user, handleUserClick, roomId, socket, clientName}) => {
 
   const [connected, setConnected] = useState(true);
 
-  const entry : CSSProperties = {alignSelf:'center',}
+  const entry : CSSProperties = {alignSelf:'center', cursor: clientName === user.username ?'cursor' : 'pointer',}
   const text: CSSProperties = {
     color: connected ? '#fff' : '#666', fontSize: '30px', margin:'10px', alignSelf:'center',
   }

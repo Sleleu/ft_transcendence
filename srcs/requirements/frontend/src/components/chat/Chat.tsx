@@ -259,8 +259,11 @@ const handleHover = () => {
 };
 
 const handleUserClick = (user: User, event: React.MouseEvent<HTMLSpanElement>) => {
-    setSelectedUser(user);
-    setPopupPosition({ x: event.clientX, y: event.clientY });
+    if (user.username !== name)
+    {
+        setSelectedUser(user);
+        setPopupPosition({ x: event.clientX, y: event.clientY });
+    }
 };
 
 const handleDelete = () => {
@@ -326,7 +329,7 @@ const onVisible = (state: boolean) => {
                 <div style={rightBlock}>
                     {invite && <Invite socket={socket} roomName={roomName} whitelist={whitelist} confirmScreen={confirmScreen}/>}
                     {!invite && <div style={title}>IN SALON</div>}
-                    {!invite && whitelist.map((user) => <WhitelistEntry user={user} handleUserClick={handleUserClick} key={user.id} roomId={roomId} socket={socket}/>)}
+                    {!invite && whitelist.map((user) => <WhitelistEntry user={user} handleUserClick={handleUserClick} key={user.id} roomId={roomId} socket={socket} clientName={name}/>)}
                 </div>
                 <div>
                  {selectedUser && <PopupChat user={selectedUser} position={popupPosition} setSelectedUser={setSelectedUser} socket={socket} roomName={roomName} clientName={name} leaveRoom={leaveRoom} changeComponent={changeComponent} confirmScreen={confirmScreen}/>}
