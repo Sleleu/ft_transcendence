@@ -105,7 +105,7 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
     }
     const navBarChat: CSSProperties = { height:'10%', display: 'flex', flexDirection: 'row', justifyContent: 'space-around',
     }
-    const displayBox: CSSProperties = { width: '90%', height: '80%', margin: '10px', padding: '20px', borderRadius: '30px', border: '2px solid #fff', backgroundColor: '#000', display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: 'auto',
+    const displayBox: CSSProperties = { width: '90%', height: '80%', margin: '10px', padding: '20px', borderRadius: '30px', border: '2px solid #fff', backgroundColor: '#000', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', overflow: 'auto',
     }
     const buttons: CSSProperties = { width: '20%', height : '80%', borderRadius: '30px', alignSelf: 'center', border: '2px solid #fff', backgroundColor: '#000', color: '#fff', fontWeight: '800', fontSize: '18px', cursor: 'pointer',
     }

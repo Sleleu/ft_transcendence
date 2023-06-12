@@ -80,6 +80,7 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom, change
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'flex-start',
+        overflow: 'auto',
     }
     const leftBlock: CSSProperties = {
         width: '70%',
@@ -99,7 +100,7 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom, change
         borderRadius: '30px',
         border: '2px solid #fff', backgroundColor: '#000',
         display: 'flex',
-        flexDirection: 'column', justifyContent: 'flex-end',
+        flexDirection: 'column-reverse', justifyContent: 'flex-start',
         overflowY: 'auto', //MARCHE PAS
         wordWrap: 'break-word',
     }
@@ -303,6 +304,7 @@ const onVisible = (state: boolean) => {
 }
 
     const [invite, setInvite] = useState(false);
+    const sortedMessages =  messages.sort((a, b) => b.id - a.id);
 
     return (
         <div style={Container}>
@@ -316,7 +318,7 @@ const onVisible = (state: boolean) => {
             <div style={middleBlock}>
                 <div style={leftBlock}>
                     <div style={displayBox}>
-                        {messages.map((message) => <Message message={message} key={message.id}/>)}
+                        {sortedMessages.map((message) => <Message message={message} key={message.id}/>)}
                     </div>
                     <div style={typingBox}>
                         {(typing) ? <div style={typingStyle}>{typing}</div> : null}

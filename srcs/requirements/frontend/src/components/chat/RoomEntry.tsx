@@ -33,9 +33,8 @@ const [owner, setOwner] = useState<string>('');
 const [newMsg, setNewMsg] = useState<boolean>(false);
 
 const RoomsContainer: CSSProperties = {
-  height:'100px', margin: '7px', color: '#fff', fontSize:'24px',
+  height:'100px', margin: '7px', color: '#fff', fontSize:'24px', flex: 'none',
   border: newMsg ? '1px solid #0f0' : '1px solid #fff',
-  // border: '1px solid #fff',
   boxShadow: newMsg ? 'inset 0 0 30px #0a0' : 'null',
   borderRadius: '30px', cursor: 'pointer', display: 'flex', justifyContent: 'space-around',
 }
