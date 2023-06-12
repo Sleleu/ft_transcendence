@@ -6,6 +6,7 @@ import { CreateRoomDto, JoinRoomDto, RoomObj, TypingDto, UserDto } from './entit
 import { ForbiddenException } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { copyFileSync } from 'fs';
+import * as argon from 'argon2';
 
 @WebSocketGateway({ cors: true })
 export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -44,15 +45,21 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 	@SubscribeMessage('createRoom')
 	async createRoom(@MessageBody() dto: CreateRoomDto,
 	@ConnectedSocket() client: Socket) {
-		const user = this.socketService.getUser(client.id);
-		const exists = await this.messagesService.getRoomByName(dto.name);
-		if (exists)
+		try {
+
+			const user = this.socketService.getUser(client.id);
+			const exists = await this.messagesService.getRoomByName(dto.name);
+			if (exists)
 			throw new ForbiddenException('Room alerady exists');
-		const room = await this.messagesService.createRoom(dto, user.id);
-		this.messagesService.addWhitelistUser(room.id, user.id);
-		this.messagesService.promoteAdmin(room.id, user.id);
-		this.server.emit('newRoom', room);
-		return room;
+			const room = await this.messagesService.createRoom(dto, user.id);
+			this.messagesService.addWhitelistUser(room.id, user.id);
+			this.messagesService.promoteAdmin(room.id, user.id);
+			this.server.emit('newRoom', room);
+			return room;
+		}
+		catch (e) {
+			client.emit('createError', { message: e.message });
+		}
 	}
 	@SubscribeMessage('join')
 	async joinRoom(@MessageBody() dto:JoinRoomDto, @ConnectedSocket() client: Socket) {
@@ -72,8 +79,11 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		}
 		if (room.type === 'protected')
 		{
-		  if (!dto.password || dto.password !== room.password)
-			throw new ForbiddenException('Wrong password provided');
+			if (!dto.password || !room.password)
+				throw new ForbiddenException('Access Forbidden');
+			const passwordMatch = await argon.verify(room.password, dto.password);
+			if (!passwordMatch)
+				throw new ForbiddenException('Wrong password provided');
 		}
 		client.join(dto.roomName);
 		console.log(user.username, 'joined room :', dto.roomName);

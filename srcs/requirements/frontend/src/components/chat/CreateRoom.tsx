@@ -1,4 +1,4 @@
-import React, { CSSProperties, useState } from 'react'
+import React, { CSSProperties, useEffect, useRef, useState } from 'react'
 import { Socket } from 'socket.io-client';
 import { User } from '../types';
 
@@ -51,7 +51,7 @@ const CreateRoom:React.FC<Props> = ({socket, setRooms, setCreateRoom, user}) => 
         border: 'none',
         boxShadow: 'inset 0 0 7px black',
         backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        zIndex: 1, margin: '20px',
+        margin: '20px',
     } 
     const TickBox: CSSProperties = {
         display: 'flex', justifyContent: 'center', 
@@ -61,10 +61,36 @@ const CreateRoom:React.FC<Props> = ({socket, setRooms, setCreateRoom, user}) => 
         height: '35px',
         borderRadius: '20px',
     }
+    const popupStyle : CSSProperties = { width: '50%', height : '15%', position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', border: '2px solid #fff', backgroundColor: '#000', padding: '10px', borderRadius: '5px', color: '#fff', fontWeight: '800', fontSize: '36px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center',
+    }
+    const closePopup : CSSProperties = { cursor: 'pointer', fontSize: '50px', color: '#fff',
+    }
 
     const [roomText, setRoomText] = useState<string>("");
     const [checkbox, setCheckbox] = useState<string>("public");
     const [password, setPassword] = useState<string>("");
+
+    const [showPopup, setShowPopup] = useState(false);
+    const[popMsg, setPopMsg] = useState('');
+
+    useEffect(() => {
+
+        socket?.on('createError', (response) => {
+            setPopMsg(response.message);
+            setShowPopup(true);
+        })
+
+        const handleClickOutside = (event:MouseEvent) => {
+            if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+              setShowPopup(false);
+            }
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, []);
+    const popupRef = useRef<HTMLDivElement>(null);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -87,9 +113,19 @@ const CreateRoom:React.FC<Props> = ({socket, setRooms, setCreateRoom, user}) => 
     const handleCheckboxChange = (type: string) => {
         setCheckbox(type);
     };
-
+    
     return (
-    <div style={CreateRoomStyle}>
+        <div style={CreateRoomStyle}>
+        {showPopup && (
+        <div className="popup" ref={popupRef} style={popupStyle}>
+        <div className="popup-content">
+            <span className="close" onClick={() => setShowPopup(false)} style={closePopup}>
+            &times;
+            </span>
+            <p>{popMsg}.</p>
+        </div>
+        </div>
+        )}
         <form style={FormStyle} onSubmit={handleSubmit}>
             <div style={TickBox}>
             <div style={RoomTypeStyle}><input type='checkbox' checked={checkbox === 'public'} onChange={() => handleCheckboxChange('public')} style={smallBox}></input>PUBLIC</div>
@@ -97,7 +133,7 @@ const CreateRoom:React.FC<Props> = ({socket, setRooms, setCreateRoom, user}) => 
             <div style={RoomTypeStyle}><input type='checkbox' checked={checkbox === 'protected'} onChange={() => handleCheckboxChange('protected')} style={smallBox}></input>PROTECTED</div>
             </div>
             {checkbox === 'protected' ?
-            <input value={password} onChange={handlePassTyping} placeholder='Password' style={InputBox}></input>
+            <input value={password} type='password' onChange={handlePassTyping} placeholder='Password' style={InputBox}></input>
             : null}
             <input value={roomText} onChange={handleTyping} placeholder='Room Name' style={InputBox}></input>
             <button style={CreateButtonStyle}>CREATE</button>

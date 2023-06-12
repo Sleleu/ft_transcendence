@@ -4,6 +4,7 @@ import { UpdateMessageDto } from './dto/update-message.dto';
 import { CreateRoomDto, MessageObj } from './entities/message.entity';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User, Message, Room } from '@prisma/client';
+import * as argon from 'argon2';
 
 @Injectable()
 export class MessageService {
@@ -75,11 +76,14 @@ export class MessageService {
   }
 
   async createRoom(dto: CreateRoomDto, userId: number) {
+    let hash: string = '';
+    if (dto.password)
+      hash = await argon.hash(dto.password);
     const room = await this.prisma.room.create({
       data: {
         name: dto.name,
         type: dto.type,
-        password: dto.password, //DEVRAIT ETRE UN HASH
+        password: hash,
         owner: { connect: { id: userId } },
       }
     });
@@ -88,7 +92,7 @@ export class MessageService {
    async deleteRoom(roomId: number) {
     return this.prisma.room.update({
       where: { id: roomId },
-      data: { active: false },
+      data: { active: false, name: roomId.toString() },
     });
 
   }

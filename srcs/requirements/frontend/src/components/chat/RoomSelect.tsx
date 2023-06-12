@@ -216,7 +216,7 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
                     )}
                     {showPass && <form style={passStyle} onSubmit={handleSubmitPass}>
                         <div onClick={() => setShowPass(false)} style={closePopup}>X</div>
-                        <input placeholder='Password' value={pass} onChange={handlePassTyping} style={passInput}></input>
+                        <input placeholder='Password' type='password' value={pass} onChange={handlePassTyping} style={passInput}></input>
                         <button style={buttons}>Submit</button>
                     </form>}
                 </div>
