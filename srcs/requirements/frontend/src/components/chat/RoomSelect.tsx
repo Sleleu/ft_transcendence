@@ -134,18 +134,21 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
     const closePopup : CSSProperties = { cursor: 'pointer', fontSize: '50px', color: '#fff',
     }
 
-
     const handleSelect = (id: number, roomName: string, type: string) => {
         if (type === 'protected' && showPass === false)
         {
-            setPassInfo({id: id, roomName:roomName, type:type});
-            setShowPass(true);
-            return ;
+            socket?.emit('isWhitelisted', {roomName:roomName}, (isWhitelisted: boolean) => {
+                
+                setPassInfo({id: id, roomName:roomName, type:type});
+                setShowPass(true);
+                if (isWhitelisted)
+                    setShowPass(false);
+            });
         }
         console.log(pass);
         socket?.emit('join', {name: username, roomName:roomName, password: pass}, () => {
             console.log(username, ' joined room ', id);
-        })
+        });
         setPass('');
         setShowPass(false);
     };

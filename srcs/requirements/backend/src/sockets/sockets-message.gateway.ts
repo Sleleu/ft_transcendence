@@ -7,6 +7,7 @@ import { ForbiddenException } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { copyFileSync } from 'fs';
 import * as argon from 'argon2';
+import { use } from 'passport';
 
 @WebSocketGateway({ cors: true })
 export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -75,19 +76,22 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		const banned = await this.messagesService.isBanned(room.id, user.id)
 		if (banned)
 			throw new ForbiddenException('Access to room forbidden : user banned');
+		const whitelisted = await this.messagesService.searchWhiteList(room.id, user.id)
 		if (room.type === 'private')
 		{
-		  const whitelisted = this.messagesService.searchWhiteList(room.id, user.id)
 		  if (!whitelisted)
 			throw new ForbiddenException('Access to private room forbidden');
 		}
 		if (room.type === 'protected')
 		{
-			if (!dto.password || !room.password)
-				throw new ForbiddenException('Access Forbidden');
-			const passwordMatch = await argon.verify(room.password, dto.password);
-			if (!passwordMatch)
-				throw new ForbiddenException('Wrong password provided');
+			if (!whitelisted)
+			{
+				if (!dto.password || !room.password)
+					throw new ForbiddenException('Access Forbidden');
+				const passwordMatch = await argon.verify(room.password, dto.password);
+				if (!passwordMatch)
+					throw new ForbiddenException('Wrong password provided');
+			}
 		}
 		client.join(dto.roomName);
 		console.log(user.username, 'joined room :', dto.roomName);
@@ -473,6 +477,16 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		catch (e) {
 			client.emit('msgError', { message: e.message });
 		}
+	}
+
+	@SubscribeMessage('isWhitelisted')
+	async isWhitelisted(@ConnectedSocket() client: Socket, @MessageBody('roomName') roomName: string,) {
+		const user = this.socketService.getUser(client.id);
+		const room = await this.messagesService.getRoomByName(roomName);
+		if (!room)
+			throw new ForbiddenException('Room does not exist');
+		const isWhiteListed = await this.messagesService.searchWhiteList(room.id, user.id);
+		return isWhiteListed;
 	}
 
 	//Ne fonctionne plus pour le moment
