@@ -14,6 +14,7 @@ const Rank:React.FC<Props> = ({user, changeComponent}) => {
 
   const rank: string =  user.elo > 5000 || user.elo < 0 ? 'ultime' : existingRanks[Math.floor(user.elo / 1000)];
 
+  const eloLimited : number = user.elo >= 5000 ? 5000 : user.elo;
 
     const rankContainer: CSSProperties = {
         flexBasis: '1750px',
@@ -47,7 +48,7 @@ const Rank:React.FC<Props> = ({user, changeComponent}) => {
     borderRadius: '30px',
 
     background: 'linear-gradient(to right, #F45BE2, #29B2FF)',
-    width: user.elo > 100 ?  user.elo / 50 + '%' : 100 / 50 + '%',
+    width: user.elo > 100 ?  eloLimited / 50 + '%' : 100 / 50 + '%',
     
     color: 'white',
     textAlign: 'center',

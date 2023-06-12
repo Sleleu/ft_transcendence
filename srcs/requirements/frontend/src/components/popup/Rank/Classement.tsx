@@ -140,7 +140,7 @@ const Header: CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    overflow: 'scroll',
+    overflow: 'auto',
   }
   const chooseRank: CSSProperties = {
     height:'80%', alignSelf:'center', margin: '10px',
