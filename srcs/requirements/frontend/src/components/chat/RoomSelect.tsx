@@ -142,10 +142,15 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
                 setPassInfo({id: id, roomName:roomName, type:type});
                 setShowPass(true);
                 if (isWhitelisted)
+                {
+                    socket?.emit('join', {name: username, roomName:roomName}, () => {
+                        console.log(username, ' joined room ', id);
+                    });            
                     setShowPass(false);
+                }
             });
+            return ;
         }
-        console.log(pass);
         socket?.emit('join', {name: username, roomName:roomName, password: pass}, () => {
             console.log(username, ' joined room ', id);
         });

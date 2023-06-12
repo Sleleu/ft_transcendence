@@ -472,7 +472,8 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		const friendClient = this.server.sockets.sockets.get(friendSocket);
 		if (!friendClient)
 			throw new ForbiddenException('Invalid target');
-		friendClient.emit('newRoom', room);
+		if (room.type === 'private' || room.type === 'direct')
+			friendClient.emit('newRoom', room);
 		}
 		catch (e) {
 			client.emit('msgError', { message: e.message });
