@@ -35,12 +35,12 @@ const CreateRoom:React.FC<Props> = ({socket, setRooms, setCreateRoom, user}) => 
     const ReturnButtonStyle : CSSProperties = {
         alignSelf: 'center', backgroundColor: '#000', width: '25%', height: '8%', textAlign: 'center',
         fontSize: '20px', fontWeight: '600px', fontFamily: 'Montserrat, sans-serif', color: '#fff', border: '3px solid #a0a', borderRadius: '20px', cursor:'pointer',
-        boxShadow: 'inset 0 0 50px #a0a',
+        boxShadow: 'inset 0 0 50px #a0a',  minWidth: '100px',
     }
     const CreateButtonStyle : CSSProperties = {
         alignSelf: 'center', backgroundColor: '#000', width: '20%', height: '40%', textAlign: 'center',
         fontSize: '20px', fontWeight: '600px', fontFamily: 'Montserrat, sans-serif', color: '#fff', border: '3px solid #0aa', borderRadius: '20px', cursor:'pointer',
-        boxShadow: 'inset 0 0 50px #0aa',
+        boxShadow: 'inset 0 0 50px #0aa', minWidth: '100px',
     }
     const InputBox: CSSProperties = {
         alignSelf: 'center',
