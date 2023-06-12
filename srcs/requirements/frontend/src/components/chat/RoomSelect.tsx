@@ -107,9 +107,9 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
     }
     const displayBox: CSSProperties = { width: '90%', height: '80%', margin: '10px', padding: '20px', borderRadius: '30px', border: '2px solid #fff', backgroundColor: '#000', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', overflow: 'auto',
     }
-    const buttons: CSSProperties = { width: '20%', height : '80%', borderRadius: '30px', alignSelf: 'center', border: '2px solid #fff', backgroundColor: '#000', color: '#fff', fontWeight: '800', fontSize: '18px', cursor: 'pointer',
+    const buttons: CSSProperties = { width: '20%', height : '80%', borderRadius: '30px', alignSelf: 'center', border: '2px solid #fff', backgroundColor: '#000', color: '#fff', fontWeight: '800', fontSize: '18px', cursor: 'pointer', minHeight:'70px',
     }
-    const returnButton: CSSProperties = { width: '10%', height : '80%', borderRadius: '30px', alignSelf: 'center', border: '2px solid #fff', backgroundColor: '#000', color: '#fff', fontWeight: '800', fontSize: '18px', cursor: 'pointer',
+    const returnButton: CSSProperties = { width: '10%', height : '80%', borderRadius: '30px', alignSelf: 'center', border: '2px solid #fff', backgroundColor: '#000', color: '#fff', fontWeight: '800', fontSize: '18px', cursor: 'pointer', minHeight:'60px',
     }
     const returnLogo : CSSProperties = { marginLeft: '30%', marginTop: '10px', width: '35%', minWidth:'33px',
     }

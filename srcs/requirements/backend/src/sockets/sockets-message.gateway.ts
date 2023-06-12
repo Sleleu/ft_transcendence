@@ -448,13 +448,14 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 	async addToChat(@MessageBody('friendId') friendId: number,
 	@MessageBody('roomName') roomName: string,
 	@ConnectedSocket() client: Socket) {
+		try {
 		const user = this.socketService.getUser(client.id);
 		const room = await this.messagesService.getRoomByName(roomName);
 		if (!room)
 			throw new ForbiddenException('Room does not exist');
 		const verifyClient = await this.messagesService.isAdmin(room.id, user.id);
 		if (!verifyClient)
-			throw new ForbiddenException('Client is not an admin');
+			throw new ForbiddenException('User is not an admin');
 		const target = await this.messagesService.searchUserId(friendId);
 		if (!target)
 			throw new ForbiddenException('Target does not exist');	
@@ -467,6 +468,10 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		if (!friendClient)
 			throw new ForbiddenException('Invalid target');
 		friendClient.emit('newRoom', room);
+		}
+		catch (e) {
+			client.emit('msgError', { message: e.message });
+		}
 	}
 
 	//Ne fonctionne plus pour le moment

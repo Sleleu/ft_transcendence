@@ -130,10 +130,10 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom, change
         cursor: hover ? 'pointer' : 'auto',
     }
     const leaveButton: CSSProperties = {
-        borderRadius: '30px', width: '15%',
+        borderRadius: '30px', width: '140px',
         border: '2px solid #fff', backgroundColor: '#000',
-        fontSize: '20px', fontWeight: '500', color: '#fff', textAlign: 'center',
-        cursor: hover ? 'pointer' : 'auto',
+        fontSize: '28px', fontWeight: '500', color: '#fff', textAlign: 'center',
+        cursor: hover ? 'pointer' : 'auto', minHeight: '50px', minWidth: '120px',
     }
     const RoomName: CSSProperties = {
         fontSize: '48px', fontWeight:'800', color: '#fff', width:'30%',
