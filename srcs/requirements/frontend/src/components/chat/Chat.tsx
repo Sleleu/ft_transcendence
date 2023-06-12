@@ -5,6 +5,8 @@ import { CSSProperties } from 'styled-components';
 import { User } from '../types';
 import WhitelistEntry from './WhiteListEntry';
 import PopupChat from './PopupChat';
+import ConfirmationPopUp from '../popup/ConfirmationPopUp';
+import Invite from './Invite';
 
 interface MessageObj {
     id: number;
@@ -133,7 +135,7 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom, change
         cursor: hover ? 'pointer' : 'auto',
     }
     const RoomName: CSSProperties = {
-        fontSize: '48px', fontWeight:'800', color: '#fff',
+        fontSize: '48px', fontWeight:'800', color: '#fff', width:'30%',
     }
     const popupStyle : CSSProperties = {
         width: '50%', height : '15%',
@@ -156,6 +158,8 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom, change
         fontSize: '50px',
         color: '#fff',
     }
+    const title: CSSProperties = {color: '#fff', alignSelf: 'center', display:'flex', flexDirection:'column', fontSize: '24px', fontWeight:'800', padding: '10px',}
+
 
     useEffect(() => {
         socket?.emit('findRoomMessages', {id: roomId}, (response: MessageObj[]) => {
@@ -168,6 +172,10 @@ const Chat:React.FC<Props> = ({name, roomId, roomName, socket, leaveRoom, change
             if (response === true)
                 setShowAdmin(true);
         });
+
+            socket?.on('newUserInChat', (user: User) => {
+                setWhitelist((prev) => [...prev, user]);
+            });
 
         socket?.on('message', (message: MessageObj) => {
             setMessages((prevMessages) => [...prevMessages, message]);
@@ -256,17 +264,51 @@ const handleUserClick = (user: User, event: React.MouseEvent<HTMLSpanElement>) =
 };
 
 const handleDelete = () => {
-    leaveRoom(roomName);
-    socket?.emit('deleteRoom', {roomName:roomName}, () => {
-    });
+    confirmScreen('delete', 'Do you really want to delete the room ?');
 }
+
+const confirmScreen = (what: string, message: string, id?: number) => {
+    setVisible(true);
+    setWhatConfirm(what);
+    setConfirmMessage(message);
+    if (id)
+        setIdConfirm(id);
+}
+
+const [visible, setVisible] = useState(false);
+const [confirmMessage, setConfirmMessage] = useState('');
+const [whatConfirm, setWhatConfirm] = useState('');
+const [idConfirm, setIdConfirm] = useState<number>();
+const onConfirm = (confirm: boolean) => {
+    if (confirm && whatConfirm === 'delete')
+    {
+        leaveRoom(roomName);
+        socket?.emit('deleteRoom', {roomName:roomName}, () => {
+        });
+    }
+    if (confirm && whatConfirm === 'block')
+        socket?.emit('bloqueFriend', { id: idConfirm });
+    if (confirm && whatConfirm === 'add')
+    {
+        socket?.emit('addToChat', {friendId: idConfirm, roomName:roomName});
+    }
+    setConfirmMessage('');
+    setWhatConfirm('');
+}
+const onVisible = (state: boolean) => {
+    setVisible(state)
+}
+
+    const [invite, setInvite] = useState(false);
 
     return (
         <div style={Container}>
+            {visible === true && <ConfirmationPopUp onConfirm={onConfirm} onVisible={onVisible} opacity={true} message={confirmMessage} />}
             <div style={topBar}>
                 <span style={RoomName}>{roomName}</span>
-                {showAdmin && <div style={leaveButton} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => handleDelete()}>DELETE ROOM</div>}
-                <div style={leaveButton} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => leaveRoom(roomName)}>LEAVE ROOM</div>
+                <div style={leaveButton} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => leaveRoom(roomName)}>LEAVE</div>
+                {showAdmin && <div style={leaveButton} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => handleDelete()}>DELETE</div>}
+                <div style={leaveButton} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={() => setInvite(!invite)}>{invite ? 'SALON' : 'INVITE'}</div>
             </div>
             <div style={middleBlock}>
                 <div style={leftBlock}>
@@ -282,10 +324,12 @@ const handleDelete = () => {
                     </form>
                 </div>
                 <div style={rightBlock}>
-                    {whitelist.map((user) => <WhitelistEntry user={user} handleUserClick={handleUserClick} key={user.id} roomId={roomId} socket={socket}/>)}
+                    {invite && <Invite socket={socket} roomName={roomName} whitelist={whitelist} confirmScreen={confirmScreen}/>}
+                    {!invite && <div style={title}>IN SALON</div>}
+                    {!invite && whitelist.map((user) => <WhitelistEntry user={user} handleUserClick={handleUserClick} key={user.id} roomId={roomId} socket={socket}/>)}
                 </div>
                 <div>
-                 {selectedUser && <PopupChat user={selectedUser} position={popupPosition} setSelectedUser={setSelectedUser} socket={socket} roomName={roomName} clientName={name} leaveRoom={leaveRoom}/>}
+                 {selectedUser && <PopupChat user={selectedUser} position={popupPosition} setSelectedUser={setSelectedUser} socket={socket} roomName={roomName} clientName={name} leaveRoom={leaveRoom} changeComponent={changeComponent} confirmScreen={confirmScreen}/>}
                 </div>
                 {showPopup && (
                     <div className="popup" ref={popupRef} style={popupStyle}>

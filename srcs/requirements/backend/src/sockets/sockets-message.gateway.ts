@@ -397,12 +397,21 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		const userB = await this.messagesService.searchUserId(targetId);
 		if (!userA || !userB)
 			throw new ForbiddenException('User does not exist');
-		const room = await this.messagesService.createDirectMsg(userA, userB);
-		if (!room)
-			throw new ForbiddenException('Room cannot be created');
-		client.join(room.name);
-		this.server.emit('newRoom', room);
-		client.emit('joinSuccess', {id: room.id, roomName: room.name});
+		const roomExists = await this.messagesService.findDirectMsg(userA.id, userB.id);
+		if (roomExists)
+		{
+			client.join(roomExists.name);
+			client.emit('joinSuccess', {id: roomExists.id, roomName: roomExists.name});
+		}
+		else
+		{
+			const room = await this.messagesService.createDirectMsg(userA, userB);
+			if (!room)
+				throw new ForbiddenException('Room cannot be created');
+			client.join(room.name);
+			this.server.emit('newRoom', room);
+			client.emit('joinSuccess', {id: room.id, roomName: room.name});
+		}		
 	}
 
 	@SubscribeMessage('deleteRoom')
@@ -424,6 +433,24 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		client.emit('msgError', { message: e.message });
 	}
 }
+
+	@SubscribeMessage('addToChat')
+	async addToChat(@MessageBody('friendId') friendId: number,
+	@MessageBody('roomName') roomName: string,
+	@ConnectedSocket() client: Socket) {
+		const user = this.socketService.getUser(client.id);
+		const room = await this.messagesService.getRoomByName(roomName);
+		if (!room)
+			throw new ForbiddenException('Room does not exist');
+		const verifyClient = await this.messagesService.isAdmin(room.id, user.id);
+		if (!verifyClient)
+			throw new ForbiddenException('Client is not an admin');
+		const target = await this.messagesService.searchUserId(friendId);
+		if (!target)
+			throw new ForbiddenException('Target does not exist');	
+		this.messagesService.addWhitelistUser(room.id, friendId);
+		this.server.to(roomName).emit('newUserInChat', target);
+	}
 
 	//Ne fonctionne plus pour le moment
 	@SubscribeMessage('typing')

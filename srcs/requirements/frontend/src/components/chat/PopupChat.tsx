@@ -17,6 +17,8 @@ interface PopupProps {
   roomName: string;
   clientName: string;
   leaveRoom: (roomName: string, kick?: boolean) => void;
+  changeComponent: (component: string) => void;
+  confirmScreen: (what: string, message: string, id?: number) => void;
 }
 
 interface popupInfo {
@@ -34,7 +36,7 @@ interface Room {
   inSalon?: string;
 }
 
-const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedUser, socket, roomName, clientName, leaveRoom }) => {
+const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedUser, socket, roomName, clientName, leaveRoom, changeComponent, confirmScreen }) => {
 
 	const [isVisible, setIsVisible] = useState(true);
 	const [ban, setBan] = useState('Ban');
@@ -107,15 +109,15 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedUser, sock
   };
 
   const handleInviteToPlay = () => {
-    // inviting the user to play
+    changeComponent('invitePlay' + user.id)
   };
 
   const handleAddFriend = () => {
-    // adding the user as a friend
+    socket?.emit('send', { id: user.id });
   };
 
   const handleBlock = () => {
-    //  blocking the user
+    confirmScreen('block', `Do you really want to block ${user.username} ?`, user.id);
   };
 
   const handleBan = () => {

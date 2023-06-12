@@ -15,8 +15,9 @@ const WhitelistEntry:React.FC<Props> = ({user, handleUserClick, roomId, socket})
 
   const [connected, setConnected] = useState(true);
 
+  const entry : CSSProperties = {alignSelf:'center',}
   const text: CSSProperties = {
-    color: connected ? '#fff' : '#666', fontSize: '30px', margin:'10px',
+    color: connected ? '#fff' : '#666', fontSize: '30px', margin:'10px', alignSelf:'center',
   }
 
   useEffect(() => {
@@ -41,7 +42,7 @@ const WhitelistEntry:React.FC<Props> = ({user, handleUserClick, roomId, socket})
 
 
   return (
-    <div>
+    <div style={entry}>
       <span style={text} onClick={(event) => handleUserClick(user, event)}> {user.username} </span>
     </div>
   )

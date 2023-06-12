@@ -194,11 +194,11 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
                         <button style={buttons}
                         onClick={() => setCreateRoom(true)}>CREATE ROOM</button>
                         <div style={returnButton}>
-                            <img src={firendLogo} style={friendLogo}></img>
+                            <img src={firendLogo} style={friendLogo} onClick={() => changeComponent('friend')}></img>
                         </div>
-                        <div style={returnButton}>
+                        {/* <div style={returnButton}>
                             <img src={retLogo} style={returnLogo}></img>
-                        </div>
+                        </div> */}
                     </div>
                     <div style={displayBox}>
                         {showPublic && publicRooms.map((room) => <RoomEntry room={room} key={room.id} handleSelect={handleSelect} socket={socket}/>)}
