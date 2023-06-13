@@ -38,12 +38,12 @@ export class SocketsGateway {
       }
     }
     catch (e) {
-      console.log('CONNECTION ERROR : ', e);
-      client.disconnect();
+      console.log("Socket error : User not found");
     }
   }
 
   async handleDisconnect(client: Socket) {
+	try {
     const token = client.handshake.headers.cookie?.substring(14);
     if (token) {
       const user: User & { friend: Friend[] } = await this.socketService.getUserWithToken(token);
@@ -54,6 +54,10 @@ export class SocketsGateway {
     }
     else
       return
+	}
+	catch (e) {
+		console.log("Socket error : User not found");
+	}
   }
 
   async refreshFriend(user: User & { friend: Friend[] }) {
