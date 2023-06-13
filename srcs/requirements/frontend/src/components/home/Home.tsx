@@ -245,6 +245,7 @@ useEffect(() => {
                         {activeComponent === "crackLead" && <Classement rank={'crack'} changeComponent={changeComponent} />}
                         {activeComponent === "ultimeLead" && <Classement rank={'ultime'} changeComponent={changeComponent} />}
                         {activeComponent.startsWith("watch") && <div>{extractId(activeComponent)}</div>}
+						{/* {activeComponent.startsWith("PublicProfile") && <PublicProfil id={extractId(activeComponent)}> */}
                         {activeComponent.startsWith("queue") && <Queue mode={extractText(activeComponent)} name={user.username} socket={socket} changeComponent={changeComponent} />}
                         {activeComponent === "rank" && <Rank user={user} changeComponent={changeComponent} />}
                         {activeComponent === "Choices" && <GameChoice changeComponent={changeComponent} />}
