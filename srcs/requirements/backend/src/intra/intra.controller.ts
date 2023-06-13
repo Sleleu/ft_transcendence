@@ -40,8 +40,8 @@ export class IntraController {
 			if (!User)
 				throw new HttpException('Cannot create new user from createUser()', HttpStatus.FORBIDDEN);
 			const JwtToken = await this.intraService.getJwtToken(User?.id, User?.username)
-			console.log("jwt token : ", JwtToken);
-			console.log("User : ", User.username);
+			// console.log("jwt token : ", JwtToken);
+			// console.log("User : ", User.username);
 			// add le token au user
 			await this.prismaService.user.update({
 				where : {

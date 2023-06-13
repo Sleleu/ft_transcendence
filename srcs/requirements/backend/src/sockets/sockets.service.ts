@@ -36,8 +36,8 @@ export class SocketsService {
     const clientId = Object.keys(this.clientToUser).find(
       (key) => this.clientToUser[key].id === id
     );
-    console.log('CLIENTID:',  id);
-    console.log( this.clientToUser);
+    // console.log('CLIENTID:',  id);
+    // console.log( this.clientToUser);
     return clientId;
   }
 

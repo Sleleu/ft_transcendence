@@ -4,6 +4,7 @@ import { SocketsGateway } from './sockets.gateway';
 import { ScheduleModule } from '@nestjs/schedule';
 import { JwtModule } from '@nestjs/jwt';
 import { config } from 'process';
+import { ConfigService } from '@nestjs/config';
 import { FriendController } from 'src/friend/friend.controler';
 import { FriendModule } from 'src/friend/friend.module';
 import { FriendService } from 'src/friend/friend.service';
@@ -16,7 +17,7 @@ import { SocketsQueueGateway } from './sockets-queue.gateway';
 import { QueueService } from './queue.service';
 
 @Module({
-  imports: [ScheduleModule.forRoot(), JwtModule.register({ secret: 'transcendence_secret' }), FriendModule],//shima added schedule module for the interval to run
+  imports: [ScheduleModule.forRoot(), JwtModule.register({ secret: process.env.JWT_SECRET }), FriendModule],//shima added schedule module for the interval to run
   providers: [SocketsGateway, SocketsChatGateway, SocketsFriendsGateway, SocketsGameGateway,
     SocketsService, FriendService, MessageService, GameService, SocketsQueueGateway, QueueService]
 })

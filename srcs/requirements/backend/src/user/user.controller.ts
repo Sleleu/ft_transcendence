@@ -69,7 +69,7 @@ export class UserController {
 
 	@Delete('deleteBlock/:blockId')
 	async RmBlock(@Param('blockId') id: number) {
-		console.log('aled')
+	//	console.log('')
 		await this.userService.deleteBlock(+id)
 	}
 

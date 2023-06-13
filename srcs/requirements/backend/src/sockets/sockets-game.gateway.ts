@@ -17,15 +17,15 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		) {}
 
 	afterInit() {
-		console.log('WebSocket Gateway initialized');
+		// console.log('WebSocket Gateway initialized');
 	}
 
 	handleConnection(client: Socket) {
-		console.log('in game connection:', client.id);
+		// console.log('in game connection:', client.id);
 	}
 
 	handleDisconnect(client: Socket) {
-		console.log('game disconnected:', client.id);
+		// console.log('game disconnected:', client.id);
 	}
 
 	@Interval(500)

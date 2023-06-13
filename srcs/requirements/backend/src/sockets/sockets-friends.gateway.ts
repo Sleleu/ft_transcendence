@@ -10,7 +10,7 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
   @WebSocketServer()
   private server: Server;
 
-  afterInit() {
+  afterInit() {  
     console.log('WebSocket Gateway initialized');
   }
 
