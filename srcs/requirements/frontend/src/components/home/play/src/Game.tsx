@@ -45,14 +45,15 @@ interface GameProps {
   changeComponent: (component: string) => void;
   socket?: Socket;
   opponentID: string | number;
+  gameMode: string;
 }
 
-const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
+const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMode}) => {
   const [state, setState] = useState<GameState>(InitialState());
 
   useEffect(() => {
     console.log("client side: joining a room");
-    socket?.emit('join-room', opponentID);//send the opponent socket
+    socket?.emit('join-room', {Mode: gameMode, opponentid: opponentID});// pass the game mode as well
 
     return () => {
       socket?.emit("GameOver");
@@ -140,17 +141,14 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID}) => {
         playerBoard = state.player1;
       else
         playerBoard = state.player2;
-      // const middlePosition = (playerBoard[0] + playerBoard[PADDLE_BOARD_SIZE - 1]) / 2;
       const mouseYDifference = mouseY - previousMouseY;
-
       const isUp = mouseYDifference < 0;
 
-      console.log("going up?: ", isUp, " with middle position of: ", mouseYDifference," , " , mouseY);
+      // console.log("going up?: ", isUp, " with middle position of: ", mouseYDifference," , " , mouseY);
       previousMouseY = mouseY;
       movedPlayer = moveBoard(playerBoard, isUp);
     }
     if (movedPlayer !== null) {
-      // console.log("client: moving my paddle to: ", movedPlayer);
       socket?.emit('move-player', {movedPlayer: movedPlayer, playerID: state.playerID});
     }
   };
