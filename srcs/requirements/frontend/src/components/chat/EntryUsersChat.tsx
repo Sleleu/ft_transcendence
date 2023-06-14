@@ -11,6 +11,7 @@ interface Props {
 	field: string;
 	changeComponent: (component: string) => void;
 	handleUserClick: (target: User, event: React.MouseEvent<HTMLSpanElement>) => void;
+	connected: User[];
 }
 
 // const sortFriend = (friend: FriendInterface[]) => {
@@ -18,16 +19,19 @@ interface Props {
 //   }
 // const filteredFriends = searchFriend.map((friend) => friend.friend).filter((user) => !whitelist.some((whitelistedUser) => whitelistedUser.id === user.id));
 
-const EntryUsersChat:React.FC<Props> = ({socket, user, target, field, changeComponent, handleUserClick}) => {
+const EntryUsersChat:React.FC<Props> = ({socket, user, target, field, changeComponent, handleUserClick, connected}) => {
 
     useEffect(() => {
 
     }, []);
+	const isConnected = connected.some((connectedUser) => connectedUser.id === target.id);
 
-
+	const EntryUser : CSSProperties = {
+		color: isConnected ? '#fff' : '#555',
+	}
 
     return (
-        <div className='EntryUser' onClick={(e) => handleUserClick(target, e)}>
+        <div className='EntryUser' style={EntryUser}  onClick={(e) => handleUserClick(target, e)}>
 			{target.gameLogin}
 
 	    </div>

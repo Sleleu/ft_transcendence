@@ -21,7 +21,6 @@ interface Props {
 const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) => {
 
 	const roomId = Number(roomIdStr);
-	console.log(roomId);
 
 	const [whitelist, setWhiteList] = useState<User[]>([]);
 	const [admins, setAdmins] = useState<User[]>([]);
@@ -29,8 +28,10 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 	const [connected, setConnected] = useState<User[]>([]);
 	const [friends, setFriends] = useState<User[]>([]);
 	const [room, setRoom] = useState<Room>();
+	const filteredWhitelist = whitelist.filter((user) =>
+	 !banned.some((bannedUser) => bannedUser.id === user.id));
 
-    useEffect(() => {
+	 useEffect(() => {
         socket?.emit('getChatRoomData', {roomId:roomId}, (data: ChatRoomData) => {
 			setWhiteList(data.whitelist);
 			setAdmins(data.admins);
@@ -45,11 +46,17 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 		socket?.on('refreshAdmins', (newUser: User) => {
             setAdmins((prevList) => [...prevList, newUser]);
         })
-		socket?.on('refreshBanned', (newUser: User) => {
-            setBanned((prevList) => [...prevList, newUser]);
+		socket?.on('refreshBanned', (newUser: User, unban: boolean) => {
+			if (unban)
+				setBanned((prev) => prev.filter((user) => user.id !== newUser.id))
+            else
+				setBanned((prevList) => [...prevList, newUser]);
         })
-		socket?.on('refreshConnected', (newUser: User) => {
-            setConnected((prevList) => [...prevList, newUser]);
+		socket?.on('refreshConnected', (newUser: User, undo: boolean) => {
+            if (undo)
+				setConnected((prev) => prev.filter((user) => user.id !== newUser.id))
+			else
+				setConnected((prevList) => [...prevList, newUser]);
         })
 		socket?.on('kickUser', (response) => {
             changeComponent('chat');
@@ -59,7 +66,13 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
             setShowPopup(true);
         })
 
-
+		// NON FONCTIONNEL : MODIFIER LEAVE / JOIN (doit prendre id)
+        return () => {
+            socket?.emit('leave', {name: user.username, roomName:room?.name}, () => {
+            console.log(user.username, ' left room ', room?.name);
+            })
+            socket?.off('message');
+        };
     }, []);
 
 	const [usersField, setUsersField] = useState('salon');
@@ -106,12 +119,12 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
         <div className='ChatRoom'>
 			<div>
 			{showPopup && (
-                    <div className="popup" ref={popupRef}>
-                    <div className="popup-content">
-                        <span className="close" onClick={() => setShowPopup(false)}>
+                    <div className="popupMsg" ref={popupRef}>
+                    <div className="popupMsg-content">
+                        <span className="closeMsg" onClick={() => setShowPopup(false)}>
                         &times;
                         </span>
-                        <p>{popMsg}.</p>
+                        <p className="popupMsgText">{popMsg}</p>
                     </div>
                     </div>
                     )}
@@ -123,12 +136,12 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 			<button style={friendsButton} className='friendsButton' onClick={() => selectUsersField('friends')}>FRIENDS</button>
 			</div>
 			<div className='UsersList' style={UsersList}>
-			{usersField === 'salon' && whitelist.map((target) => <EntryUsersChat socket={socket} user={user}
-			 target={target} field='salon' changeComponent={changeComponent} handleUserClick={handleUserClick}/>)}
+			{usersField === 'salon' && filteredWhitelist.map((target) => <EntryUsersChat socket={socket} user={user}
+			 target={target} field='salon' changeComponent={changeComponent} handleUserClick={handleUserClick} connected={connected}/>)}
 			{usersField === 'banned' && banned.map((target) => <EntryUsersChat socket={socket} user={user}
-			 target={target} field='banned' changeComponent={changeComponent} handleUserClick={handleUserClick}/>)}
+			 target={target} field='banned' changeComponent={changeComponent} handleUserClick={handleUserClick} connected={connected}/>)}
 			{usersField === 'friends' && friends.map((target) => <EntryUsersChat socket={socket} user={user}
-			 target={target} field='friends' changeComponent={changeComponent} handleUserClick={handleUserClick}/>)}
+			 target={target} field='friends' changeComponent={changeComponent} handleUserClick={handleUserClick} connected={connected}/>)}
 			</div>
 	    </div>
 	<div>

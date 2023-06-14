@@ -121,6 +121,7 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 
 	@SubscribeMessage('leave')
 	async leaveRoom(@MessageBody() joinDto: JoinRoomDto, @ConnectedSocket() client: Socket) {
+		console.log(joinDto);
 	  client.leave(joinDto.roomName);
 	  const user = this.socketService.getUser(client.id);
 	  const room = await this.messagesService.getRoomByName(joinDto.roomName);
@@ -247,6 +248,7 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		const isConnected = await this.messagesService.isConnected(room.id, userTarget.id);
 		if (isConnected)
 		kickedClient.emit('kickUser', {name: room.name});
+		this.server.to(roomName).emit('refreshBanned', userTarget, false);
 		} catch (e) {
 			client.emit('msgError', { message: e.message });
 		}
@@ -271,6 +273,8 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		if (!targetIsBanned)
 			throw new ForbiddenException('Target is not Banned');
 		this.messagesService.unban(room.id, userTarget.id);
+		this.server.to(roomName).emit('refreshBanned', userTarget, true);
+
 	} catch (e) {
 		client.emit('msgError', { message: e.message });
 	}

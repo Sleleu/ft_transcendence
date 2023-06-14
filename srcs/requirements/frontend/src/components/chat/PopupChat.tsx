@@ -145,7 +145,7 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, so
   };
 
   return (
-    <div className="popup" style={popupStyle} onClick={handleClickOutside} onMouseLeave={handleClickOutside}>
+    <div style={popupStyle} onClick={handleClickOutside} onMouseLeave={handleClickOutside}>
       <span style={UsernameStyle}>{user.username}</span>
       <button style={Buttons} onClick={handleSendMessage}>Send Message</button>
       <button style={Buttons} onClick={handleInviteToPlay}>Invite to Play</button>
