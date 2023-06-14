@@ -12,7 +12,7 @@ class CustomSocketIoAdapter extends IoAdapter {
 		const server = super.createIOServer(port, {
 			...options,
 			cors: {
-				origin: "http://localhost:3000",
+				origin: `http://${process.env.DOMAIN}:${process.env.CLIENT_PORT}`,
 				methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
 				allowedHeaders: ["Access-Control-Allow-Origin", "Content-Type", "Accept", "Authorization"],
 				credentials: true
@@ -24,7 +24,7 @@ class CustomSocketIoAdapter extends IoAdapter {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors({	origin: "http://localhost:3000",
+  app.enableCors({	origin: `http://${process.env.DOMAIN}:${process.env.CLIENT_PORT}`,
   					methods: 'GET, POST, PUT, PATCH, DELETE',
   					allowedHeaders: "Content-Type, Accept, Authorization",
 					credentials: true})

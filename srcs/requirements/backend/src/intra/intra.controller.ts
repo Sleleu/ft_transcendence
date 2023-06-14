@@ -56,7 +56,7 @@ export class IntraController {
 			res.cookie('Authorization', JwtToken, {
 				httpOnly: true
 			});
-			res.redirect('http://localhost:3000/home');
+			res.redirect(`http://${process.env.DOMAIN}:${process.env.CLIENT_PORT}/home`);
 	}
 
 	@Get('verify-session')

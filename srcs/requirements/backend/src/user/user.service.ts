@@ -130,14 +130,14 @@ export class UserService {
         const filepath = `./avatars/${filename}`;
 
         await fs.promises.writeFile(filepath, avatar.buffer);
-        const avatarUrl = `http://localhost:5000/avatars/${filename}`;
+        const avatarUrl = `http://${process.env.DOMAIN}:5000/avatars/${filename}`;
         const updatedUser = await this.prismaService.user.update({
           where: { id: user.id },
           data: { avatar: avatarUrl },
         });
 
         // Delete old avatar file
-        if (user.avatar && user.avatar.startsWith('http://localhost:5000/avatars/')) {
+        if (user.avatar && user.avatar.startsWith(`http://${process.env.DOMAIN}:5000/avatars/`)) {
             const oldAvatarFilename = user.avatar.split('/').pop();
             if (oldAvatarFilename) {
             const oldAvatarFilepath = path.join('./avatars', oldAvatarFilename);
@@ -163,7 +163,7 @@ export class UserService {
     }
 
     async setDefaultAvatar(id: number) {
-        const defaultAvatarUrl = 'http://localhost:5000/avatars/default_avatar.jpeg';
+        const defaultAvatarUrl = `http://${process.env.DOMAIN}:5000/avatars/default_avatar.jpeg`;
         const user = await this.prismaService.user.update({
           where: {id: id},
           data: { avatar: defaultAvatarUrl },
