@@ -8,6 +8,16 @@ import { MessageService } from './message.service';
 import { copyFileSync } from 'fs';
 import * as argon from 'argon2';
 import { use } from 'passport';
+import { User } from '@prisma/client';
+
+export interface ChatRoomData {
+	whitelist: User[];
+	admins: User[];
+	banned: User[];
+	connected: User[];
+	friends: User[];
+	room: RoomObj;
+  }
 
 @WebSocketGateway({ cors: true })
 export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -195,7 +205,7 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 			throw new ForbiddenException('Target does not exist');
 		const owner = await this.messagesService.owner(roomName);
 		if (target === owner?.id)
-			throw new ForbiddenException('Cannot demote the owner !');			
+			throw new ForbiddenException('Cannot demote the owner !');
 		const wasAdmin = this.messagesService.isAdmin(room.id, userTarget.id);
 		if (!wasAdmin)
 			throw new ForbiddenException('User is not an admin');
@@ -223,7 +233,7 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 			throw new ForbiddenException('Target does not exist');
 			const owner = await this.messagesService.owner(roomName);
 			if (target === owner?.id)
-			throw new ForbiddenException('Cannot ban the owner !');				
+			throw new ForbiddenException('Cannot ban the owner !');
 		const targetIsBanned = await this.messagesService.isBanned(room.id, userTarget.id);
 		if (targetIsBanned)
 		throw new ForbiddenException('Target Alerady Banned');
@@ -284,7 +294,7 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 			throw new ForbiddenException('Target does not exist');
 		const owner = await this.messagesService.owner(roomName);
 		if (target === owner?.id)
-			throw new ForbiddenException('Cannot mute the owner !');				
+			throw new ForbiddenException('Cannot mute the owner !');
 		this.messagesService.mute(room.id, userTarget.id);
 	} catch (e) {
 		client.emit('msgError', { message: e.message });
@@ -327,7 +337,7 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 			throw new ForbiddenException('Client is not an admin');
 		const owner = await this.messagesService.owner(roomName);
 		if (targetId === owner?.id)
-			throw new ForbiddenException('Cannot kick the owner !');				
+			throw new ForbiddenException('Cannot kick the owner !');
 		const kickedId = this.socketService.findSocketById(targetId);
 		if (!kickedId)
 			throw new ForbiddenException('Invalid target client ID');
@@ -426,7 +436,7 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 			client.emit('newRoom', room);
 			friendClient.emit('newRoom', room);
 			client.emit('joinSuccess', {id: room.id, roomName: room.name});
-		}		
+		}
 	}
 
 	@SubscribeMessage('deleteRoom')
@@ -463,7 +473,7 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 			throw new ForbiddenException('User is not an admin');
 		const target = await this.messagesService.searchUserId(friendId);
 		if (!target)
-			throw new ForbiddenException('Target does not exist');	
+			throw new ForbiddenException('Target does not exist');
 		this.messagesService.addWhitelistUser(room.id, friendId);
 		this.server.to(roomName).emit('newUserInChat', target);
 		const friendSocket = this.socketService.findSocketById(friendId);
@@ -498,4 +508,15 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 	  const typing = dto.isTyping;
 	  client.to(dto.roomName).emit('typing', { username, typing });
 	}
+
+	//Classic
+
+	@SubscribeMessage('getChatRoomData')
+	async getChatRoomData(@ConnectedSocket() client: Socket, @MessageBody('roomId') roomId: number) {
+		const user = await this.socketService.getUser(client.id);
+		const data: ChatRoomData = await this.messagesService.getChatRoomData(roomId, user.id);
+		// console.log('DATA : ', data);
+		return data;
+	}
+
 }

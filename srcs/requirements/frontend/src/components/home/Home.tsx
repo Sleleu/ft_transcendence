@@ -28,6 +28,7 @@ import Verify2FA from '../Login/Verify-2fa';
 import { check2FA, check2FAVerified, unsetTwoFAVerified, getUserProfile, logout } from '../Api';
 import SelectLogin from '../Login/SelectLogin';
 import SelectAvatar from '../Login/SelectAvatar';
+import ChatRoom from '../chat/ChatRoom'
 
 function Home() {
 
@@ -38,7 +39,7 @@ function Home() {
     const [message, setMessage] = useState('void')
     const [visible, setVisible] = useState(false)
     const navigate = useNavigate()
-    const existingRanks: string[] = ['bronze', 'silver', 'gold', 'crack', 'ultime']; 
+    const existingRanks: string[] = ['bronze', 'silver', 'gold', 'crack', 'ultime'];
     const userRank: string =  user.elo > 5000 || user.elo < 0 ? 'ultime' : existingRanks[Math.floor(user.elo / 1000)];
     const [twoFAEnabled, setTwoFAEnabled] = useState<boolean>(false);
     const [is2FAVerified, set2FAVerified] = useState(false);
@@ -99,7 +100,7 @@ function Home() {
 
     useEffect(() => {
         getUser()
-        
+
         const sock = io('http://localhost:5000', { withCredentials: true });
         setSocket(sock);
         sock.on('invitePlayReq', async ({ friendId }: { friendId: number }) => {
@@ -247,6 +248,7 @@ useEffect(() => {
                         {activeComponent.startsWith("watch") && <div>{extractId(activeComponent)}</div>}
 						{/* {activeComponent.startsWith("PublicProfile") && <PublicProfil id={extractId(activeComponent)}> */}
                         {activeComponent.startsWith("queue") && <Queue mode={extractText(activeComponent)} name={user.username} socket={socket} changeComponent={changeComponent} />}
+                        {activeComponent.startsWith("chatRoom") && <ChatRoom roomIdStr={extractText(activeComponent)} user={user} socket={socket} changeComponent={changeComponent} />}
                         {activeComponent === "rank" && <Rank user={user} changeComponent={changeComponent} />}
                         {activeComponent === "Choices" && <GameChoice changeComponent={changeComponent} />}
                     </div>

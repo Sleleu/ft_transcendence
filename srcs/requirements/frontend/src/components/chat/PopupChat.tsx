@@ -2,23 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { User } from '../types';
 import { Socket } from 'socket.io-client';
 
-interface MessageObj {
-  id: number;
-  name: string;
-  text: string;
-  roomId: number;
-}
-
 interface PopupProps {
   user: User;
   position : {x: number, y: number};
-  setSelectedUser: React.Dispatch<React.SetStateAction<User | null>>;
+  setSelectedTarget: React.Dispatch<React.SetStateAction<User | null>>;
   socket?: Socket;
-  roomName: string;
+  room: Room | undefined;
   clientName: string;
-  leaveRoom: (roomName: string, kick?: boolean) => void;
   changeComponent: (component: string) => void;
-  confirmScreen: (what: string, message: string, id?: number) => void;
 }
 
 interface popupInfo {
@@ -36,13 +27,16 @@ interface Room {
   inSalon?: string;
 }
 
-const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedUser, socket, roomName, clientName, leaveRoom, changeComponent, confirmScreen }) => {
+const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, socket, room, clientName, changeComponent}) => {
 
 	const [isVisible, setIsVisible] = useState(true);
 	const [ban, setBan] = useState('Ban');
 	const [mute, setMute] = useState('Mute');
 	const [admin, setAdmin] = useState('Promote as admin');
 	const [clientAdmin, setClientAdmin] = useState(false);
+
+
+  const roomName = room ? room.name : null;
 
 	const popupStyle: React.CSSProperties = {
 		position: 'fixed',
@@ -81,7 +75,7 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedUser, sock
 		transition: 'background-color 0.3s ease',
 		boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)',
 	};
- 
+
   useEffect(() => {
 
     socket?.emit('popupInfos', { id:user.id, roomName:roomName},
@@ -101,9 +95,9 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedUser, sock
     };
 
   }, []);
-	
+
   const handleSendMessage = () => {
-    leaveRoom(roomName);
+    changeComponent('chat');
     socket?.emit('leave', {roomName: roomName, name: clientName});
     socket?.emit('createDirectMessage', {targetId: user.id});
   };
@@ -117,7 +111,8 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedUser, sock
   };
 
   const handleBlock = () => {
-    confirmScreen('block', `Do you really want to block ${user.username} ?`, user.id);
+    // confirmScreen('block', `Do you really want to block ${user.username} ?`, user.id);
+      socket?.emit('bloqueFriend', { id: user.id });
   };
 
   const handleBan = () => {
@@ -146,7 +141,7 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedUser, sock
   };
 
   const handleClickOutside = () => {
-      setSelectedUser(null);
+      setSelectedTarget(null);
   };
 
   return (

@@ -1,0 +1,83 @@
+.ChatRoom {
+	/* background-color: #600; */
+	width: 90%;
+	height: 90%;
+	font-family: Montserrat, sans-serif;
+	display: flex;
+}
+
+.UsersBlock {
+	background-color: rgba(0, 0, 0, 0.8);
+	width: 30%;
+	height: 100%;
+	align-self: center;
+	display: flex;
+	flex-direction: column;
+	border-radius: 10px;
+}
+.UsersTopBar {
+	color : #fff;
+	display: flex;
+	justify-content: space-around;
+}
+.salonButton {
+	align-self: center;
+	color : #fff;
+	border: 3px solid #0ff;
+	border-radius: 10px;
+	background-color: #000;
+	min-width: 80px;
+	margin: 10px;
+	box-shadow: inset 0 0 50px #055, 0 0 10px #0ff;
+	cursor: pointer;
+	transition: box-shadow 0.3s;
+}
+.blockedButton {
+	align-self: center;
+	color : #fff;
+	border: 3px solid #e00;
+	border-radius: 10px;
+	background-color: #000;
+	min-width: 80px;
+	margin: 10px;
+	box-shadow: inset 0 0 50px #500, 0 0 10px #e00;
+	cursor: pointer;
+	transition: box-shadow 0.3s;
+}
+.friendsButton {
+	align-self: center;
+	color : #fff;
+	border: 3px solid #f0f;
+	border-radius: 10px;
+	background-color: #000;
+	min-width: 80px;
+	margin: 10px;
+	box-shadow: inset 0 0 50px #606, 0 0 10px #f0f;
+	cursor: pointer;
+	transition: box-shadow 0.3s;
+}
+.salonButton:hover {
+	box-shadow: inset 0 0 50px #055, 0 0 10px #0ff, 0 0 40px #0ff;
+}
+.blockedButton:hover {
+	box-shadow: inset 0 0 50px #500, 0 0 10px #e00, 0 0 40px #e00;
+}
+.friendsButton:hover {
+	box-shadow: inset 0 0 50px #606, 0 0 10px #f0f, 0 0 40px #f0f;
+}
+
+.UsersList {
+	align-self: center; width: 90%; height: 90%; margin: 5px; border-radius: 10px;
+	display: flex; flex-direction: column; padding: 8px;
+	align-items: center;
+}
+
+.EntryUser {
+	color: #fff; font-size: 18px; padding: 5px;
+	cursor: pointer;
+	transition: text-shadow 0.2s;
+}
+.EntryUser:hover {
+	/* box-shadow: 0 0 40px #fff; */
+	text-shadow: 0 0 10px #fff, 0 0 40px #fff;
+}

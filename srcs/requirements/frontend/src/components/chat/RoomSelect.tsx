@@ -19,8 +19,8 @@ interface Room {
 }
 
 interface PassObj {
-    id: number; 
-    roomName: string; 
+    id: number;
+    roomName: string;
     type: string;
 }
 
@@ -62,11 +62,12 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
         });
 
         socket?.on('joinError', (response) => {
-            console.log(response);
             setPopMsg(response.message);
             setShowPopup(true);
         })
         socket?.on('joinSuccess', (response) => {
+            const toRoom : string = 'chatRoom' + response.id;
+            changeComponent(toRoom);
             setRoomName(response.roomName);
             setCurrentRoom(response.id);
         })
@@ -138,14 +139,14 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
         if (type === 'protected' && showPass === false)
         {
             socket?.emit('isWhitelisted', {roomName:roomName}, (isWhitelisted: boolean) => {
-                
+
                 setPassInfo({id: id, roomName:roomName, type:type});
                 setShowPass(true);
                 if (isWhitelisted)
                 {
                     socket?.emit('join', {name: username, roomName:roomName}, () => {
                         console.log(username, ' joined room ', id);
-                    });            
+                    });
                     setShowPass(false);
                 }
             });
@@ -229,8 +230,8 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
                     </form>}
                 </div>
             </div>
-            :
-            <Chat name={username} roomId={currentRoom} roomName={roomName} socket={socket} leaveRoom={leaveRoom} changeComponent={changeComponent}/>
+            : null
+            // <Chat name={username} roomId={currentRoom} roomName={roomName} socket={socket} leaveRoom={leaveRoom} changeComponent={changeComponent}/>
             }
         </div>
   )
