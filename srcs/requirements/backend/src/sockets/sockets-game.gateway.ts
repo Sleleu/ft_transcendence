@@ -36,7 +36,8 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	}
 
 	startGameInterval(): void {
-		const intervalDuration = this.currentGameSpeed;
+		const intervalDuration = 500 / this.currentGameSpeed;
+
 		this.interval = setInterval(() => {
 		if (this.gameService.getwinner() && this.connectedClients[1] && this.connectedClients[0])
 		{
@@ -82,14 +83,15 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		const opponent = this.socketService.findSocketById(+(gameMode.opponentid));
 		if (opponent)
 			this.connectedClients[1] = this.server.sockets.sockets.get(opponent);
-
+		else
+			console.log("waiting for the opponent")
 		if (this.connectedClients.length === 2){
 			this.gameService.setnumofPlayers();
 			let i = 0;
 			if ( gameMode.Mode === 'n')
-				this.currentGameSpeed = 500;
+				this.currentGameSpeed = 5;
 			else
-				this.currentGameSpeed = 100;
+				this.currentGameSpeed = 10;
 			this.connectedClients.forEach((client)=> {
 				if (client)
 					client.emit('start', ++i);

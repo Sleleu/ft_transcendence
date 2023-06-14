@@ -33,7 +33,7 @@ const InitialState = (): GameState => {
     player2: board.map((x) => (x + 1) * COL_SIZE - (PADDLE_EDGE_SPACE + 1)),
     ball: Math.round((ROW_SIZE * COL_SIZE) / 2) + ROW_SIZE,
     deltaX: -1,
-    deltaY: -COL_SIZE,
+    deltaY: -(COL_SIZE),
     playerScore: 0,
     opponentScore: 0,
     pause: true,
@@ -101,7 +101,6 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
       }));
     });
 
-
     return () => {
       socket?.emit("GameOver");
     };
@@ -114,8 +113,6 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
   const topbottomEdge = (pos: number) =>
     pos < COL_SIZE + 1 || // Ball touches top edge
     pos >= (ROW_SIZE - 1) * COL_SIZE - 1;
-
-
 
   const moveBoard = (playerBoard: number[], isUp: boolean) => {
     const playerEdge = isUp ? playerBoard[0] : playerBoard[PADDLE_BOARD_SIZE - 1];

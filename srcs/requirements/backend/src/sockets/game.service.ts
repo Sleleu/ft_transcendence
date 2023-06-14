@@ -18,7 +18,7 @@ export class GameService {
 		player2: board.map((x) => (x + 1) * COL_SIZE - (PADDLE_EDGE_SPACE + 1)),
 		ball: Math.round((ROW_SIZE * COL_SIZE) / 2) + ROW_SIZE, // Initial ball position
 		deltaX: -1, // Initial ball delta x
-		deltaY: -COL_SIZE, // Initial ball delta y
+		deltaY: -(COL_SIZE), // Initial ball delta y
 		playerScore: 0, // Initial player score
 		opponentScore: 0, // Initial opponent score
 		pause: true, // Initial game state (paused)
@@ -47,7 +47,7 @@ export class GameService {
 			player2: board.map((x) => (x + 1) * COL_SIZE - (PADDLE_EDGE_SPACE + 1)), // Reset opponent board
 			ball: Math.round((ROW_SIZE * COL_SIZE) / 2) + ROW_SIZE, // Reset ball position
 			deltaX: -1, // Reset ball delta x
-			deltaY: -COL_SIZE, // Reset ball delta y
+			deltaY: -(COL_SIZE), // Reset ball delta y
 			playerScore: 0, // Reset player score
 			opponentScore: 0, // Reset opponent score
 			pause: true, // Reset game state (paused)
@@ -66,31 +66,6 @@ export class GameService {
 	setnumofPlayers(): void{
 		this.gameState.numofPlayers = 2;
 	}
-	// updateBallPosition(bounceBallDto: BounceBallDto): void{
-	// 	this.gameState.deltaX = bounceBallDto.deltaX;
-	// 	this.gameState.deltaY = bounceBallDto.deltaY;
-	// 	this.gameState.ball = this.gameState.ball + bounceBallDto.deltaY + bounceBallDto.deltaX;
-	// }
-
-	// isScore(pos: number): boolean {
-	// 	const { deltaX, ball } = this.gameState;
-	// 	if (deltaX === -1) {
-	// 	  // Ball moving towards the opponent's side
-
-	// 	  const opponentScoreRange = [COL_SIZE - 1, COL_SIZE, 0];
-	// 	  const isOpponentScore = opponentScoreRange.includes(pos % COL_SIZE) && ball >= pos;
-	// 	  console.log(`Opponent score: pos=${pos}, ball=${ball}, isScore=${isOpponentScore}`);
-
-	// 		return isOpponentScore;
-	// 	} else {
-	// 		// Ball moving towards the player's side
-	// 		const playerScoreRange = [0, 1];
-	// 		const isPlayerScore = playerScoreRange.includes(pos % COL_SIZE) && ball <= pos;
-	// 		console.log(`Player score: pos=${pos}, ball=${ball}, isScore=${isPlayerScore}`);
-
-	// 		return isPlayerScore;
-	// 	}
-	// }
 
 	updateScores(): void{
 		if (this.gameState.deltaX !== -1) {
@@ -109,8 +84,8 @@ export class GameService {
 	}
 
 	bounceBall():void{
-		const newstate = this.gameState.ball + this.gameState.deltaY + this.gameState.deltaX ;
-
+		const newstate = this.gameState.ball + (this.gameState.deltaY + this.gameState.deltaX);
+		console.log(newstate);
 		if (this.rightleftEdge(newstate)) {
 			//they missed the ball , the direction should change for next start
 			this.gameState.deltaX = -this.gameState.deltaX;
@@ -125,7 +100,6 @@ export class GameService {
 			}
 			this.gameState.ball = newstate;
 		}
-
 	}
 
 	private topbottomEdge(pos: number): boolean {
@@ -152,3 +126,29 @@ export class GameService {
 		return player1Edges.includes(pos) || player2Edges.includes(pos);
 	}
 }
+
+	// updateBallPosition(bounceBallDto: BounceBallDto): void{
+	// 	this.gameState.deltaX = bounceBallDto.deltaX;
+	// 	this.gameState.deltaY = bounceBallDto.deltaY;
+	// 	this.gameState.ball = this.gameState.ball + bounceBallDto.deltaY + bounceBallDto.deltaX;
+	// }
+
+	// isScore(pos: number): boolean {
+	// 	const { deltaX, ball } = this.gameState;
+	// 	if (deltaX === -1) {
+	// 	  // Ball moving towards the opponent's side
+
+	// 	  const opponentScoreRange = [COL_SIZE - 1, COL_SIZE, 0];
+	// 	  const isOpponentScore = opponentScoreRange.includes(pos % COL_SIZE) && ball >= pos;
+	// 	  console.log(`Opponent score: pos=${pos}, ball=${ball}, isScore=${isOpponentScore}`);
+
+	// 		return isOpponentScore;
+	// 	} else {
+	// 		// Ball moving towards the player's side
+	// 		const playerScoreRange = [0, 1];
+	// 		const isPlayerScore = playerScoreRange.includes(pos % COL_SIZE) && ball <= pos;
+	// 		console.log(`Player score: pos=${pos}, ball=${ball}, isScore=${isPlayerScore}`);
+
+	// 		return isPlayerScore;
+	// 	}
+	// }
