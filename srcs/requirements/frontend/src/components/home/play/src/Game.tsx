@@ -125,40 +125,35 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
     return playerBoard;
   };
 
-  const handleMouseMove = (event: MouseEvent) => {
-    if (state.pause)
-    {
-      console.log("state is pause not gonna move mouse")
-      return ;
-    }
-      const container = document.getElementById("game");
+  const handleKeyDown = (event: KeyboardEvent) => {
+    event.preventDefault(); // Prevent default scrolling behavior
+
     let movedPlayer: number[] | null = null;
-    if (container) {
-      const containerRect = container.getBoundingClientRect();
-      const mouseY = event.clientY - containerRect.top;
+    const isUp = event.key === "ArrowUp";
+    const isDown = event.key === "ArrowDown";
+
+    if (isUp || isDown) {
       let playerBoard;
       if (state.playerID === 1)
         playerBoard = state.player1;
       else
         playerBoard = state.player2;
-      const mouseYDifference = mouseY - previousMouseY;
-      const isUp = mouseYDifference < 0;
-      previousMouseY = mouseY;
+
       movedPlayer = moveBoard(playerBoard, isUp);
     }
+
     if (movedPlayer !== null) {
-      socket?.emit('move-player', {movedPlayer: movedPlayer, playerID: state.playerID});
+      socket?.emit('move-player', { movedPlayer: movedPlayer, playerID: state.playerID });
     }
   };
 
   useEffect(() => {
-    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-
+      document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [handleMouseMove]);
+  }, [handleKeyDown]);
 
   // const board = [...Array(ROW_SIZE * COL_SIZE)].map((_, pos) => {
   //   let val = BACKGROUND;

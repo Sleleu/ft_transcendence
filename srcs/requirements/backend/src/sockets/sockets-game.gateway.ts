@@ -89,9 +89,9 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 			this.gameService.setnumofPlayers();
 			let i = 0;
 			if ( gameMode.Mode === 'n')
-				this.currentGameSpeed = 5;
+				this.currentGameSpeed = 4;
 			else
-				this.currentGameSpeed = 10;
+				this.currentGameSpeed = 8;
 			this.connectedClients.forEach((client)=> {
 				if (client)
 					client.emit('start', ++i);
