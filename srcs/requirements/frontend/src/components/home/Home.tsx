@@ -41,6 +41,8 @@ function Home() {
         setStack(stack.slice(0, -1))
     };
     const front = () => {
+        if (activeComponent.startsWith("game"))
+            socket?.emit("player-left");
         if (stack.length === 1) {
             setActiveComponent(stack[stack.length - 1])
             return;
@@ -49,12 +51,20 @@ function Home() {
             setActiveComponent('play')
             return;
         }
-        setActiveComponent(stack[stack.length - 1])
-        pop()
+        if (stack[stack.length - 1].startsWith("game"))
+        {
+            setActiveComponent(stack[stack.length - 2]);
+            pop();
+            pop();
+        }
+        else{
+            setActiveComponent(stack[stack.length - 1])
+            pop()
+        }
+
     }
 
     const changeComponent = (component: string) => {
-        console.log("inside change component: ", changeComponent)
         if (activeComponent.startsWith("game")){
             socket?.emit("player-left");
         }

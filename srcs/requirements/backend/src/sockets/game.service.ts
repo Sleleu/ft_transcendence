@@ -22,6 +22,7 @@ export class GameService {
 		playerScore: 0, // Initial player score
 		opponentScore: 0, // Initial opponent score
 		pause: true, // Initial game state (paused)
+		numofPlayers: 0,
 	};
 
 	getGameState() : GameState{
@@ -50,25 +51,26 @@ export class GameService {
 			playerScore: 0, // Reset player score
 			opponentScore: 0, // Reset opponent score
 			pause: true, // Reset game state (paused)
+			numofPlayers: 0,
 		};
 	}
 
 	movePlayer1(movePlayer: number[]): void{
-		// console.log("server service: move-player");
 		this.gameState.player1 = movePlayer;
 	}
 
 	movePlayer2(moveOpponent: number[]): void{
-		// console.log("server service: move-opponent");
 		this.gameState.player2 = moveOpponent;
 	}
 
-	updateBallPosition(bounceBallDto: BounceBallDto): void{
-		// console.log("server service: update ball position");
-		this.gameState.deltaX = bounceBallDto.deltaX;
-		this.gameState.deltaY = bounceBallDto.deltaY;
-		this.gameState.ball = this.gameState.ball + bounceBallDto.deltaY + bounceBallDto.deltaX;
+	setnumofPlayers(): void{
+		this.gameState.numofPlayers = 2;
 	}
+	// updateBallPosition(bounceBallDto: BounceBallDto): void{
+	// 	this.gameState.deltaX = bounceBallDto.deltaX;
+	// 	this.gameState.deltaY = bounceBallDto.deltaY;
+	// 	this.gameState.ball = this.gameState.ball + bounceBallDto.deltaY + bounceBallDto.deltaX;
+	// }
 
 	// isScore(pos: number): boolean {
 	// 	const { deltaX, ball } = this.gameState;

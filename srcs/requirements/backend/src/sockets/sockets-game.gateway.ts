@@ -7,6 +7,7 @@ import { GameService } from './game.service';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { profile } from 'console';
+import { connect } from 'http2';
 
 @WebSocketGateway({ cors: true })
 export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -58,7 +59,6 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		}
 		else if (this.connectedClients.length === 2  && !this.gameService.getGameState().pause)
 		{
-			// console.log("inside the interval game over with speed of ", intervalDuration);
 			this.gameService.bounceBall();
 			this.connectedClients.forEach((client)=> {
 				if (client)
@@ -74,99 +74,67 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		}
 	}
 
-	@SubscribeMessage('join-room')//recieve another variable game mode
+	@SubscribeMessage('join-room')
 	joinroom(@MessageBody() gameMode: gameModeDto, @ConnectedSocket() client: Socket): void{
-		console.log("server side: joining a room: ", gameMode.opponentid, gameMode.Mode);
-
+		if (this.gameService.getGameState().numofPlayers === 2)
+			return ;
 		this.connectedClients[0] = client;
 		const opponent = this.socketService.findSocketById(+(gameMode.opponentid));
-		console.log("opponentid is ", gameMode.opponentid, opponent);
 		if (opponent)
-		{
-			console.log("found the opponent");
 			this.connectedClients[1] = this.server.sockets.sockets.get(opponent);
-		}
+
 		if (this.connectedClients.length === 2){
+			this.gameService.setnumofPlayers();
 			let i = 0;
 			if ( gameMode.Mode === 'n')
-				this.currentGameSpeed = 700;
-			else
 				this.currentGameSpeed = 500;
+			else
+				this.currentGameSpeed = 100;
 			this.connectedClients.forEach((client)=> {
 				if (client)
-				{
 					client.emit('start', ++i);
-					this.startGame(client);
-				}
 			});
-			console.log("server: starting the game: ");
+			this.gameService.startGame();
+			this.startGameInterval();
 		}
-		else
-			console.log("server:waiting for the second player");
-	}
-
-	@SubscribeMessage('start')
-	startGame(@ConnectedSocket() client: Socket): void{
-		console.log("in socketgatway start game");
-		this.gameService.startGame();
-		this.startGameInterval();
-	}
-
-	@SubscribeMessage('pause')
-	pauseGame(@ConnectedSocket() client: Socket): void{
-		console.log("in socketgatway pause game");
-		this.gameService.pauseGame();
-
-		this.connectedClients.forEach((client)=> {
-			if (client)
-				client.emit('pause');
-		});
 	}
 
 	@SubscribeMessage('game-over')
 	gameOver(@ConnectedSocket() client: Socket): void{
-		this.connectedClients.forEach((client)=> {
-			if (client)
-				client.emit("game-over");
-		});
-		this.gameService.resetGame();
-		this.stopGameInterval();
-		this.connectedClients = [];
+		if (this.connectedClients.includes(client))
+		{
+			this.connectedClients.forEach((connectedclient)=> {
+				console.log("server side sending game-over")
+				if (connectedclient)
+					client.emit("game-over");
+			});
+			this.gameService.resetGame();
+			this.stopGameInterval();
+			this.connectedClients = [];
+		}
 	}
 
 	@SubscribeMessage('player-left')
 	playerleft(@ConnectedSocket() client: Socket): void{
-		if (client == this.connectedClients[0]){
-			this.gameService.getGameState().playerScore = 0;
-			this.gameService.getGameState().opponentScore = 10;
-		}else{
-			this.gameService.getGameState().playerScore = 10;
-			this.gameService.getGameState().opponentScore = 0;
+		if (this.connectedClients.includes(client))
+		{
+			console.log("calling player-left")
+			const leavingplayerind = this.connectedClients.indexOf(client);
+			const opponentIndex = leavingplayerind === 0 ? 1 : 0;
+
+			this.gameService.getGameState().playerScore = leavingplayerind === 0 ? 0 : 10;
+			this.gameService.getGameState().opponentScore = leavingplayerind === 0 ? 10 : 0;
+			this.connectedClients[leavingplayerind]?.emit("player-left");
+			this.connectedClients[opponentIndex]?.emit("game-over");
+
+			this.gameService.resetGame();
+			this.stopGameInterval();
+			this.connectedClients = [];
 		}
-		// console.log("in socketgatway playerleft");
-		this.connectedClients.forEach((client)=> {
-			if (client)
-				client.emit("game-over");
-		});
-		this.gameService.resetGame();
-		this.stopGameInterval();
-		this.connectedClients = [];
-	}
-
-	@SubscribeMessage('updateBallPosition')
-	bounceBall(@MessageBody() bounceBallDto: BounceBallDto,  @ConnectedSocket() client: Socket): void{
-		this.gameService.updateBallPosition(bounceBallDto);
-		console.log("server side: bounce ball gateway emitting from: ", client.id);
-
-		this.connectedClients.forEach((client)=> {
-			if (client)
-				client.emit('updateBallPosition', this.gameService.getGameState());
-		});
 	}
 
 	@SubscribeMessage('move-player')
 	movePlayer(@MessageBody() movePaddleDto: movePaddleDto, @ConnectedSocket() client: Socket): void{
-		// console.log("server side: move-player with id: ", movePaddleDto.playerID, "and moved player of ", movePaddleDto.movedPlayer);
 		if (movePaddleDto.playerID === 1)
 			this.gameService.movePlayer1(movePaddleDto.movedPlayer);
 		else
@@ -178,40 +146,3 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		});
 	}
 }
-
-
-
-	// @Interval(500)
-	// updateGameStateInterval(): void{
-	// 	if (this.gameService.getwinner() && this.connectedClients[1] && this.connectedClients[0])
-	// 	{
-	// 		const player2 = this.socketService.getUser(this.connectedClients[1]?.id);
-	// 		const player1 = this.socketService.getUser(this.connectedClients[0]?.id);
-
-	// 		if (this.gameService.getGameState().playerScore > this.gameService.getGameState().opponentScore){
-	// 			player1.win++;
-	// 			player2.loose++;
-	// 		} else if (this.gameService.getGameState().playerScore < this.gameService.getGameState().opponentScore){
-	// 			player1.loose++;
-	// 			player2.win++;
-	// 		}
-
-	// 		this.connectedClients.forEach((client)=> {
-	// 			if (client)
-	// 			{
-	// 				client.emit('game-over', this.gameService.getGameState());
-	// 				this.gameOver(client);
-	// 			}
-	// 		});
-	// 	}
-	// 	else if (this.connectedClients.length === 2  && !this.gameService.getGameState().pause)
-	// 	{
-	// 		// console.log("inside the interval bounce ball with ", this.connectedClients.length, " clients");
-	// 		this.gameService.bounceBall();
-	// 		this.gameService.updateScores();
-	// 		this.connectedClients.forEach((client)=> {
-	// 			if (client)
-	// 				client.emit('updateBallPosition', this.gameService.getGameState());
-	// 		});
-	// 	}
-	// }

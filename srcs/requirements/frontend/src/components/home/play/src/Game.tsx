@@ -1,4 +1,4 @@
-import React, { useEffect, useState, CSSProperties } from 'react';
+import React, { useEffect, useState, CSSProperties, useMemo } from 'react';
 import Box, { BACKGROUND, PLAYER, BALL } from './box';
 import { io, Socket } from 'socket.io-client';
 import '../css/Game.css'
@@ -55,6 +55,53 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
     console.log("client side: joining a room");
     socket?.emit('join-room', {Mode: gameMode, opponentid: opponentID});// pass the game mode as well
 
+    socket?.on('game-over', () => {
+      console.log("client side event: game-over");
+      resetGame();
+      changeComponent("GameOver");
+    });
+
+    socket?.on('player-left', () => {
+      console.log("client side event: player left");
+      resetGame();
+    });
+
+    socket?.on('gameState', (gameState: GameState) => {
+      console.log("client side event: gameState");
+      setState(gameState);
+    });
+
+    socket?.on('start', (_playerID: number) => {
+      console.log("client side event: start with id of: ", _playerID);
+      setState((prevState) => ({
+        ...prevState,
+        pause: false,
+        playerID: _playerID,
+      }));
+    });
+
+    socket?.on('updateBallPosition', (gameState: GameState) => {
+      // console.log("client side event: updateBallPosition ", socket.id);
+      setState((prevState) => ({
+        ...prevState,
+        deltaX: gameState.deltaX,
+        deltaY: gameState.deltaY,
+        ball: gameState.ball,
+        playerScore: gameState.playerScore,
+        opponentScore: gameState.opponentScore,
+      }));
+    });
+
+    socket?.on('move-paddles', (gameState: GameState) => {
+      // console.log("client side event: moving paddles");
+      setState((prevState) => ({
+        ...prevState,
+        player1: gameState.player1,
+        player2: gameState.player2,
+      }));
+    });
+
+
     return () => {
       socket?.emit("GameOver");
     };
@@ -68,54 +115,7 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
     pos < COL_SIZE + 1 || // Ball touches top edge
     pos >= (ROW_SIZE - 1) * COL_SIZE - 1;
 
-  socket?.on('gameState', (gameState: GameState) => {
-    console.log("client side event: gameState");
-    setState(gameState);
-  });
 
-  socket?.on('start', (_playerID: number) => {
-    console.log("client side event: start with id of: ", _playerID);
-    setState((prevState) => ({
-      ...prevState,
-      pause: false,
-      playerID: _playerID,
-    }));
-  });
-
-  socket?.on('pause', () => {
-    console.log("client side event: pause");
-    setState((prevState) => ({
-      ...prevState,
-      pause: true,
-    }));
-  });
-
-  socket?.on('game-over', () => {
-    console.log("client side event: game-over");
-    resetGame();
-    changeComponent("GameOver");
-  });
-
-  socket?.on('updateBallPosition', (gameState: GameState) => {
-    // console.log("client side event: updateBallPosition ", socket.id);
-    setState((prevState) => ({
-      ...prevState,
-      deltaX: gameState.deltaX,
-      deltaY: gameState.deltaY,
-      ball: gameState.ball,
-      playerScore: gameState.playerScore,
-      opponentScore: gameState.opponentScore,
-    }));
-  });
-
-  socket?.on('move-paddles', (gameState: GameState) => {
-    // console.log("client side event: moving paddles");
-    setState((prevState) => ({
-      ...prevState,
-      player1: gameState.player1,
-      player2: gameState.player2,
-    }));
-  });
 
   const moveBoard = (playerBoard: number[], isUp: boolean) => {
     const playerEdge = isUp ? playerBoard[0] : playerBoard[PADDLE_BOARD_SIZE - 1];
@@ -130,8 +130,11 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
 
   const handleMouseMove = (event: MouseEvent) => {
     if (state.pause)
+    {
+      console.log("state is pause not gonna move mouse")
       return ;
-    const container = document.getElementById("game");
+    }
+      const container = document.getElementById("game");
     let movedPlayer: number[] | null = null;
     if (container) {
       const containerRect = container.getBoundingClientRect();
@@ -143,8 +146,6 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
         playerBoard = state.player2;
       const mouseYDifference = mouseY - previousMouseY;
       const isUp = mouseYDifference < 0;
-
-      // console.log("going up?: ", isUp, " with middle position of: ", mouseYDifference," , " , mouseY);
       previousMouseY = mouseY;
       movedPlayer = moveBoard(playerBoard, isUp);
     }
@@ -162,17 +163,35 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
     };
   }, [handleMouseMove]);
 
-  const board = [...Array(ROW_SIZE * COL_SIZE)].map((_, pos) => {
-    let val = BACKGROUND;
-    if (
-      state.player1.indexOf(pos) !== -1 ||
-      state.player2.indexOf(pos) !== -1
-    ) {
-      val = PLAYER;
-    } else if (state.ball === pos) {
-      val = BALL;
-    }
-    return <Box key={pos} name={val} />;
+  // const board = [...Array(ROW_SIZE * COL_SIZE)].map((_, pos) => {
+  //   let val = BACKGROUND;
+  //   if (
+  //     state.player1.indexOf(pos) !== -1 ||
+  //     state.player2.indexOf(pos) !== -1
+  //   ) {
+  //     val = PLAYER;
+  //   } else if (state.ball === pos) {
+  //     val = BALL;
+  //   }
+  //   return <Box key={pos} name={val} />;
+  // });
+  const Board = React.memo(({ state }:  { state: GameState }) => {
+    const board = useMemo(() => {
+      return [...Array(ROW_SIZE * COL_SIZE)].map((_, pos) => {
+        let val = BACKGROUND;
+        if (
+          state.player1.indexOf(pos) !== -1 ||
+          state.player2.indexOf(pos) !== -1
+        ) {
+          val = PLAYER;
+        } else if (state.ball === pos) {
+          val = BALL;
+        }
+        return <Box key={pos} name={val} />;
+      });
+    }, [state]);
+
+    return <div className="style">{board}</div>;
   });
 
   const divider = [...Array(ROW_SIZE / 2 + 2)].map((_, index) => <div key={index}>{"|"}</div>);
@@ -180,7 +199,8 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
   return (
     <div id="game" className="outer">
       <div className="style">
-        <div className="style">{board}</div>
+        {/* <div className="style">{board}</div> */}
+        <Board state={state} />
         <div className="score">{state.playerScore}</div>
         <div className="dividerStyle">{divider} </div>
         <div className="dividerStyle">{state.opponentScore}</div>

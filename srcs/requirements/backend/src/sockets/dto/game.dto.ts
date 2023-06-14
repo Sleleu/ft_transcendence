@@ -8,6 +8,7 @@ export interface GameState {
 	pause: boolean;
 	playerScore: number;
 	opponentScore: number;
+	numofPlayers: number;
 }
 
 export interface BounceBallDto {
@@ -19,11 +20,6 @@ export interface movePaddleDto {
 	movedPlayer: number[];
 	playerID: number;
 }
-
-// export interface Opponent {
-// 	username: string
-// 	id: number
-// }
 
 export interface gameModeDto {
 	Mode: string
