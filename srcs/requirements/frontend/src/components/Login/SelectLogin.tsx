@@ -15,7 +15,7 @@ const SelectLogin: React.FC<SelectLoginProps> = ({user, onLoginUpdated}) => {
     event.preventDefault();
     setError(null);
     try {
-        const response = await fetch('http://localhost:5000/users/update-gameLogin', {
+        const response = await fetch(`http://${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_DOMAIN_PORT}/users/update-gameLogin`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json'},
             body: JSON.stringify({ gameLogin }),

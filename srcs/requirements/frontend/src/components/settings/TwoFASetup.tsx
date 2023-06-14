@@ -1,15 +1,17 @@
-import { useState, useEffect, ChangeEvent } from 'react';
+import { useState, useEffect } from 'react';
 import AuthCode from 'react-auth-code-input';
 
 const TwoFASetup = ({ onVerification }: { onVerification: (isVerified: boolean) => void }) => {
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [twoFACode, setTwoFACode] = useState('');
   const [isVerified, setIsVerified] = useState(false);
-	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const DOMAIN = process.env.REACT_APP_DOMAIN
+  const PORT = process.env.REACT_APP_DOMAIN_PORT
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("http://localhost:5000/twofa/generate-2fa-secret", {
+      const response = await fetch(`http://${DOMAIN}:${PORT}/twofa/generate-2fa-secret`, {
         method: "GET",
         credentials: 'include'
       });
@@ -38,7 +40,7 @@ const TwoFASetup = ({ onVerification }: { onVerification: (isVerified: boolean) 
 
   const verifyCode = async () => {
     try {
-      const response = await fetch("http://localhost:5000/twofa/confirm-enable-2fa", {
+      const response = await fetch(`http://${DOMAIN}:${PORT}/twofa/confirm-enable-2fa`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

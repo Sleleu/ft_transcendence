@@ -41,7 +41,7 @@ const InvitePlay = ({ name, changeComponent, socket, friendId, mode, changeMode 
                 socket?.emit('acceptInvitation', { id: friendId })
                 await delay(2000)
                 setFind(true)
-                const data = await fetch("http://localhost:5000/friend/" + friendId, {
+                const data = await fetch(`http://${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_DOMAIN_PORT}/friend/` + friendId, {
                     method: "GET",
                     credentials: "include",
                 });

@@ -36,7 +36,7 @@ const History:React.FC = () => {
   const [entryData, setEntryData] = useState<historyData[]>([]);
 
   const fetchHistory = async () => {
-    const data = await fetch("http://localhost:5000/history/display" ,{ method:"GET", credentials: "include" })
+    const data = await fetch(`http://${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_DOMAIN_PORT}/history/display` ,{ method:"GET", credentials: "include" })
     const jsonData = await data.json();
     return jsonData;
   }

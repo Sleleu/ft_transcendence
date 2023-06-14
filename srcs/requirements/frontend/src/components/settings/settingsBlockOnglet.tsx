@@ -44,7 +44,7 @@ const SettingsBlockOnglet = ({ block, updateBlock }: props) => {
     const onConfirm = async (confirm: boolean) => {
         if (confirm) {
             updateBlock(block.id)
-            const req = 'http://localhost:5000/users/deleteBlock/' + block.id
+            const req = `http://${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_DOMAIN_PORT}/users/deleteBlock/` + block.id
             await fetch(req, { method: "DELETE", credentials: "include" })
         }
         if (!confirm)

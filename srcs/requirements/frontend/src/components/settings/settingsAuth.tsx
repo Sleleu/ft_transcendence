@@ -4,13 +4,13 @@ import TwoFASetup from './TwoFASetup';
 
 const SettingsAuth = () => {
   const [otpauthUrl, setOtpauthUrl] = useState(null);
-  const [qrVisible, setQrVisible] = useState(false); // New state
-  const [twoFAVerified, setTwoFAVerified] = useState(false); // New state
+  const [qrVisible, setQrVisible] = useState(false);
+  const [twoFAVerified, setTwoFAVerified] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("http://localhost:5000/twofa/generate-2fa-secret", {
+      const response = await fetch(`http://${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_DOMAIN_PORT}/twofa/generate-2fa-secret`, {
         method: "GET",
         credentials: 'include'
       });

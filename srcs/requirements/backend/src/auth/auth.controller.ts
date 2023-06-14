@@ -35,6 +35,5 @@ export class AuthController {
 	res.cookie('Authorization', JwtToken, {
 		httpOnly: true
 	});
-	//res.redirect('http://localhost:3000/home');
   }
 }

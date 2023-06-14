@@ -128,7 +128,7 @@ const LogPage: React.FC<Props> = ({ updateToken, setPage }) => {
 
     const logAccount = async (data: Account) => {
         try {
-            const response = await fetch("http://localhost:5000/auth/signin", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            const response = await fetch(`http://${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_DOMAIN_PORT}/auth/signin`, { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
             if (response.status === 201) {
                 const jsonData = await response.json()
                 updateToken(jsonData.access_token)

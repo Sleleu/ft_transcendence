@@ -117,7 +117,7 @@ function CreateAccount(props: Props) {
 
     const postAccount = async (data: Account) => {
 			console.log("data : ", data)
-            const response = await fetch("http://localhost:5000/auth/signup", {
+            const response = await fetch(`http://${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_DOMAIN_PORT}/auth/signup`, {
 				method: "POST",
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(data) });

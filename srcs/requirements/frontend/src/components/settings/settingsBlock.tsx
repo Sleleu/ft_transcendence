@@ -16,7 +16,7 @@ const SettingsBlock = () => {
 
 	useEffect(() => {
 		const setBlock = async () => {
-			const req = 'http://localhost:5000/users/blockUser'
+			const req = `http://${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_DOMAIN_PORT}/users/blockUser`
 			const data = await fetch(req, { method: "GET", credentials: "include" })
 			const list = await data.json()
 			setBlocked(list)

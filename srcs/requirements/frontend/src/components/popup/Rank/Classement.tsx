@@ -151,7 +151,7 @@ const Header: CSSProperties = {
   const [leaders, setLeaders] = useState<rankData[]>([]);
 
   const fetchUsers = async () => {
-    const data = await fetch("http://localhost:5000/users/leaderboard/" ,{ method:"GET", credentials: "include",
+    const data = await fetch(`http://${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_DOMAIN_PORT}/users/leaderboard/` ,{ method:"GET", credentials: "include",
   });
     console.log(data);
     const jsonData = await data.json();

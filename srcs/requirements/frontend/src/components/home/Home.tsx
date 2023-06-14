@@ -115,7 +115,7 @@ function Home() {
     useEffect(() => {
         getUser()
 
-        const sock = io('http://localhost:5000', { withCredentials: true });
+        const sock = io(`http://${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_DOMAIN_PORT}`, { withCredentials: true });
         setSocket(sock);
         sock.on('invitePlayReq', async ({ friendId }: { friendId: number }) => {
             setFriendIdInvite(friendId)
@@ -131,7 +131,7 @@ function Home() {
 
 
     const fecthMessage = async (id: number) => {
-        const data = await fetch("http://localhost:5000/friend/" + id, {
+        const data = await fetch(`http://${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_DOMAIN_PORT}/friend/` + id, {
             method: "GET",
             credentials: "include",
         });

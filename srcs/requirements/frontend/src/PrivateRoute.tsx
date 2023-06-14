@@ -37,7 +37,7 @@ const PrivateRoute: React.FC<{ children: React.ReactElement }> = ({ children }) 
   useEffect(() => {
     const checkUserToken = async () => {
       try {
-        const response = await fetch("http://localhost:5000/users/profile", {
+        const response = await fetch(`http://${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_DOMAIN_PORT}/users/profile`, {
           credentials: 'include'
         });
 

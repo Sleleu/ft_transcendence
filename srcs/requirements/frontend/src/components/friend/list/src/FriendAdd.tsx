@@ -32,7 +32,7 @@ const FriendAdd = ({ socket }: { socket?: Socket }) => {
         event.preventDefault()
         if (!input)
             return;
-        const req = 'http://localhost:5000/friend/add/' + input
+        const req = `http://${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_DOMAIN_PORT}/friend/add/` + input
         const data = await fetch(req, { method: "GET", credentials: "include" })
         const friend = await data.json()
         setFriendList(friend)
