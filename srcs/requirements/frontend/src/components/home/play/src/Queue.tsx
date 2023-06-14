@@ -29,7 +29,7 @@ const Queue = ({ mode, name, socket, changeComponent }: props) => {
             setFind(true)
             setVs(opponent.username)
             await delay(3000)
-            const change = 'game' + opponent.id
+            const change = 'game' + opponent.id + mode;
             changeComponent(change)
         })
         return () => {

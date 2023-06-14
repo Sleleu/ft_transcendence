@@ -28,6 +28,7 @@ import Verify2FA from '../Login/Verify-2fa';
 import { check2FA, check2FAVerified, unsetTwoFAVerified, getUserProfile, logout } from '../Api';
 import SelectLogin from '../Login/SelectLogin';
 import SelectAvatar from '../Login/SelectAvatar';
+import GameOver from './play/src/Game-over';
 
 function Home() {
 
@@ -38,7 +39,7 @@ function Home() {
     const [message, setMessage] = useState('void')
     const [visible, setVisible] = useState(false)
     const navigate = useNavigate()
-    const existingRanks: string[] = ['bronze', 'silver', 'gold', 'crack', 'ultime']; 
+    const existingRanks: string[] = ['bronze', 'silver', 'gold', 'crack', 'ultime'];
     const userRank: string =  user.elo > 5000 || user.elo < 0 ? 'ultime' : existingRanks[Math.floor(user.elo / 1000)];
     const [twoFAEnabled, setTwoFAEnabled] = useState<boolean>(false);
     const [is2FAVerified, set2FAVerified] = useState(false);
@@ -54,6 +55,8 @@ function Home() {
         setStack(stack.slice(0, -1))
     };
     const front = () => {
+        if (activeComponent.startsWith("game"))
+            socket?.emit("player-left");
         if (stack.length === 1) {
             setActiveComponent(stack[stack.length - 1])
             return;
@@ -62,8 +65,17 @@ function Home() {
             setActiveComponent('play')
             return;
         }
-        setActiveComponent(stack[stack.length - 1])
-        pop()
+        if (stack[stack.length - 1].startsWith("game"))
+        {
+            setActiveComponent(stack[stack.length - 2]);
+            pop();
+            pop();
+        }
+        else{
+            setActiveComponent(stack[stack.length - 1])
+            pop()
+        }
+
     }
 
     const onVisible = (state: boolean) => {
@@ -86,6 +98,9 @@ function Home() {
     }
 
     const changeComponent = (component: string) => {
+        if (activeComponent.startsWith("game")){
+            socket?.emit("player-left");
+        }
         if (activeComponent !== component && !activeComponent.startsWith("queue") && !activeComponent.startsWith('invitePlay')) {
             push(activeComponent)
         }
@@ -99,7 +114,7 @@ function Home() {
 
     useEffect(() => {
         getUser()
-        
+
         const sock = io('http://localhost:5000', { withCredentials: true });
         setSocket(sock);
         sock.on('invitePlayReq', async ({ friendId }: { friendId: number }) => {
@@ -230,7 +245,8 @@ useEffect(() => {
                         {visible === true && <ConfirmationPopUp onConfirm={onConfirm} onVisible={onVisible} opacity={true} message={message} />}
                         {activeComponent === "play" && <Play changeComponent={changeComponent} />}
                         {activeComponent.startsWith("invitePlay") && <InvitePlay changeComponent={changeComponent} name={user.username} socket={socket} friendId={+extractId(activeComponent)} mode={modeInvite} changeMode={changeMode} />}
-                        {activeComponent.startsWith("game") && <Game socket={socket} opponentID={extractId(activeComponent)} />}
+                        {activeComponent.startsWith("game") && <Game changeComponent={changeComponent} socket={socket} opponentID={extractId(activeComponent.substring(0,activeComponent.length - 1))} gameMode={activeComponent[activeComponent.length - 1]}/>}
+                        {activeComponent === "GameOver" && <GameOver changeComponent={changeComponent} />}
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent} />}
                         {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} refreshUser={getUser} />}
                         {activeComponent === "historic" && <History />}
