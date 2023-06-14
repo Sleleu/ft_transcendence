@@ -1,5 +1,8 @@
+const DOMAIN = process.env.REACT_APP_DOMAIN;
+const DOMAIN_PORT = process.env.REACT_APP_DOMAIN_PORT;
+
 const baseRequest = async (url : string, method : string) => {
-  const response = await fetch('http://localhost:5000' + url, {
+  const response = await fetch(`http://${DOMAIN}:${DOMAIN_PORT}` + url, {
     method: method,
     credentials: 'include'
   });
@@ -13,7 +16,7 @@ const baseRequest = async (url : string, method : string) => {
 
 export const verifyTwoFACode = async (code : string) => {
   const response = await fetch(
-    `http://localhost:5000/twofa/verify-2fa-code`, {
+    `http://${DOMAIN}:${DOMAIN_PORT}/twofa/verify-2fa-code`, {
       method: "POST",
       headers: {
         'Content-Type': 'application/json'
@@ -30,7 +33,7 @@ export const verifyTwoFACode = async (code : string) => {
 export const updateAvatar = async (file: File) => {
   const avatar = new FormData();
   avatar.append('avatar', file);
-  const response = await fetch('http://localhost:5000/users/update-avatar', {
+  const response = await fetch(`http://${DOMAIN}:${DOMAIN_PORT}/users/update-avatar`, {
     method: 'POST',
     credentials: 'include',
     body: avatar
@@ -45,7 +48,7 @@ export const updateAvatar = async (file: File) => {
 };
 
 export const setAvatarSelected = async () => {
-  const response = await fetch(`http://localhost:5000/users/set-avatar-selected`, {
+  const response = await fetch(`http://${DOMAIN}:${DOMAIN_PORT}/users/set-avatar-selected`, {
     method: 'PUT',
     credentials: 'include',
   });
@@ -58,7 +61,7 @@ export const setAvatarSelected = async () => {
 };
 
 export const setDefaultAvatar = async () => {
-  const response = await fetch('http://localhost:5000/users/set-default-avatar', {
+  const response = await fetch(`http://${DOMAIN}:${DOMAIN_PORT}/users/set-default-avatar`, {
     method: 'PUT',
     credentials: 'include',
   });
