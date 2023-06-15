@@ -67,7 +67,7 @@ const MSG: CSSProperties = {
 }
 
 useEffect(() => {
-  socket?.emit('owner', {roomName: room.name}, (response:User) => {
+  socket?.emit('owner', {roomId: room.id}, (response:User) => {
     setOwner(response.username);
   })
 

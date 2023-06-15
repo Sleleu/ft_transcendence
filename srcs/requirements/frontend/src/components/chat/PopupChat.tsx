@@ -10,6 +10,8 @@ interface PopupProps {
   room: Room | undefined;
   clientName: string;
   changeComponent: (component: string) => void;
+  field: string;
+  whitelist: User[];
 }
 
 interface popupInfo {
@@ -27,7 +29,7 @@ interface Room {
   inSalon?: string;
 }
 
-const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, socket, room, clientName, changeComponent}) => {
+const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, socket, room, clientName, changeComponent, field, whitelist}) => {
 
 	const [isVisible, setIsVisible] = useState(true);
 	const [ban, setBan] = useState('Ban');
@@ -37,6 +39,7 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, so
 
 
   const roomName = room ? room.name : null;
+  const roomId = room ? room.id : null;
 
 	const popupStyle: React.CSSProperties = {
 		position: 'fixed',
@@ -51,7 +54,7 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, so
 	  };
 
 	  const UsernameStyle: React.CSSProperties = {
-		padding: '10px 20px',
+		padding: '10px 10px',
 		fontSize: '20px',
 		fontWeight: 'bold',
 		borderRadius: '5px',
@@ -64,8 +67,8 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, so
 
 	  const Buttons: React.CSSProperties = {
 		margin: '10px',
-		padding: '5px 10px',
-		fontSize: '16px',
+		// padding: '5px 10px',
+		fontSize: '12px',
 		fontWeight: 'bold',
 		borderRadius: '5px',
 		border: 'none',
@@ -78,7 +81,7 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, so
 
   useEffect(() => {
 
-    socket?.emit('popupInfos', { id:user.id, roomName:roomName},
+    socket?.emit('popupInfos', { id:user.id, roomId:roomId},
     (response: popupInfo) => {
       if (response.ban === true)
         setBan('Unban');
@@ -98,7 +101,7 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, so
 
   const handleSendMessage = () => {
     changeComponent('chat');
-    socket?.emit('leave', {roomName: roomName, name: clientName});
+    socket?.emit('leave', {roomId: roomId, name: clientName});
     socket?.emit('createDirectMessage', {targetId: user.id});
   };
 
@@ -111,50 +114,56 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, so
   };
 
   const handleBlock = () => {
-    // confirmScreen('block', `Do you really want to block ${user.username} ?`, user.id);
       socket?.emit('bloqueFriend', { id: user.id });
   };
 
   const handleBan = () => {
     if (ban === 'Ban')
-	    socket?.emit('ban', {targetId : user.id, roomName: roomName});
+	    socket?.emit('ban', {targetId : user.id, roomId: roomId});
     else if (ban === 'Unban')
-      socket?.emit('unban', {targetId : user.id, roomName: roomName});
+      socket?.emit('unban', {targetId : user.id, roomId: roomId});
   };
 
   const handleKick = () => {
-    socket?.emit('kick', {targetId: user.id, roomName: roomName});
+    socket?.emit('kick', {targetId: user.id, roomId: roomId});
   };
 
   const handleMute = () => {
     if (mute === 'Mute')
-      socket?.emit('mute', {targetId: user.id, roomName: roomName});
+      socket?.emit('mute', {targetId: user.id, roomId: roomId});
     else if (mute === 'Unmute')
-      socket?.emit('unmute', {targetId: user.id, roomName: roomName});
+      socket?.emit('unmute', {targetId: user.id, roomId: roomId});
   };
 
   const handlePromoteAdmin = () => {
     if (admin === 'Promote as admin')
-	    socket?.emit('promoteAdmin', {targetId : user.id, roomName: roomName});
+	    socket?.emit('promoteAdmin', {targetId : user.id, roomId: roomId});
     else if (admin === 'Demote admin')
-      socket?.emit('demoteAdmin', {targetId : user.id, roomName: roomName});
+      socket?.emit('demoteAdmin', {targetId : user.id, roomId: roomId});
   };
 
   const handleClickOutside = () => {
       setSelectedTarget(null);
   };
 
+  const handleAddToChat = () => {
+    socket?.emit('addToChat', {friendId: user.id, roomId:roomId});
+  }
+
+  const isWhitelisted =  whitelist.some((guy) => guy.id === user.id);
+
   return (
     <div style={popupStyle} onClick={handleClickOutside} onMouseLeave={handleClickOutside}>
-      <span style={UsernameStyle}>{user.username}</span>
+      <span style={UsernameStyle}>{user.gameLogin}</span>
       <button style={Buttons} onClick={handleSendMessage}>Send Message</button>
       <button style={Buttons} onClick={handleInviteToPlay}>Invite to Play</button>
-      <button style={Buttons} onClick={handleAddFriend}>Add Friend</button>
+      {field !== 'friends' && <button style={Buttons} onClick={handleAddFriend}>Add Friend</button>}
       <button style={Buttons} onClick={handleBlock}>Block</button>
-      {clientAdmin && <button style={Buttons} onClick={handleBan}>{ban}</button>}
-      {clientAdmin && <button style={Buttons} onClick={handleKick}>Kick</button>}
-      {clientAdmin && <button style={Buttons} onClick={handleMute}>{mute}</button>}
-      {clientAdmin && <button style={Buttons} onClick={handlePromoteAdmin}>{admin}</button>}
+      {clientAdmin && field !== 'friends' && <button style={Buttons} onClick={handleBan}>{ban}</button>}
+      {clientAdmin && field === 'salon' && <button style={Buttons} onClick={handleKick}>Kick</button>}
+      {clientAdmin && field === 'salon' && <button style={Buttons} onClick={handleMute}>{mute}</button>}
+      {clientAdmin && field === 'salon' && <button style={Buttons} onClick={handlePromoteAdmin}>{admin}</button>}
+      {clientAdmin && field === 'friends' && !isWhitelisted && <button style={Buttons} onClick={handleAddToChat}>Add to chatroom</button>}
     </div>
   );
 };

@@ -36,6 +36,7 @@ model User {
 	bloquedBy				bloqueUser[] @relation("BloquedRecipient")
 	history					History[]
 	rooms                   Room[]               @relation("RoomOwner")
+	messages                Message[]            @relation("messageAuthor")
 	whitelistedRooms        Room[]               @relation("RoomWhitelist")
 	adminRooms         		Room[]               @relation("Admin")
 	bannedRooms         	Room[]               @relation("Banned")
@@ -98,7 +99,7 @@ model Room {
 	directId	String?
 
 	ownerId     Int
-  	owner       User?    @relation("RoomOwner", fields: [ownerId], references: [id])
+  	owner       User    @relation("RoomOwner", fields: [ownerId], references: [id])
 	whitelist   User[]   @relation("RoomWhitelist")
 	admin		User[]   @relation("Admin")
 	banned		User[]   @relation("Banned")
@@ -112,7 +113,8 @@ model Message {
 	id          Int    @id @default(autoincrement())
 	createdAt   DateTime @default(now())
 
-	name		String
+	authorId	Int
+  	author      User	@relation("messageAuthor", fields: [authorId], references: [id])
 	text		String
 
 	room      	Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)

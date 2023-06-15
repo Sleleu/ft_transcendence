@@ -7,12 +7,14 @@ import { User, Message, Room } from '@prisma/client';
 import * as argon from 'argon2';
 
 export interface ChatRoomData {
-  whitelist: User[];
-  admins: User[];
-  banned: User[];
-  connected: User[];
-  friends: User[];
-  room: RoomObj;
+	whitelist: User[];
+	admins: User[];
+	banned: User[];
+	connected: User[];
+	friends: User[];
+  blocked : User[];  
+	room: RoomObj;
+	owner: User | null;
 }
 
 @Injectable()
@@ -38,10 +40,10 @@ export class MessageService {
     return user;
   }
 
-  async owner(roomName : string) {
-    const room = await this.prisma.room.findFirst({
+  async owner(roomId : number) {
+    const room = await this.prisma.room.findUnique({
       where : {
-        name : roomName,
+        id : roomId,
       },
     });
     if (!room)
@@ -118,11 +120,25 @@ export class MessageService {
     });
     return room;
   }
+  async getRoomById(roomId: number) {
+    const room = await this.prisma.room.findUnique({
+      where : {
+        id: roomId,
+      },
+    });
+    return room;
+  }
 
   async addWhitelistUser(roomId: number, userId: number) {
     return this.prisma.room.update({
       where: { id: roomId },
       data: { whitelist: { connect: { id: userId } } },
+    });
+  }
+  async removeWhitelistUser(roomId: number, userId: number) {
+    return this.prisma.room.update({
+      where: { id: roomId },
+      data: { whitelist: { disconnect: { id: userId } } },
     });
   }
   async searchWhiteList(roomId: number, userId: number) {
@@ -204,24 +220,51 @@ export class MessageService {
     return adm;
   }
 
-  async createMessage(createMessageDto: CreateMessageDto, username: string) {
+  async createMessage(userId: number, text: string, roomId: number) {
     const message = await this.prisma.message.create({
       data: {
-        name: username,
-        text: createMessageDto.text,
-        room: { connect: { id: createMessageDto.room } },
+        author: {connect: {id: userId} },
+        text: text,
+        room: { connect: { id: roomId } },
       }
     })
-    return message;
+    const messageComplete = await this.prisma.message.findUnique({
+      where : {id: message.id},
+      include: { author: true },
+    })
+    const filteredUser = (user: User): any => {
+      const { access_token, ...filteredData } = user;
+      return filteredData;
+    };
+    const filteredMessage = (message: any): any => {
+      return {
+        ...message,
+        author: filteredUser(message.author),
+      };
+    }
+    const messagefiltered = filteredMessage(messageComplete);
+    return messagefiltered;
   }
 
   async getMessagesByRoom(roomId: number) {
-  const messages = this.prisma.message.findMany({
+  const messages = await this.prisma.message.findMany({
       where: { roomId },
+      include: { author: true },
       orderBy: { createdAt: 'asc' },
     });
-    return messages;
-  }
+    const filteredUser = (user: User): any => {
+      const { access_token, ...filteredData } = user;
+      return filteredData;
+    };
+    const filteredMessage = (message: any): any => {
+      return {
+        ...message,
+        author: filteredUser(message.author),
+      };
+    }
+    const messagesFiltered = messages.map(filteredMessage);
+    return messagesFiltered;
+}
 
   async findDirectMsg(idA: number, idB: number) {
     const directIdA: string = idA.toString() + idB.toString();
@@ -285,18 +328,24 @@ export class MessageService {
         admin: true,
         banned: true,
         connected: true,
+        owner: true,
       },
     });
 
     if (!room)
       throw new ForbiddenException('No Room found !');
 
-    const friends = await this.prisma.friend.findMany({
-      where: { userId: userId },
-      include: { friend: true },
-    });
-
-    const filteredFriends = friends.map((friend) => friend.friend);
+      const friends = await this.prisma.friend.findMany({
+        where: { userId: userId },
+        include: { friend: true },
+      });
+      const blocked = await this.prisma.bloqueUser.findMany({
+        where: { senderId: userId },
+        include: { recipient: true },
+      });
+    
+      const filteredFriends = friends.map((friend) => friend.friend);
+      const filteredBlocked = blocked.map((block) => block.recipient);
 
     const filteredUser = (user: User): any => {
       const { access_token, ...filteredData } = user;
@@ -311,7 +360,29 @@ export class MessageService {
       banned: room.banned.map(filteredUser),
       connected: room.connected.map(filteredUser),
       friends: filteredFriends.map(filteredUser),
+      blocked: filteredBlocked.map(filteredUser),
       room: filteredRoom,
+      owner: filteredUser(room.owner),
     };
   }
+  
+  async protectRoom(roomId: number, password: string) {
+
+   const hash = await argon.hash(password);
+    return await this.prisma.room.update({
+      where: { id: roomId },
+      data: { type: 'protected', password: hash },
+    });
+  }
+  async unprotectRoom(roomId: number) {
+    return await this.prisma.room.update({
+      where: { id: roomId },
+      data: { type: 'public', password: '' },
+    });
+  }
+
+  async verifyBlock(userId: number, blockedId: number) {
+
+  }
+
 }

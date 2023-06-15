@@ -12,29 +12,42 @@ interface Props {
 	changeComponent: (component: string) => void;
 	handleUserClick: (target: User, event: React.MouseEvent<HTMLSpanElement>) => void;
 	connected: User[];
+	admins: User[];
+	owner: User | undefined;
+	blocked: User[];
 }
 
-// const sortFriend = (friend: FriendInterface[]) => {
-//     return friend.sort((a, b) => (a.friend.state !== 'offline' ? -1 : 1))
-//   }
-// const filteredFriends = searchFriend.map((friend) => friend.friend).filter((user) => !whitelist.some((whitelistedUser) => whitelistedUser.id === user.id));
-
-const EntryUsersChat:React.FC<Props> = ({socket, user, target, field, changeComponent, handleUserClick, connected}) => {
+const EntryUsersChat:React.FC<Props> = ({socket, user, target, field, changeComponent, handleUserClick, connected, admins, owner, blocked}) => {
 
     useEffect(() => {
 
     }, []);
 	const isConnected = connected.some((connectedUser) => connectedUser.id === target.id);
+	
+	let roomRank: string;
+	if (owner) {
+		roomRank =  target.id === owner.id ? 'Owner' :
+		admins.some((admin) => admin.id === target.id) ? 'Admin' : 'Member';
+	}	else {
+		roomRank = 'Member';
+	}
+	let colorCodeRank : string = roomRank === 'Owner' ? '#fe0' : roomRank === 'Admin' ? '#e0e' : '#eee';
+
+	const displayRank : string = ` (${roomRank})`;
 
 	const EntryUser : CSSProperties = {
-		color: isConnected ? '#fff' : '#555',
+		color: isConnected ? colorCodeRank : '#555',
 	}
 
-    return (
-        <div className='EntryUser' style={EntryUser}  onClick={(e) => handleUserClick(target, e)}>
-			{target.gameLogin}
+	const hide : boolean = blocked.some((guy) => guy.id === target.id);
 
-	    </div>
+    return (
+		<div>
+        {!hide && <div className='EntryUser' style={EntryUser}  onClick={(e) => handleUserClick(target, e)}>
+			{target.gameLogin}
+			{roomRank != 'Member' && displayRank}
+	    </div>}
+		</div>
 
   )
 }

@@ -2,9 +2,12 @@ import React, { CSSProperties, useEffect, useRef, useState } from 'react'
 import { Socket } from 'socket.io-client';
 import { User } from '../types';
 import './ChatRoom.css'
-import {ChatRoomData, Room} from './chatTypes';
+import {ChatRoomData, Message, Room} from './chatTypes';
 import EntryUsersChat from './EntryUsersChat'
 import PopupChat from './PopupChat';
+import RoomOptions from './RoomOptions';
+import sendLogo from '../../img/sendblue.png'
+import MessageEntry from './MessageEntry';
 
 interface Props {
     socket: Socket | undefined;
@@ -27,9 +30,16 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 	const [banned, setBanned] = useState<User[]>([]);
 	const [connected, setConnected] = useState<User[]>([]);
 	const [friends, setFriends] = useState<User[]>([]);
+	const [blocked, setBlocked] = useState<User[]>([]);
 	const [room, setRoom] = useState<Room>();
+	const [owner, setOwner] = useState<User>();	
+	const [messages, setMessages] = useState<Message[]>([]);
+	const [type, setType] = useState<string>('');
+
 	const filteredWhitelist = whitelist.filter((user) =>
 	 !banned.some((bannedUser) => bannedUser.id === user.id));
+	 
+	 const passPopupRef = useRef<HTMLFormElement>(null);
 
 	 useEffect(() => {
         socket?.emit('getChatRoomData', {roomId:roomId}, (data: ChatRoomData) => {
@@ -38,13 +48,34 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 			setBanned(data.banned);
 			setConnected(data.connected);
 			setFriends(data.friends);
+			setBlocked(data.blocked);
 			setRoom(data.room);
+			setOwner(data.owner);
+			setType(data.room.type);
 		});
-		socket?.on('refreshWhiteList', (newUser: User) => {
-            setWhiteList((prevList) => [...prevList, newUser]);
+        socket?.emit('findRoomMessages', {id:roomId}, (messages: Message[]) => {
+			setMessages(messages);
+		});
+		socket?.on('refreshMessages', (newMsg: Message, undo: boolean) => {
+            if (undo)
+				setMessages((prev) => prev.filter((old) => old.id !== newMsg.id))
+			else
+				setMessages((prevList) => [...prevList, newMsg]);
         })
-		socket?.on('refreshAdmins', (newUser: User) => {
-            setAdmins((prevList) => [...prevList, newUser]);
+		socket?.on('refreshType', (newType: string) => {
+			setType(newType);
+        })
+		socket?.on('refreshWhiteList', (newUser: User, undo: boolean) => {
+            if (undo)
+				setWhiteList((prev) => prev.filter((user) => user.id !== newUser.id))
+			else
+				setWhiteList((prevList) => [...prevList, newUser]);
+        })
+		socket?.on('refreshAdmins', (newUser: User, undo: boolean) => {
+			if (undo)
+				setAdmins((prev) => prev.filter((user) => user.id !== newUser.id))
+			else
+            	setAdmins((prevList) => [...prevList, newUser]);
         })
 		socket?.on('refreshBanned', (newUser: User, unban: boolean) => {
 			if (unban)
@@ -66,11 +97,23 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
             setShowPopup(true);
         })
 
-		// NON FONCTIONNEL : MODIFIER LEAVE / JOIN (doit prendre id)
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+			  passPopupRef.current &&
+			  event.target &&
+			  !passPopupRef.current.contains(event.target as Node)
+			) {
+			  	setAskPass(false);
+				setInputPass('');
+				setShowPass('password');
+			}
+		  };
+	  
+		  document.addEventListener('mousedown', handleClickOutside);
+	  
         return () => {
-            socket?.emit('leave', {name: user.username, roomName:room?.name}, () => {
-            console.log(user.username, ' left room ', room?.name);
-            })
+			document.removeEventListener('mousedown', handleClickOutside);
+            socket?.emit('leave', {roomId: roomId}, () => {})
             socket?.off('message');
         };
     }, []);
@@ -101,6 +144,11 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 			setPopupPosition({ x: event.clientX, y: event.clientY });
 		}
 	};
+	const [roomClicked, setRoomClicked] = useState(false);
+	const handleRoomClick = (event: React.MouseEvent<HTMLSpanElement>) => {
+		setRoomClicked(true);
+		setPopupPosition({ x: event.clientX, y: event.clientY });
+	}
 
     const [showPopup, setShowPopup] = useState(false);
     const[popMsg, setPopMsg] = useState('');
@@ -115,9 +163,54 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 		};
 	}
 
+	let roomRank: string;
+	if (owner) {
+		roomRank =  user.id === owner.id ? 'Owner' :
+		admins.some((admin) => admin.id === user.id) ? 'Admin' : 'Member';
+	}	else {
+		roomRank = 'Member';
+	}
+	let colorCodeRank : string = roomRank === 'Owner' ? '#fa0' : roomRank === 'Admin' ? '#e0e' : '#eee';
+	const rankColor: CSSProperties = {	
+		textShadow:` 0 0 10px ${colorCodeRank}, 0 0 40px ${colorCodeRank}, 0 0 60px ${colorCodeRank}`,
+		boxShadow: `0 0 10px ${colorCodeRank}, 0 0 100px ${colorCodeRank}`,
+	}
+
+	const [inputText, setInputText] = useState<string>('');
+	const handleTyping = (event: React.ChangeEvent<HTMLInputElement>) => {
+		if (inputText.length >= 200)
+			return ;
+		setInputText(event.target.value);
+	};
+	const submitMessage = (e: React.FormEvent) => {
+		e.preventDefault();
+		socket?.emit('createMessage', {roomId: roomId, text:inputText});
+		setInputText('');
+	}
+	const [inputPass, setInputPass] = useState<string>('');
+	const [showPass, setShowPass] = useState<string>('password');
+	const handlePass = (event: React.ChangeEvent<HTMLInputElement>) => {
+		if (inputPass.length >= 20)
+			return ;
+		setInputPass(event.target.value);
+	};
+	const submitPass = (e: React.FormEvent) => {
+		e.preventDefault();
+		if (!inputPass)
+			return;
+		socket?.emit('protectRoom', {roomId: room?.id, password: inputPass});
+		setInputPass('');
+		setAskPass(false);
+	}
+
+    const sortedMessages =  messages.sort((a, b) => b.id - a.id);
+	
+	const [askPass, setAskPass] = useState(false);
+
     return (
-        <div className='ChatRoom'>
-			<div>
+		<div className='ChatRoom'>
+			<div> 
+			{/* Popup On Error */}
 			{showPopup && (
                     <div className="popupMsg" ref={popupRef}>
                     <div className="popupMsg-content">
@@ -129,6 +222,8 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
                     </div>
                     )}
 			</div>
+
+			{/* Left Block with users options*/}
         <div className='UsersBlock'>
 			<div className='UsersTopBar'>
 			<button style={salonButton} className='salonButton' onClick={() => selectUsersField('salon')}>SALON</button>
@@ -137,18 +232,52 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 			</div>
 			<div className='UsersList' style={UsersList}>
 			{usersField === 'salon' && filteredWhitelist.map((target) => <EntryUsersChat socket={socket} user={user}
-			 target={target} field='salon' changeComponent={changeComponent} handleUserClick={handleUserClick} connected={connected}/>)}
+			 target={target} field='salon' changeComponent={changeComponent} handleUserClick={handleUserClick} connected={connected} key={target.id} admins={admins} owner={owner} blocked={blocked}/>)}
 			{usersField === 'banned' && banned.map((target) => <EntryUsersChat socket={socket} user={user}
-			 target={target} field='banned' changeComponent={changeComponent} handleUserClick={handleUserClick} connected={connected}/>)}
+			 target={target} field='banned' changeComponent={changeComponent} handleUserClick={handleUserClick} connected={connected} key={target.id} admins={admins} owner={owner} blocked={blocked}/>)}
 			{usersField === 'friends' && friends.map((target) => <EntryUsersChat socket={socket} user={user}
-			 target={target} field='friends' changeComponent={changeComponent} handleUserClick={handleUserClick} connected={connected}/>)}
+			 target={target} field='friends' changeComponent={changeComponent} handleUserClick={handleUserClick} connected={connected} key={target.id} admins={admins} owner={owner} blocked={blocked}/>)}
 			</div>
 	    </div>
 	<div>
+
+   			{/* Popup on user selection */}
 	{selectedTarget && <PopupChat user={selectedTarget} position={popupPosition} setSelectedTarget={setSelectedTarget} socket={socket}
-	 room={room} clientName={user.username} changeComponent={changeComponent}/>}
+	 room={room} clientName={user.username} changeComponent={changeComponent} field={usersField} whitelist={whitelist}/>}
    </div>
 
+		<div className='RightBlock'>
+					
+   			{/* Upper Block with Chatroom Options */}
+			   <div className='RoomBlock'>
+			   <span className='RoomRank' style={rankColor}> <div>Rank : {roomRank} </div> </span>
+			   <button className='RoomName' onClick={handleRoomClick}> <div>{room?.name}</div> </button>
+			   <button className='Leave' onClick={() => changeComponent('chat')}> <div>Leave</div> </button>
+			   </div>
+   			{/* Popup on room click */}
+			{roomClicked && <RoomOptions position={popupPosition} socket={socket} changeComponent={changeComponent} setRoomClicked={setRoomClicked} user={user} admins={admins} room={room} setAskPass={setAskPass} type={type}/>}
+
+			{/* Popup for password */}
+				{askPass && <form ref={passPopupRef} className='passPopup' onSubmit={submitPass}>
+				<div className='PassTop'>
+				<input className='PassInput' type={showPass} placeholder='Password' value={inputPass} onChange={handlePass}/>
+				<div className='PassShow' onClick={() => setShowPass(showPass === 'input' ? 'password' : 'input')}>Show</div>
+				</div>
+				<button className='PassButton'>Submit</button>
+				</form>}
+
+				{/* display messages */}
+				<div className='MessagesBlock'>
+				{messages.map((message) => <MessageEntry author={message.author} text={message.text}  key={message.id} admins={admins} owner={owner} handleUserClick={handleUserClick} blocked={blocked}/>)}
+				</div>
+
+				{/* input for messages */}	
+				<form className='MessageBar' onSubmit={submitMessage}>
+				<input className='InputMessages' placeholder='Your message...' value={inputText}
+				onChange={handleTyping}></input>
+				<img className='SendIcon' src={sendLogo} onClick={submitMessage}></img>
+				</form>
+			   </div>
     </div>
   )
 }

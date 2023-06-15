@@ -8,7 +8,7 @@ import Room from './RoomEntry';
 import RoomEntry from './RoomEntry';
 import retLogo from '../../img/navBar/returnLogo.png'
 import firendLogo from '../../img/menue/friend.png'
-import Message from './Message';
+import Message from './MessageEntry';
 
 interface Room {
     name: string;
@@ -68,8 +68,8 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
         socket?.on('joinSuccess', (response) => {
             const toRoom : string = 'chatRoom' + response.id;
             changeComponent(toRoom);
-            setRoomName(response.roomName);
-            setCurrentRoom(response.id);
+            // setRoomName(response.roomName);
+            // setCurrentRoom(response.id);
         })
         socket?.on('newRoom', (room: Room) => {
             setRooms((prevRooms) => [...prevRooms, room]);
@@ -93,9 +93,9 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
 
     const popupRef = useRef<HTMLDivElement>(null);
 
-    const handleConnect = () => {
-        socket?.emit('connectToChat', {name: username}, () => {})
-    }
+    // const handleConnect = () => {
+    //     socket?.emit('connectToChat', {name: username}, () => {})
+    // }
 
     const Container: CSSProperties = {
         width: '90%', height:'95%', background: 'rgba(0, 0, 0, 0.6)', border: '4px solid', borderRadius: '15px', display: 'flex', flexDirection: 'column', justifyContent: 'space-around',
@@ -144,7 +144,7 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
                 setShowPass(true);
                 if (isWhitelisted)
                 {
-                    socket?.emit('join', {name: username, roomName:roomName}, () => {
+                    socket?.emit('join', {roomId:id}, () => {
                         console.log(username, ' joined room ', id);
                     });
                     setShowPass(false);
@@ -152,7 +152,7 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
             });
             return ;
         }
-        socket?.emit('join', {name: username, roomName:roomName, password: pass}, () => {
+        socket?.emit('join', {roomId:id, password: pass}, () => {
             console.log(username, ' joined room ', id);
         });
         setPass('');

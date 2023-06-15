@@ -13,5 +13,14 @@ export interface ChatRoomData {
 	banned: User[];
 	connected: User[];
 	friends: User[];
+	blocked : User[];  
 	room: Room;
+	owner: User;
+	messages: Message[];
+}
+
+export interface Message {
+	id: number;
+    author: User;
+    text: string;
 }

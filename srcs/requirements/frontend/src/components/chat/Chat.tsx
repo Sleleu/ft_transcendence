@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react'
 import { io, Socket } from 'socket.io-client';
-import Message from './Message';
+import Message from './MessageEntry';
 import { CSSProperties } from 'styled-components';
 import { User } from '../types';
 import WhitelistEntry from './WhiteListEntry';
