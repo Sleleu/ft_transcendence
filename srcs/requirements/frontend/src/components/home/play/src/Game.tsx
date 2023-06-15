@@ -8,8 +8,6 @@ import GameOver from './Game-over';
 const ROW_SIZE = 10;
 const COL_SIZE = 20;
 
-let previousMouseY = 0;
-
 /* paddle */
 const PADDLE_BOARD_SIZE = 3;
 const PADDLE_EDGE_SPACE = 1;
@@ -46,14 +44,20 @@ interface GameProps {
   socket?: Socket;
   opponentID: string | number;
   gameMode: string;
+  watchmode: boolean;
 }
 
-const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMode}) => {
+const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMode, watchmode}) => {
   const [state, setState] = useState<GameState>(InitialState());
 
   useEffect(() => {
-    console.log("client side: joining a room");
-    socket?.emit('join-room', {Mode: gameMode, opponentid: opponentID});// pass the game mode as well
+    if (watchmode)
+      socket?.emit('join-as-spectator')
+    else
+    {
+      console.log("client side: joining a room");
+      socket?.emit('join-room', {Mode: gameMode, opponentid: opponentID});// pass the game mode as well
+    }
 
     socket?.on('game-over', () => {
       console.log("client side event: game-over");

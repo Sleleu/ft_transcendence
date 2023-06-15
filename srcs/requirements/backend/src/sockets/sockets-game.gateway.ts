@@ -8,14 +8,16 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { profile } from 'console';
 import { connect } from 'http2';
+import { session } from 'passport';
 
 @WebSocketGateway({ cors: true })
 export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	private server: Server;
-	private connectedClients: (Socket<any> | undefined)[] = [];
+	// private connectedClients: (Socket<any> | undefined)[] = [];
 	private interval: NodeJS.Timeout | undefined;
-	private currentGameSpeed: number;
+	// private currentGameSpeed: number;
+	private gameSessions: Map<(Socket<any> | undefined)[], GameService> = new Map();
 
 	constructor(
 		private readonly socketService: SocketsService,
@@ -24,46 +26,49 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		) {}
 
 	afterInit() {
-		// console.log('WebSocket Gateway initialized');
 	}
 
 	handleConnection(client: Socket) {
-		// console.log('in game connection:', client.id);
 	}
 
 	handleDisconnect(client: Socket) {
-		// console.log('game disconnected:', client.id);
 	}
 
-	startGameInterval(): void {
-		const intervalDuration = 500 / this.currentGameSpeed;
+	startGameInterval(clients: (Socket<any> | undefined)[]): void {
+		let game_service = this.getGameService(clients);
+		let connectedClients = clients;
+		if (!game_service){
+			console.log("no active game session!")
+			return;
+		}
+		const intervalDuration = 500 / game_service.getGameState().gameSpeed;
 
 		this.interval = setInterval(() => {
-		if (this.gameService.getwinner() && this.connectedClients[1] && this.connectedClients[0])
+		if (game_service?.getwinner() && connectedClients[1] && connectedClients[0])
 		{
-			const player2 = this.socketService.getUser(this.connectedClients[1]?.id);
-			const player1 = this.socketService.getUser(this.connectedClients[0]?.id);
-			if (this.gameService.getGameState().playerScore > this.gameService.getGameState().opponentScore){
+			const player2 = this.socketService.getUser(connectedClients[1]?.id);
+			const player1 = this.socketService.getUser(connectedClients[0]?.id);
+			if (game_service.getGameState().playerScore > game_service.getGameState().opponentScore){
 				player1.win++;
 				player2.loose++;
-			} else if (this.gameService.getGameState().playerScore < this.gameService.getGameState().opponentScore){
+			} else if (game_service.getGameState().playerScore < game_service.getGameState().opponentScore){
 				player1.loose++;
 				player2.win++;
 			}
-			this.connectedClients.forEach((client)=> {
+			connectedClients.forEach((client)=> {
 				if (client)
 				{
-					client.emit('game-over', this.gameService.getGameState());
+					client.emit('game-over', game_service?.getGameState());
 					this.gameOver(client);
 				}
 			});
 		}
-		else if (this.connectedClients.length === 2  && !this.gameService.getGameState().pause)
+		else if (connectedClients.length === 2  && !game_service?.getGameState().pause)
 		{
-			this.gameService.bounceBall();
-			this.connectedClients.forEach((client)=> {
+			game_service?.bounceBall();
+			connectedClients.forEach((client)=> {
 				if (client)
-					client.emit('updateBallPosition', this.gameService.getGameState());
+					client.emit('updateBallPosition', game_service?.getGameState());
 			});}
 		}, intervalDuration);
 	}
@@ -75,76 +80,151 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		}
 	}
 
+	getGameService(clients: (Socket<any> | undefined)[]): GameService | undefined {
+		for (const [key, gameService] of this.gameSessions.entries()) {
+		  if (
+			(key[0] === clients[0] && key[1] === clients[1]) ||
+			(key[0] === clients[1] && key[1] === clients[0])
+		  ) {
+			return gameService;
+		  }
+		}
+		return undefined;
+	}
+
+	find_clients(client1: (Socket<any> | undefined), client2: (Socket<any> | undefined)): boolean{
+		for (const key of this.gameSessions.keys()) {
+			if ((key[0] === client1 && key[1] === client2) ||
+			(key[0] === client2 && key[1] === client1))
+				return true;
+		}
+		return false;
+	}
+
+	//false if they didnt exist
+	find_session(client1: (Socket<any> | undefined), client2: (Socket<any> | undefined)): boolean{
+
+		if (!this.find_clients(client1, client2))
+		{
+			console.log("creating the game service")
+			const game_service = new GameService;
+			this.gameSessions.set([client1, client2], game_service);
+			this.gameSessions.get([client1, client2])?.setnumofPlayers();
+			return false;
+		}
+		return true;
+	}
+
+	deleteSession(clients: (Socket<any> | undefined)[]): boolean {
+		for (const [key, _] of this.gameSessions.entries()) {
+		  if (
+			(key[0] === clients[0] && key[1] === clients[1]) ||
+			(key[0] === clients[1] && key[1] === clients[0])
+		  ) {
+			this.gameSessions.delete(key);
+			return true;
+		  }
+		}
+		return false;
+	  }
+
 	@SubscribeMessage('join-room')
 	joinroom(@MessageBody() gameMode: gameModeDto, @ConnectedSocket() client: Socket): void{
-		if (this.gameService.getGameState().numofPlayers === 2)
-			return ;
-		this.connectedClients[0] = client;
+
+		//CREATING A NEW NODE TO THE GAME SESSION USING CLIENT AND THE OPPONENTID
 		const opponent = this.socketService.findSocketById(+(gameMode.opponentid));
-		if (opponent)
-			this.connectedClients[1] = this.server.sockets.sockets.get(opponent);
-		else
-			console.log("waiting for the opponent")
-		if (this.connectedClients.length === 2){
-			this.gameService.setnumofPlayers();
+		if (opponent && (!this.find_session(client, this.server.sockets.sockets.get(opponent)))){
+			let clients = [client, this.server.sockets.sockets.get(opponent)];
 			let i = 0;
-			if ( gameMode.Mode === 'n')
-				this.currentGameSpeed = 4;
-			else
-				this.currentGameSpeed = 8;
-			this.connectedClients.forEach((client)=> {
+			console.log("didnt find the pair of clients created one");
+			this.getGameService(clients)?.setSpeed(gameMode.Mode);
+			for (const client of clients) {
 				if (client)
 					client.emit('start', ++i);
-			});
-			this.gameService.startGame();
-			this.startGameInterval();
+			}
+			this.getGameService(clients)?.startGame();
+			this.startGameInterval(clients);
 		}
+		else if (opponent && this.find_session(client, this.server.sockets.sockets.get(opponent))){
+			console.log("session already exist");//for when the second player calls the session
+		}
+		else
+			console.log("opponent doesnt exist");
 	}
 
 	@SubscribeMessage('game-over')
 	gameOver(@ConnectedSocket() client: Socket): void{
-		if (this.connectedClients.includes(client))
-		{
-			this.connectedClients.forEach((connectedclient)=> {
-				console.log("server side sending game-over")
-				if (connectedclient)
-					client.emit("game-over");
-			});
-			this.gameService.resetGame();
+		for (const connectedClients of this.gameSessions.keys()) {
+		  if (connectedClients.includes(client)) {
+			connectedClients.forEach((clients) => {
+				clients?.emit("game-over");
+			})
+			this.getGameService(connectedClients)?.resetGame();
 			this.stopGameInterval();
-			this.connectedClients = [];
+			this.deleteSession(connectedClients);
+			break;
+		  }
 		}
+	}
+
+	@SubscribeMessage('join-as-spectator')
+	joinAsSpectator(@MessageBody() playerId: number, @ConnectedSocket() client: Socket): void {
+		let found = false;
+		for (const [key, value] of this.gameSessions.entries()) {
+			const [client1, client2] = key;
+			if (client1 && client2 && (client1.id === playerId.toString() || client2.id === playerId.toString())) {
+				client.emit('gameState', value.getGameState); // Spectator mode start signal
+				this.startGameInterval(key)
+				found = true;
+				break;
+			}
+		}
+		if (!found)
+			console.log("no active game")
 	}
 
 	@SubscribeMessage('player-left')
 	playerleft(@ConnectedSocket() client: Socket): void{
-		if (this.connectedClients.includes(client))
-		{
-			console.log("calling player-left")
-			const leavingplayerind = this.connectedClients.indexOf(client);
-			const opponentIndex = leavingplayerind === 0 ? 1 : 0;
-
-			this.gameService.getGameState().playerScore = leavingplayerind === 0 ? 0 : 10;
-			this.gameService.getGameState().opponentScore = leavingplayerind === 0 ? 10 : 0;
-			this.connectedClients[leavingplayerind]?.emit("player-left");
-			this.connectedClients[opponentIndex]?.emit("game-over");
-
-			this.gameService.resetGame();
-			this.stopGameInterval();
-			this.connectedClients = [];
-		}
+		for (const connectedClients of this.gameSessions.keys()) {
+			if (connectedClients.includes(client)) {
+				const leavingplayerind = connectedClients.indexOf(client);
+				const opponentIndex = leavingplayerind === 0 ? 1 : 0;
+				const game_serv = this.getGameService(connectedClients)
+				if (game_serv)
+				{
+					game_serv.getGameState().playerScore = leavingplayerind === 0 ? 0 : 10;
+					game_serv.getGameState().opponentScore = leavingplayerind === 0 ? 10 : 0;
+					game_serv.resetGame();
+					connectedClients[leavingplayerind]?.emit("player-left");
+					connectedClients[opponentIndex]?.emit("game-over");
+					this.stopGameInterval();
+					this.deleteSession(connectedClients);
+				}
+			  break;
+			}
+		  }
 	}
 
 	@SubscribeMessage('move-player')
 	movePlayer(@MessageBody() movePaddleDto: movePaddleDto, @ConnectedSocket() client: Socket): void{
-		if (movePaddleDto.playerID === 1)
-			this.gameService.movePlayer1(movePaddleDto.movedPlayer);
-		else
-			this.gameService.movePlayer2(movePaddleDto.movedPlayer);
+		for (const connectedClients of this.gameSessions.keys()) {
+			if (connectedClients.includes(client)) {
+				const game_serv = this.getGameService(connectedClients);
+				if (game_serv)
+				{
+					if (movePaddleDto.playerID === 1)
+						game_serv.movePlayer1(movePaddleDto.movedPlayer);
+					else
+						game_serv.movePlayer2(movePaddleDto.movedPlayer);
+					connectedClients.forEach((client)=> {
+						if (client)
+							client.emit('move-paddles', game_serv.getGameState());
+					});
+				}
+				break;
+			}
+		  }
 
-		this.connectedClients.forEach((client)=> {
-			if (client)
-				client.emit('move-paddles', this.gameService.getGameState());
-		});
+
 	}
 }

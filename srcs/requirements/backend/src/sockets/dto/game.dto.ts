@@ -9,6 +9,7 @@ export interface GameState {
 	playerScore: number;
 	opponentScore: number;
 	numofPlayers: number;
+	gameSpeed: number,
 }
 
 export interface BounceBallDto {

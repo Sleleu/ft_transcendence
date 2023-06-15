@@ -23,6 +23,7 @@ export class GameService {
 		opponentScore: 0, // Initial opponent score
 		pause: true, // Initial game state (paused)
 		numofPlayers: 0,
+		gameSpeed: 0,
 	};
 
 	getGameState() : GameState{
@@ -52,7 +53,15 @@ export class GameService {
 			opponentScore: 0, // Reset opponent score
 			pause: true, // Reset game state (paused)
 			numofPlayers: 0,
+			gameSpeed: 0,
 		};
+	}
+
+	setSpeed(Mode: string): void{
+		if (Mode === 'n')
+			this.gameState.gameSpeed = 4;
+		else
+			this.gameState.gameSpeed = 8;
 	}
 
 	movePlayer1(movePlayer: number[]): void{
@@ -85,7 +94,7 @@ export class GameService {
 
 	bounceBall():void{
 		const newstate = this.gameState.ball + (this.gameState.deltaY + this.gameState.deltaX);
-		console.log(newstate);
+		// console.log(newstate);
 		if (this.rightleftEdge(newstate)) {
 			//they missed the ball , the direction should change for next start
 			this.gameState.deltaX = -this.gameState.deltaX;
