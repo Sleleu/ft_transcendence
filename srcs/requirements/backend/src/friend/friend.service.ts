@@ -38,7 +38,6 @@ export class FriendService {
         })
 
         if (isAlreadyFriend.length) {
-            console.log('isFriend', isAlreadyFriend)
             throw new Error(`user ${UserId} is already friend with ${friendId}`);
         }
         const isAlreadyRequest = await this.prisma.friendRequest.findMany({
@@ -134,9 +133,14 @@ export class FriendService {
     }
 
     async userByName(userId: number, name: string) {
+        const validCharacters = /^[a-zA-Z0-9_-éèàç]+$/
+        if (!validCharacters.test(name)) {
+            console.log("incorrect FriendName");
+            return [];
+        }
         const friend = await this.prisma.user.findMany({
             where: {
-                username: {
+                gameLogin: {
                     startsWith: name,
                 }
             }
@@ -173,9 +177,11 @@ export class FriendService {
     }
 
     async getUserById(id: number) {
+        if (Number.isNaN(id))
+            return ;
         const user = await this.prisma.user.findUnique({
             where: { id: id }
         })
-        return user?.username
+        return user?.gameLogin
     }
 }

@@ -32,11 +32,25 @@ const FriendAdd = ({ socket }: { socket?: Socket }) => {
         event.preventDefault()
         if (!input)
             return;
-        const req = `http://${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_DOMAIN_PORT}/friend/add/` + input
-        const data = await fetch(req, { method: "GET", credentials: "include" })
-        const friend = await data.json()
-        setFriendList(friend)
-        setSearch(true)
+        try {
+            const req = `http://${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_DOMAIN_PORT}/friend/add/` + input
+            const data = await fetch(req, { method: "GET", credentials: "include" })
+            if (data.status !== 200 && data.status !== 304)
+            {
+                setFriendList([])
+                console.log("error loking for friend", data.status);
+                setSearch(true)
+                return ;
+            }
+            const friend = await data.json()
+            setFriendList(friend)
+            setSearch(true)
+        }
+        catch (error) {
+            setFriendList([])
+            console.log("Wrong req");
+            setSearch(true)
+        }
     }
 
     const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,7 +65,7 @@ const FriendAdd = ({ socket }: { socket?: Socket }) => {
 
         <div className='containerAddFriendInside'>
             <form className='containerAddFriendHeader' onSubmit={fetchFriendsList}>
-                <input style={inputStyle} className='inputFriend' type='text' placeholder='NewFriendName' onChange={handleInput} />
+                <input style={inputStyle} className='inputFriend' type='text' placeholder='NewFriendName' onChange={handleInput} maxLength={30}/>
                 <button style={loopStyle} className='loopButton' type='submit' />
             </form>
             <div className='containerAddFriendBody'>

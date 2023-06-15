@@ -75,7 +75,7 @@ const Friend: FC<FriendProps> = ({ changeComponent, socket }) => {
   const handleSearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value.toLowerCase()
     setSearchText(value)
-    const filteredFriends = friend.filter((friend) => friend.friend.username.toLowerCase().startsWith(value))
+    const filteredFriends = friend.filter((friend) => friend.friend.gameLogin?.toLowerCase().startsWith(value))
     const sortedFriend = filteredFriends.sort((a, b) => (a.friend.state !== 'offline' ? -1 : 1))
     setSearchFriend(sortedFriend)
   }

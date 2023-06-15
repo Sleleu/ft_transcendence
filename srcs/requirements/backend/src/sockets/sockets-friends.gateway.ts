@@ -43,6 +43,7 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
   @SubscribeMessage('send')
   async sendFriendReq(@ConnectedSocket() client: Socket, @MessageBody() body: { id: number }) {
     const user = this.socketService.getUser(client.id);
+    try{
     const request = await this.friendService.createFriendRequest(user.id, +body.id)
     if (!request)
       return;
@@ -52,6 +53,11 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
       if (friendSocket) {
         friendSocket.emit('friendRequestNotification', { req: request });
       }
+    }
+    }
+    catch (e)
+    {
+      console.log(e.message)
     }
   }
 

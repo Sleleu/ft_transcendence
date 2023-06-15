@@ -54,7 +54,7 @@ const FriendOnglet = ({ friend, switchComponent }: Interface) => {
         <div className='containerFriendOnglet' onClick={handleClick}>
             <div style={rankLogo} className={calculRank(friend.elo)} />
             <div className='containerTextFriendName'>
-                <div style={nameFriend} className='nameText' >{friend.username}</div>
+                <div style={nameFriend} className='nameText' >{friend.gameLogin}</div>
                 <div style={stateFriendTxt} className='stateFriend'>{friend.state}</div>
             </div>
             <div style={avatarOpacity} className='containerAvatarFriend'>

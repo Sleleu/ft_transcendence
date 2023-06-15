@@ -31,6 +31,8 @@ const SettingsBlockOnglet = ({ block, updateBlock }: props) => {
 
     const padding = {
         marginRight: '6%',
+        height: '20px',
+        width: '20px',
     }
 
     const handleNo = () => {
@@ -58,7 +60,7 @@ const SettingsBlockOnglet = ({ block, updateBlock }: props) => {
     return (
         <div className='containerBlockOnglet'>
             {visible === true && <ConfirmationPopUp onConfirm={onConfirm} onVisible={onVisible} opacity={true} message={message} />}
-            <div className='nameText' style={padd}>{block.recipient.username}</div>
+            <div className='nameText' style={padd}>{block.recipient.gameLogin}</div>
             <div style={padding} className='noButton' title='unblock' onClick={handleNo} />
         </div>
     )

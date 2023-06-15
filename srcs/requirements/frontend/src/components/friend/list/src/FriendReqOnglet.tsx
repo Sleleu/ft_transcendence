@@ -30,7 +30,7 @@ const FriendReqOnglet = ({ sender, socket }: propsRem) => {
 
 	return (
 		<div className='containerFriendReqOnglet'>
-			<div style={padd} className='nameText'>{sender.username}</div>
+			<div style={padd} className='nameText'>{sender.gameLogin}</div>
 			<div className='containerCheck'>
 				<div className='yesButton' title='accept' onClick={handleYes} />
 				<div className='noButton' title='refuse' onClick={handleNo} />

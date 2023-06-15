@@ -51,7 +51,7 @@ export class QueueService {
         })
         if (user)
             return {
-                username: user.username,
+                username: user.gameLogin,
                 id: user.id
             }
     }

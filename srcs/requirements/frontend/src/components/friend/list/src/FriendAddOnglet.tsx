@@ -41,7 +41,7 @@ const FriendAddOnglet = ({ friend, socket }: { friend: User, socket?: Socket }) 
 
     return (
         <div className='containerAddOnglet'>
-            <div style={nameFriend} className='nameText'>{friend.username}</div>
+            <div style={nameFriend} className='nameText'>{friend.gameLogin}</div>
             <button style={friendLogomo} className='addFriendLogo' onClick={handleClick} />
         </div>
     )
