@@ -52,7 +52,7 @@ const Queue = ({ mode, name, socket, changeComponent }: props) => {
                 <div className='headerBotQ'>{modeStr()}</div>
                 <div className='containerQ'>
                     <div className='containerName'>
-                        <div>{name}</div>
+                        <div className='headerBotQ'>{name}</div>
                     </div>
                     <div className='containerPong'>
                         <div className='bloc'></div>
