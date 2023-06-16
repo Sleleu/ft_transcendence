@@ -119,10 +119,26 @@
 }
 
 .createPopupInput {
-	width: 80%; height: 30%; align-self: center;
+	width: 80%; height: 40%; align-self: center;
 	background-color: rgba(0, 0, 0, 0.8); border-radius: 10px;
 	border: none; border-radius: 50px;
 	border: 2px solid #0ff; box-shadow: inset 0 0 20px #055, 0 0 10px #0ff;
 	color: #fff; font-family: Montserrat, sans-serif;  font-weight: 600; font-size: large;
 	padding-left: 20px; margin: 15px;
+}
+
+.EmptySelection {
+	align-self: center; margin-top: 10%;
+	font-size: 48px; font-weight: 600; 
+	background-color: rgba(0, 0, 0, 0.8); padding: 30px; border-radius: 10px;
+	cursor: default;
+    text-shadow: 0 0 30px var(--salon-a) ;
+    transition: text-shadow 0.8s;
+    cursor: default;
+}
+
+.errorMessage {
+	align-self: center;
+	font-size: 18px; font-weight: 600; text-align: center;
+    text-shadow: 0 0 20px #fff ;
 }

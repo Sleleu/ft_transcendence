@@ -1,10 +1,10 @@
 import { relative } from 'path'
 import React from 'react'
 import { CSSProperties, useState } from 'react'
-import { rankData } from '../../types'
+import { User, rankData } from '../../types'
 
 interface Props {
-  leader: rankData;
+  leader: User;
 }
 
 const ClassementEntry:React.FC<Props> = ({leader}) => {
@@ -50,7 +50,7 @@ const entryText: CSSProperties = {
   return (
     <div style={Entry}>
       <span style={rank}>{leader.rank}</span>
-      <span style={entryText}> {leader.username} </span>
+      <span style={entryText}> {leader.gameLogin} </span>
       <span style={entryText}>{leader.elo}</span>
       <span style={entryText}>{leader.win}</span>
       <span style={entryText}>{leader.win + leader.loose === 0 ? 0 : (leader.win / (leader.win + leader.loose) * 100).toFixed(0)}%</span>

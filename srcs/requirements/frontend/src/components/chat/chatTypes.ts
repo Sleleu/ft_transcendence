@@ -4,7 +4,7 @@ export interface Room {
     name: string;
     id: number;
     type: string;
-    owner?: string;
+    owner?: User;
 }
 
 export interface ChatRoomData {

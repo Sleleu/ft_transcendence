@@ -4,6 +4,7 @@ import { CSSProperties } from 'styled-components';
 import { User } from '../types';
 import msgGrey from '../../img/msgGrey.png'
 import msgGreen from '../../img/msgGreen.png'
+import { Room } from './chatTypes';
 
 interface MessageObj {
   id: number;
@@ -12,33 +13,26 @@ interface MessageObj {
   roomId: number;
 }
 
-interface Room {
-    name: string;
-    id: number;
-    type: string;
-    owner?: string;
-    inSalon?: string;
-}
-
 interface Props {
 	room: Room;
 	key: number;
-  handleSelect: (id: number, roomName: string, type: string, owner: string) => void;
+  handleSelect: (id: number, roomName: string, type: string, owner?: string) => void;
   socket?: Socket;
 }
 
 const RoomEntry:React.FC<Props> = ({room, handleSelect, socket}) => {
 
-const [owner, setOwner] = useState<string>('');
+const [owner, setOwner] = useState(room.owner);
 const [newMsg, setNewMsg] = useState<boolean>(false);
+const [roomType, setRoomType] = useState<string>(room.type);
 
 const RoomsContainer: CSSProperties = {
   // border: newMsg ? '1px solid #0f0' : '1px solid #fff',
   boxShadow: newMsg ? 'inset 0 0 30px #0a0' : 'null',
 }
 const Type: CSSProperties = {
-  color: (room.type === 'public') ? '#00ee13'
-  : (room.type === 'protected') ? '#eeaa00'
+  color: (roomType === 'public') ? '#00ee13'
+  : (roomType === 'protected') ? '#eeaa00'
   : '#ff0000',
 }
 
@@ -47,10 +41,6 @@ const Block: CSSProperties = {
 }
 
 useEffect(() => {
-  socket?.emit('owner', {roomId: room.id}, (response:User) => {
-    setOwner(response.username);
-  })
-
   socket?.on('newMessage', (message: MessageObj) => {
     if (message.roomId === room.id)
       setNewMsg(true);
@@ -59,21 +49,27 @@ useEffect(() => {
     if (response.id === room.id)
       setNewMsg(false);
     })
-}, []);
+  
+		socket?.on('refreshRoomSelectType', (roomId: number, newType: string) => {
+      if (room.id === roomId)
+			  setRoomType(newType);
+    })
+
+  }, []);
 
   return (
-    <div className='RoomBox' style={RoomsContainer} onClick={() => handleSelect(room.id, room.name, room.type, owner)}>
+    <div className='RoomBox' style={RoomsContainer} onClick={() => handleSelect(room.id, room.name, roomType, owner?.username)}>
       {room.type !== 'direct' && <div style={Block}>
       <span className='legend'>Salon Name</span>
         <span className='salon'>{room.name}</span>
       </div>}
       {room.type !== 'direct' && <div style={Block}>
         <span className='legend'>Owner</span>
-        <span className='ownerTxt'>{owner}</span>
+        <span className='ownerTxt'>{owner?.gameLogin}</span>
       </div>}
       {room.type !== 'direct' && <div style={Block}>
         <span className='legend'>Status</span>
-        <span style={Type}>{room.type.toUpperCase()}</span>
+        <span style={Type}>{roomType.toUpperCase()}</span>
       </div>}
       {room.type === 'direct' && <div style={Block}>
         <span>{room.name}</span>

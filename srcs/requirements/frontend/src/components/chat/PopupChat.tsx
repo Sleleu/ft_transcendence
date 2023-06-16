@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { User } from '../types';
 import { Socket } from 'socket.io-client';
+import { Room } from './chatTypes';
 
 interface PopupProps {
   user: User;
@@ -12,6 +13,7 @@ interface PopupProps {
   changeComponent: (component: string) => void;
   field: string;
   whitelist: User[];
+  returnTo: string;
 }
 
 interface popupInfo {
@@ -21,15 +23,7 @@ interface popupInfo {
   clientAdmin: boolean;
 }
 
-interface Room {
-  name: string;
-  id: number;
-  type: string;
-  owner?: string;
-  inSalon?: string;
-}
-
-const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, socket, room, clientName, changeComponent, field, whitelist}) => {
+const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, socket, room, clientName, changeComponent, field, whitelist, returnTo}) => {
 
 	const [isVisible, setIsVisible] = useState(true);
 	const [ban, setBan] = useState('Ban');
@@ -100,7 +94,7 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, so
   }, []);
 
   const handleSendMessage = () => {
-    changeComponent('chat');
+    changeComponent(`${returnTo}`);
     socket?.emit('leave', {roomId: roomId, name: clientName});
     socket?.emit('createDirectMessage', {targetId: user.id});
   };

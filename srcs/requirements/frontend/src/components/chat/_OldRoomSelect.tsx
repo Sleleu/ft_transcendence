@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react'
 import { CSSProperties } from 'react'
 import { io, Socket } from 'socket.io-client';
-import CreateRoom from './CreateRoom';
+import CreateRoom from './_CreateRoom';
 import { User } from '../types';
 import Room from './RoomEntry';
 import RoomEntry from './RoomEntry';
@@ -210,8 +210,8 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
                         </div> */}
                     </div>
                     <div style={displayBox}>
-                        {showPublic && publicRooms.map((room) => <RoomEntry room={room} key={room.id} handleSelect={handleSelect} socket={socket}/>)}
-                        {showPublic === false && privateRooms.map((room) => <RoomEntry room={room} key={room.id} handleSelect={handleSelect} socket={socket}/>)}
+                        {/* {showPublic && publicRooms.map((room) => <RoomEntry room={room} key={room.id} handleSelect={handleSelect} socket={socket}/>)}
+                        {showPublic === false && privateRooms.map((room) => <RoomEntry room={room} key={room.id} handleSelect={handleSelect} socket={socket}/>)} */}
                     </div>
                     {showPopup && (
                     <div className="popup" ref={popupRef} style={popupStyle}>

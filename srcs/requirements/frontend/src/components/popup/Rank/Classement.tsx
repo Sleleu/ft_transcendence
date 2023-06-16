@@ -148,7 +148,7 @@ const Header: CSSProperties = {
     display:'flex', flexDirection:'column', justifyContent:'center',
   }
 
-  const [leaders, setLeaders] = useState<rankData[]>([]);
+  const [leaders, setLeaders] = useState<User[]>([]);
 
   const fetchUsers = async () => {
     const data = await fetch("http://localhost:5000/users/leaderboard/" ,{ method:"GET", credentials: "include",
@@ -166,7 +166,7 @@ const Header: CSSProperties = {
     getLeaders();
   }, [])
 
-  const leadersSorted: rankData[] = leaders.sort((a, b) => b.elo - a.elo).filter((player) => player.elo >= elo && (player.elo < elo + 1000 || elo >= 4000));
+  const leadersSorted: User[] = leaders.sort((a, b) => b.elo - a.elo).filter((player) => player.elo >= elo && (player.elo < elo + 1000 || elo >= 4000));
   leadersSorted.forEach((player, index) => { player.rank = index + 1});
 
 

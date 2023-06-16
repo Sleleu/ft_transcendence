@@ -50,9 +50,9 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		private readonly messagesService: MessageService) {}
 
 	@SubscribeMessage('findAllRooms')
-	findAllRooms(@ConnectedSocket() client: Socket) {
+	async findAllRooms(@ConnectedSocket() client: Socket) {
 		const user = this.socketService.getUser(client.id);
-		const rooms = this.messagesService.getRoomsForUser(user);
+		const rooms = await this.messagesService.getRoomsForUser(user);
 		return rooms;
 	}
 	@SubscribeMessage('owner')
@@ -66,25 +66,27 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 	async createRoom(@MessageBody('roomName') roomName: string,
 	@MessageBody('type') type: string,
 	@ConnectedSocket() client: Socket) {
-		console.log(roomName);
 		try {
 			if (roomName.length > 14)
 				throw new ForbiddenException('Room name too long');
 			const user = this.socketService.getUser(client.id);
-			const exists = await this.messagesService.getRoomByName(roomName);
-			if (exists)
-				throw new ForbiddenException('Room alerady exists');
+			if (type === 'public' || type === 'protected')
+			{
+				const exists = await this.messagesService.getRoomByName(roomName);
+				if (exists)
+					throw new ForbiddenException('Room alerady exists');
+			}
 			const room = await this.messagesService.createRoom(user.id, roomName, type);
 			this.messagesService.addWhitelistUser(room.id, user.id);
 			this.messagesService.promoteAdmin(room.id, user.id);
 			if (room.type === 'private')
 				client.emit('newRoom', room);
 			else
-				this.server.emit('newRoom', room);
+					this.server.emit('newRoom', room);
 			return room;
 		}
 		catch (e) {
-			client.emit('createError', { message: e.message });
+			client.emit('errorMessage',e.message);
 		}
 	}
 
@@ -145,7 +147,13 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		client.emit('joinSuccess', room.name);
 		this.server.to(roomId.toString()).emit('refreshConnected', user, false);
 	} catch (e) {
-		client.emit('joinError',  e.message );
+		const room = await this.messagesService.getRoomById(roomId);
+		if (!room)
+		{
+			client.emit('joinError', {msg : e.message});
+			return ;
+		}
+		client.emit('joinError', {msg : e.message, type: room.type});
 	}
 	}
 
@@ -282,7 +290,9 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		throw new ForbiddenException('Invalid target');
 		const isConnected = await this.messagesService.isConnected(room.id, userTarget.id);
 		if (isConnected)
-		kickedClient.emit('kickUser', {name: room.name});
+		{
+			kickedClient.emit('kickUser', {name: room.name});
+		}
 		this.server.to(room.id.toString()).emit('refreshBanned', userTarget, false);
 		} catch (e) {
 			client.emit('msgError', { message: e.message });
@@ -388,7 +398,9 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 			throw new ForbiddenException('Invalid target');
 		const isConnected = await this.messagesService.isConnected(room.id, targetId);
 		if (isConnected)
+		{
 			kickedClient.emit('kickUser', {name: room.name});
+		}
 		const target = await this.messagesService.searchUserId(targetId);
 		if (!target)
 			return;
@@ -475,7 +487,7 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		const verifyClient = await this.messagesService.isAdmin(room.id, user.id);
 		if (!verifyClient)
 			throw new ForbiddenException('Client is not an admin');
-		this.messagesService.deleteRoom(room.id);
+		await this.messagesService.deleteRoom(room.id);
 		this.server.emit('deleted', room.id);
 		this.server.to(roomId.toString()).emit('kickUser', {name: room.name});
 		} catch (e) {
@@ -514,15 +526,15 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		}
 	}
 
-	@SubscribeMessage('isWhitelisted')
-	async isWhitelisted(@ConnectedSocket() client: Socket, @MessageBody('roomName') roomName: string,) {
-		const user = this.socketService.getUser(client.id);
-		const room = await this.messagesService.getRoomByName(roomName);
-		if (!room)
-			throw new ForbiddenException('Room does not exist');
-		const isWhiteListed = await this.messagesService.searchWhiteList(room.id, user.id);
-		return isWhiteListed;
-	}
+	// @SubscribeMessage('isWhitelisted')
+	// async isWhitelisted(@ConnectedSocket() client: Socket, @MessageBody('roomName') roomName: string,) {
+	// 	const user = this.socketService.getUser(client.id);
+	// 	const room = await this.messagesService.getRoomByName(roomName);
+	// 	if (!room)
+	// 		throw new ForbiddenException('Room does not exist');
+	// 	const isWhiteListed = await this.messagesService.searchWhiteList(room.id, user.id);
+	// 	return isWhiteListed;
+	// }
 
 	//Ne fonctionne plus pour le moment
 	// @SubscribeMessage('typing')
@@ -573,6 +585,7 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 				throw new ForbiddenException('User is not an admin');	
 			await this.messagesService.protectRoom(roomId, password);
 			this.server.to(room.id.toString()).emit('refreshType', 'protected');
+			this.server.emit('refreshRoomSelectType', room.id ,'protected');
 	} catch (e) {
 			client.emit('msgError', { message: e.message });
 		}
@@ -590,6 +603,7 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 				throw new ForbiddenException('User is not an admin');	
 			await this.messagesService.unprotectRoom(roomId);
 			this.server.to(room.id.toString()).emit('refreshType', 'public');
+			this.server.emit('refreshRoomSelectType', room.id ,'public');
 	} catch (e) {
 			client.emit('msgError', { message: e.message });
 		}

@@ -1,7 +1,7 @@
 import React, { CSSProperties, useEffect, useRef, useState } from 'react'
 import { Socket } from 'socket.io-client';
 import { User } from '../types';
-import InviteEntry from './InviteEntry';
+import InviteEntry from './_InviteEntry';
 
 interface Props {
     socket: Socket | undefined;

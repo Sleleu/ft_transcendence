@@ -57,9 +57,13 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 				setType(data.room.type);
 			});
 		})
-		socket?.on('joinError', (message) => {
-			changeComponent('chat');
-			console.log('Error :', message);
+		socket?.on('joinError', (response) => {
+			if (!response.room)
+				changeComponent(`privchat-${response.msg}`);
+			if (response.type === 'public' || response.type === 'protected')
+				changeComponent(`pubchat-${response.msg}`);
+			else
+				changeComponent(`privchat-${response.msg}`);
 		})
 
 		socket?.emit('findRoomMessages', {id:roomId}, (messages: Message[]) => {
@@ -100,7 +104,7 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 				setConnected((prevList) => [...prevList, newUser]);
         })
 		socket?.on('kickUser', (response) => {
-            changeComponent('chat');
+            changeComponent(`${returnTo}-You got kicked from ${response.name}`);
         })
 		socket?.on('msgError', (response) => {
             setPopMsg(response.message);
@@ -194,6 +198,8 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 	};
 	const submitMessage = (e: React.FormEvent) => {
 		e.preventDefault();
+		if (!inputText)
+			return ;
 		socket?.emit('createMessage', {roomId: roomId, text:inputText});
 		setInputText('');
 	}
@@ -216,6 +222,7 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
     const sortedMessages =  messages.sort((a, b) => b.id - a.id);
 	
 	const [askPass, setAskPass] = useState(false);
+	const returnTo : string = (room?.type === 'public' || room?.type === 'protected')  ? 'pubchat' : 'privchat';
 
     return (
 		<div className='ChatRoom'>
@@ -253,7 +260,7 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 
    			{/* Popup on user selection */}
 	{selectedTarget && <PopupChat user={selectedTarget} position={popupPosition} setSelectedTarget={setSelectedTarget} socket={socket}
-	 room={room} clientName={user.username} changeComponent={changeComponent} field={usersField} whitelist={whitelist}/>}
+	 room={room} clientName={user.username} changeComponent={changeComponent} field={usersField} whitelist={whitelist} returnTo={returnTo} />}
    </div>
 
 		<div className='RightBlock'>
@@ -262,10 +269,12 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 			   <div className='RoomBlock'>
 			   <span className='RoomRank' style={rankColor}> <div>Rank : {roomRank} </div> </span>
 			   <button className='RoomName' onClick={handleRoomClick}> <div>{room?.name}</div> </button>
-			   <button className='Leave' onClick={() => changeComponent('chat')}> <div>Leave</div> </button>
+			   <button className='Leave' 
+			   onClick={() => changeComponent(returnTo)}>
+				<div>Leave</div> </button>
 			   </div>
    			{/* Popup on room click */}
-			{roomClicked && <RoomOptions position={popupPosition} socket={socket} changeComponent={changeComponent} setRoomClicked={setRoomClicked} user={user} admins={admins} room={room} setAskPass={setAskPass} type={type}/>}
+			{roomClicked && <RoomOptions position={popupPosition} socket={socket} changeComponent={changeComponent} setRoomClicked={setRoomClicked} user={user} admins={admins} room={room} setAskPass={setAskPass} type={type} returnTo={returnTo} />}
 
 			{/* Popup for password */}
 				{askPass && <form ref={passPopupRef} className='passPopup' onSubmit={submitPass}>

@@ -233,10 +233,15 @@ useEffect(() => {
                         {activeComponent.startsWith("game") && <Game socket={socket} opponentID={extractId(activeComponent)} />}
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent} />}
                         {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} refreshUser={getUser} />}
-                        {activeComponent === "historic" && <History />}
+                        {activeComponent === "history" && <History changeComponent={changeComponent}/>}
                         {activeComponent === "stat" && <Stats user={user} changeComponent={changeComponent} />}
                         {activeComponent === "friend" && <Friend changeComponent={changeComponent} socket={socket}/>}
-                        {activeComponent === "chat" && <RoomSelect user={user} socket={socket} changeComponent={changeComponent}/>}
+
+                        {activeComponent.startsWith('privchat') && <RoomSelect user={user} socket={socket} changeComponent={changeComponent}
+                        message={activeComponent.substring(9)} status='PRIVATE'/>}
+                        {activeComponent.startsWith('pubchat') && <RoomSelect user={user} socket={socket} changeComponent={changeComponent}
+                        message={activeComponent.substring(8)} status='PUBLIC'/>}
+                        {activeComponent.startsWith("room") && <ChatRoom roomIdStr={extractText(activeComponent)} user={user} socket={socket} changeComponent={changeComponent} />}
 
                         {activeComponent === "leader" && <Classement rank={userRank} changeComponent={changeComponent} />}
                         {activeComponent === "bronzeLead" && <Classement rank={'bronze'} changeComponent={changeComponent} />}
@@ -247,7 +252,6 @@ useEffect(() => {
                         {activeComponent.startsWith("watch") && <div>{extractId(activeComponent)}</div>}
 						{/* {activeComponent.startsWith("PublicProfile") && <PublicProfil id={extractId(activeComponent)}> */}
                         {activeComponent.startsWith("queue") && <Queue mode={extractText(activeComponent)} name={user.username} socket={socket} changeComponent={changeComponent} />}
-                        {activeComponent.startsWith("chatRoom") && <ChatRoom roomIdStr={extractText(activeComponent)} user={user} socket={socket} changeComponent={changeComponent} />}
                         {activeComponent === "rank" && <Rank user={user} changeComponent={changeComponent} />}
                         {activeComponent === "Choices" && <GameChoice changeComponent={changeComponent} />}
                     </div>

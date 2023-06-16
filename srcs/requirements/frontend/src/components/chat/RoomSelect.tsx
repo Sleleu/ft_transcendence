@@ -1,38 +1,32 @@
 import React, {useState, useEffect, useRef} from 'react'
 import { CSSProperties } from 'react'
 import { io, Socket } from 'socket.io-client';
-import CreateRoom from './CreateRoom';
+import CreateRoom from './_CreateRoom';
 import { User } from '../types';
-import Room from './RoomEntry';
 import RoomEntry from './RoomEntry';
 import retLogo from '../../img/navBar/returnLogo.png'
 import friendImage from '../../img/menue/friend.png'
 import Message from './MessageEntry';
 import './RoomSelect.css'
 import ChatRoom from './ChatRoom';
-
-interface Room {
-    name: string;
-    id: number;
-    type: string;
-    owner?: string;
-    inSalon?: string;
-}
+import { Room } from './chatTypes';
 
 interface PassObj {
     id: number;
     roomName: string;
     type: string;
-    owner: string;
+    owner?: string;
 }
 
 interface Props {
     user: User;
     socket?: Socket;
     changeComponent: (component: string) => void;
+    message?: string;
+    status: string;
 }
 
-const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
+const RoomSelect:React.FC<Props> = ({user, socket, changeComponent, message, status}) => {
 
     const username = user.username;
     const [rooms, setRooms] = useState<Room[]>([]);
@@ -52,6 +46,12 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
     const passRef = useRef<HTMLFormElement>(null);
 
     useEffect(() => {
+        if (message)
+        {
+            setPopMsg(message);
+            setShowPopup(true);
+        }
+
         socket?.emit('findAllRooms', {}, (response: Room[]) => setRooms(response));
         socket?.on('disconnect', () => {
             console.log('Disconnected from Socket.IO server');
@@ -61,12 +61,17 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
             console.log('Connection error:', error);
         });
 
+        socket?.on('errorMessage', (msg) => {
+            setPopMsg(msg);
+            setShowPopup(true);
+        })
+
         socket?.on('passError', (response) => {
             setPopMsg(response.message);
             setShowPopup(true);
         })
         socket?.on('passSuccess', (response) => {
-            const toRoom : string = 'chatRoom' + response.id;
+            const toRoom : string = 'room' + response.id;
             changeComponent(toRoom);
         })
         socket?.on('newRoom', (room: Room) => {
@@ -85,6 +90,8 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
             }
             else if (passRef.current && event.target && !passRef.current.contains(event.target as Node)) {
                 setShowPass(false);
+                setPass('');
+                setPassVisible('password');
             }
         }
         document.addEventListener('mousedown', handleClickOutside);
@@ -96,7 +103,7 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
     const privateRooms = rooms.filter(room => room.type === 'private' || room.type === 'direct');
     const publicRooms = rooms.filter(room => room.type !== 'private' && room.type !== 'direct');
 
-    const handleSelect = (id: number, roomName: string, type: string, owner: string) => {
+    const handleSelect = (id: number, roomName: string, type: string, owner?: string) => {
         if (type === 'protected' && showPass === false && owner !== user.username)
         {
             setPassInfo({id: id, roomName:roomName, type:type, owner:owner});
@@ -111,6 +118,7 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
         e.preventDefault();
         if (passInfo)
             handleSelect(passInfo.id, passInfo.roomName, passInfo.type, passInfo.owner);
+        setPassVisible('password');
     }
 
     const handlePassTyping = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,7 +127,7 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
         setPass(event.target.value);
     };
 
-    const [roomsDisplayed, setRoomsDisplayed] = useState<string>('PRIVATE');
+    const [roomsDisplayed, setRoomsDisplayed] = useState<string>(status);
     const colorPrivA = roomsDisplayed === 'PUBLIC' ? '#0ff' : '#f0f';
     const colorPrivB = roomsDisplayed === 'PUBLIC' ? '#055' : '#a0a';
     const colorCreaA = roomsDisplayed === 'PUBLIC' ? '#0f5' : '#d52';
@@ -150,6 +158,8 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
         setCreateRoomName(event.target.value);
     }
 
+    const [passVisible, setPassVisible] = useState<string>('password');
+
   return (
         <div className='Container'>
 
@@ -168,6 +178,8 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
 
             {/* Selection of Rooms */}
             <div className='SelectScreen'>
+            {roomsDisplayed === 'PUBLIC' && publicRooms.length === 0 && <div className='EmptySelection'>You don't have any rooms yet !</div>}
+            {roomsDisplayed === 'PRIVATE' && privateRooms.length === 0 && <div className='EmptySelection'>You don't have any rooms yet !</div>}
             {roomsDisplayed === 'PUBLIC' && publicRooms.map((room) => <RoomEntry room={room} key={room.id} handleSelect={handleSelect} socket={socket}/>)}
             {roomsDisplayed === 'PRIVATE' && privateRooms.map((room) => <RoomEntry room={room} key={room.id} handleSelect={handleSelect} socket={socket}/>)}
             </div>
@@ -179,10 +191,23 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent}) => {
 				</form>}
 
             {/* Ask password popup */}
-            {showPass && <form ref={passRef} className='passPopup' onSubmit={submitPass}>
-				<input className='createPopupInput' placeholder='Password...' value={pass} onChange={handlePassTyping}/>
+            {/* {showPass && <form ref={passRef} className='passPopup' onSubmit={submitPass}>
+				<input className='createPopupInput' type='password' placeholder='Password...' value={pass} onChange={handlePassTyping}/>
+				<button className='PassButton'>Submit</button>
+				</form>} */}
+
+                {showPass && <form ref={passRef} className='passPopup' onSubmit={submitPass}>
+				<div className='PassTop'>
+				<input className='createPopupInput' type={passVisible} placeholder='Password...' value={pass} onChange={handlePassTyping}/>
+				<div className='PassShow' onClick={() => setPassVisible(passVisible === 'input' ? 'password' : 'input')}>Show</div>
+				</div>
 				<button className='PassButton'>Submit</button>
 				</form>}
+
+            {/* Error popup */}
+            {showPopup && <div ref={popupRef} className='passPopup'>
+                <div className='errorMessage'>{popMsg}</div>
+			</div>}
 
         </div>
   )

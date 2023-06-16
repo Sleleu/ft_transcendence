@@ -14,20 +14,21 @@ interface Props {
     room: Room | undefined;
     setAskPass: React.Dispatch<React.SetStateAction<boolean>>;
     type: string;
+    returnTo: string;
 }
 
-const RoomOptions: React.FC<Props> = ({position, setRoomClicked, user, admins, changeComponent, socket, room, setAskPass, type}) => {
+const RoomOptions: React.FC<Props> = ({position, setRoomClicked, user, admins, changeComponent, socket, room, setAskPass, type, returnTo}) => {
 
     const popupStyle: React.CSSProperties = { top: position.y, left: position.x,};
     const isAdmin = admins.some((admin) => admin.id === user.id);
 
     const handleQuit = () => {
         socket?.emit('quitRoom', {roomId: room?.id});
-        changeComponent('chat');
+        changeComponent(`${returnTo}`);
     }
     const handleDelete = () => {
-        socket?.emit('deleteRoom', {roomId: room?.id});
-        changeComponent('chat');
+      socket?.emit('deleteRoom', {roomId: room?.id});
+      changeComponent(`${returnTo}`);
     }
     const handleProtect = () => {
         setAskPass(true);

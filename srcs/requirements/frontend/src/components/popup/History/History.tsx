@@ -2,9 +2,13 @@ import React, {useState, useEffect} from 'react'
 import HistoryEntry from './HistoryEntry'
 import { historyData } from './typeHistory'
 import { CSSProperties } from 'react'
+import './History.css'
 
+interface Props {
+  changeComponent: (component: string) => void;
+}
 
-const History:React.FC = () => {
+const History:React.FC<Props> = ({changeComponent}) => {
 
   const Container: CSSProperties = {
 
@@ -51,6 +55,7 @@ const History:React.FC = () => {
 
   return (
     <div style={Container}>
+    {entryData.length === 0 && <div className='EmptyMessage' onClick={() => changeComponent('play')}>Play some games to see your history !</div>}
       <div style={Entries}>
         {entryData.map((entry) => (<HistoryEntry entry={entry} key={entry.id} />))}
         </div>

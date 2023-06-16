@@ -3,10 +3,10 @@ import { io, Socket } from 'socket.io-client';
 import Message from './MessageEntry';
 import { CSSProperties } from 'styled-components';
 import { User } from '../types';
-import WhitelistEntry from './WhiteListEntry';
+import WhitelistEntry from './_WhiteListEntry';
 import PopupChat from './PopupChat';
 import ConfirmationPopUp from '../popup/ConfirmationPopUp';
-import Invite from './Invite';
+import Invite from './_Invite';
 
 interface MessageObj {
     id: number;

@@ -92,7 +92,7 @@ export class MessageService {
     //   hash = await argon.hash(dto.password);
     const validCharacters = /^[a-zA-Z0-9_-éèàç]+$/
     if (!validCharacters.test(roomName)) {
-        throw new ForbiddenException('Game login can only contain alphanumeric characters, hyphens and underscores');
+        throw new ForbiddenException('Room Name can only contain alphanumeric characters, hyphens and underscores');
     }
     const room = await this.prisma.room.create({
       data: {
@@ -102,8 +102,15 @@ export class MessageService {
         owner: { connect: { id: userId } },
       }
     });
-    return room;
+    const completeRoom = await this.prisma.room.findUnique({
+      where : {id: room.id},
+      include: { owner: true },
+    })
+    if (!completeRoom)
+      throw new HttpException('Room not found', 400);
+    return completeRoom;
   }
+  
    async deleteRoom(roomId: number) {
     return this.prisma.room.update({
       where: { id: roomId },
@@ -129,6 +136,7 @@ export class MessageService {
       where : {
         id: roomId,
       },
+      include: { owner: true },
     });
     return room;
   }
@@ -318,10 +326,20 @@ export class MessageService {
       },
       include: {
         whitelist: true,
+        owner: true,
       },
     });
 
-    return rooms;
+
+    return rooms.map((room) => {
+      const { whitelist, owner, ...filteredRoom } = room;
+      return {
+        ...filteredRoom,
+        whitelist: whitelist.map(({ access_token, ...user }) => user),
+        owner: owner && { ...owner, access_token: undefined },
+      };
+    });
+
   }
 
   async getChatRoomData(roomId: number, userId: number): Promise<ChatRoomData> {
