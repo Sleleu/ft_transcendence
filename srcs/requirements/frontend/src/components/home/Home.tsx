@@ -248,7 +248,7 @@ useEffect(() => {
                         {activeComponent.startsWith("invitePlay") && <InvitePlay changeComponent={changeComponent} name={user.username} socket={socket} friendId={+extractId(activeComponent)} mode={modeInvite} changeMode={changeMode} />}
                         {activeComponent.startsWith("game") && <Game changeComponent={changeComponent} socket={socket} opponentID={extractId(activeComponent.substring(0,activeComponent.length - 1))} gameMode={activeComponent[activeComponent.length - 1]} watchmode={false}/>}
                         {activeComponent === "GameOver" && <GameOver changeComponent={changeComponent} />}
-                        {activeComponent === "menue" && <Menue changeComponent={changeComponent} />}
+                        {activeComponent === "menue" && <Menue changeComponent={changeComponent} user={user} />}
                         {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} refreshUser={getUser} />}
                         {activeComponent === "historic" && <History />}
                         {activeComponent === "stat" && <Stats user={user} changeComponent={changeComponent} />}
