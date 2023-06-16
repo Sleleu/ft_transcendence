@@ -16,9 +16,9 @@
     "js-cookie": "^3.0.5",
     "json-server": "^0.17.3",
     "react": "^18.2.0",
-    "react-cssfx-loading": "^2.1.0",
     "react-auth-code-input": "^3.2.1",
     "react-avatar-editor": "^13.0.0",
+    "react-cssfx-loading": "^2.1.0",
     "react-dom": "^18.2.0",
     "react-qr-code": "^2.0.11",
     "react-router-dom": "^6.10.0",
@@ -57,6 +57,7 @@
   "devDependencies": {
     "@types/js-cookie": "^3.0.3",
     "@types/lodash": "^4.14.195",
-    "@types/styled-components": "^5.1.26"
+    "@types/styled-components": "^5.1.26",
+    "eslint-plugin-jest": "^27.2.1"
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GameState, BounceBallDto} from './dto/game.dto';
+import { Server, Socket } from 'socket.io';
 
 const PADDLE_BOARD_SIZE = 3;
 const PADDLE_EDGE_SPACE = 1;
@@ -12,7 +13,7 @@ const board = [...Array(PADDLE_BOARD_SIZE)].map((_, pos) => pos);
 
 @Injectable()
 export class GameService {
-
+	private spectators: Socket<any>[] = [];
 	private gameState: GameState = {
 		player1: board.map((x) => x * COL_SIZE + PADDLE_EDGE_SPACE),
 		player2: board.map((x) => (x + 1) * COL_SIZE - (PADDLE_EDGE_SPACE + 1)),
@@ -25,6 +26,29 @@ export class GameService {
 		numofPlayers: 0,
 		gameSpeed: 0,
 	};
+
+	addSpectator(spectator: Socket<any>): void {
+		this.spectators.push(spectator);
+	}
+
+	removeSpectator(spectator: Socket<any>): void {
+		const index = this.spectators.indexOf(spectator);
+		if (index !== -1) {
+		  this.spectators.splice(index, 1);
+		}
+	}
+
+	spectatorGameEnded(): void {
+		this.spectators.forEach((spectator) => {
+			spectator.emit('game-over');
+		  });
+	}
+
+	updateSpectators(gameState: GameState): void {
+		this.spectators.forEach((spectator) => {
+		  spectator.emit('gameState', gameState); // Emit game state update to spectators
+		});
+	}
 
 	getGameState() : GameState{
 	// console.log("server service: gameState");

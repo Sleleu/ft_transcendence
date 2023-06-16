@@ -49,10 +49,9 @@ interface GameProps {
 
 const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMode, watchmode}) => {
   const [state, setState] = useState<GameState>(InitialState());
-
   useEffect(() => {
     if (watchmode)
-      socket?.emit('join-as-spectator')
+      socket?.emit('join-as-spectator', opponentID)
     else
     {
       console.log("client side: joining a room");
@@ -85,7 +84,7 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
     });
 
     socket?.on('updateBallPosition', (gameState: GameState) => {
-      // console.log("client side event: updateBallPosition ", socket.id);
+      console.log("client side event: updateBallPosition ", socket.id);
       setState((prevState) => ({
         ...prevState,
         deltaX: gameState.deltaX,
@@ -97,7 +96,6 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
     });
 
     socket?.on('move-paddles', (gameState: GameState) => {
-      // console.log("client side event: moving paddles");
       setState((prevState) => ({
         ...prevState,
         player1: gameState.player1,
@@ -130,6 +128,8 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
+    if (watchmode)
+      return ;
     event.preventDefault(); // Prevent default scrolling behavior
 
     let movedPlayer: number[] | null = null;
@@ -159,18 +159,6 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
     };
   }, [handleKeyDown]);
 
-  // const board = [...Array(ROW_SIZE * COL_SIZE)].map((_, pos) => {
-  //   let val = BACKGROUND;
-  //   if (
-  //     state.player1.indexOf(pos) !== -1 ||
-  //     state.player2.indexOf(pos) !== -1
-  //   ) {
-  //     val = PLAYER;
-  //   } else if (state.ball === pos) {
-  //     val = BALL;
-  //   }
-  //   return <Box key={pos} name={val} />;
-  // });
   const Board = React.memo(({ state }:  { state: GameState }) => {
     const board = useMemo(() => {
       return [...Array(ROW_SIZE * COL_SIZE)].map((_, pos) => {

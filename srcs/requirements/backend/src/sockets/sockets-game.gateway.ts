@@ -14,9 +14,7 @@ import { session } from 'passport';
 export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	private server: Server;
-	// private connectedClients: (Socket<any> | undefined)[] = [];
 	private interval: NodeJS.Timeout | undefined;
-	// private currentGameSpeed: number;
 	private gameSessions: Map<(Socket<any> | undefined)[], GameService> = new Map();
 
 	constructor(
@@ -66,10 +64,12 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		else if (connectedClients.length === 2  && !game_service?.getGameState().pause)
 		{
 			game_service?.bounceBall();
+			console.log("number of connected clients: ", connectedClients.length)
 			connectedClients.forEach((client)=> {
 				if (client)
 					client.emit('updateBallPosition', game_service?.getGameState());
 			});}
+			game_service?.updateSpectators(game_service.getGameState());
 		}, intervalDuration);
 	}
 
@@ -101,7 +101,6 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		return false;
 	}
 
-	//false if they didnt exist
 	find_session(client1: (Socket<any> | undefined), client2: (Socket<any> | undefined)): boolean{
 
 		if (!this.find_clients(client1, client2))
@@ -116,17 +115,27 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	}
 
 	deleteSession(clients: (Socket<any> | undefined)[]): boolean {
-		for (const [key, _] of this.gameSessions.entries()) {
+		for (const [key, game_serv] of this.gameSessions.entries()) {
 		  if (
 			(key[0] === clients[0] && key[1] === clients[1]) ||
 			(key[0] === clients[1] && key[1] === clients[0])
 		  ) {
+			game_serv.spectatorGameEnded();
 			this.gameSessions.delete(key);
 			return true;
 		  }
 		}
 		return false;
 	  }
+
+	async updatePlayerStatus(client: (Socket<any> | undefined)) {
+		const token = client?.handshake.headers.cookie?.substring(14);
+		if (token)
+		{
+			const user = await this.socketService.getUserWithToken(token);
+			this.socketService.changeState(+user.id, 'is playing')
+		}
+	}
 
 	@SubscribeMessage('join-room')
 	joinroom(@MessageBody() gameMode: gameModeDto, @ConnectedSocket() client: Socket): void{
@@ -141,6 +150,7 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 			for (const client of clients) {
 				if (client)
 					client.emit('start', ++i);
+				this.updatePlayerStatus(client);
 			}
 			this.getGameService(clients)?.startGame();
 			this.startGameInterval(clients);
@@ -170,17 +180,23 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	@SubscribeMessage('join-as-spectator')
 	joinAsSpectator(@MessageBody() playerId: number, @ConnectedSocket() client: Socket): void {
 		let found = false;
-		for (const [key, value] of this.gameSessions.entries()) {
-			const [client1, client2] = key;
-			if (client1 && client2 && (client1.id === playerId.toString() || client2.id === playerId.toString())) {
-				client.emit('gameState', value.getGameState); // Spectator mode start signal
-				this.startGameInterval(key)
-				found = true;
-				break;
+		const towatch = this.socketService.findSocketById(+(playerId));
+		if (towatch)
+		{
+			const sock_towatch = this.server.sockets.sockets.get(towatch);
+			console.log("joining as spectator")
+			for (const [connectedClients, game_serv] of this.gameSessions.entries()) {
+				if (connectedClients.includes(sock_towatch)) {
+					game_serv.addSpectator(client);
+					found = true;
+					break;
+				}
 			}
+			if (!found)
+				console.log("no active game: player id is ", playerId)
 		}
-		if (!found)
-			console.log("no active game")
+		else
+			console.log("nothing to watch player id is ", playerId)
 	}
 
 	@SubscribeMessage('player-left')
