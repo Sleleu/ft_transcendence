@@ -27,7 +27,7 @@ const NavBar: FC<NavBarProps> = ({user, changeComponent, front, handleLogout }) 
         className='logoutLogo'
         />
         <div
-        onClick={() => changeComponent("stat")}
+        onClick={() => changeComponent('PublicProfile' + user.id)}
 		style={{backgroundImage: `url(${user.avatar})`}}
         className='avatar'
         title='stat'
