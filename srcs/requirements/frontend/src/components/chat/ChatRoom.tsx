@@ -69,7 +69,13 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 		socket?.emit('findRoomMessages', {id:roomId}, (messages: Message[]) => {
 			setMessages(messages);
 		});
-
+		
+		socket?.on('refreshFriends', (newUser: User, undo: boolean) => {
+            if (undo)
+				setFriends((prev) => prev.filter((old) => old.id !== newUser.id))
+			else
+				setFriends((prevList) => [...prevList, newUser]);
+        })
 		socket?.on('refreshMessages', (newMsg: Message, undo: boolean) => {
             if (undo)
 				setMessages((prev) => prev.filter((old) => old.id !== newMsg.id))
@@ -103,8 +109,10 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 			else
 				setConnected((prevList) => [...prevList, newUser]);
         })
-		socket?.on('refreshBlocked', (newUser: User) => {
-				console.log('blocked', newUser);
+		socket?.on('refreshBlocked', (newUser: User, undo: boolean) => {
+            if (undo)
+				setBlocked((prev) => prev.filter((user) => user.id !== newUser.id))
+			else
 				setBlocked((prevList) => [...prevList, newUser]);
         })
 		socket?.on('kickUser', (response) => {
@@ -116,7 +124,10 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
         })
 
 		const handleClickOutside = (event: MouseEvent) => {
-			if (
+			if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+                setShowPopup(false);
+            }
+			else if (
 			  passPopupRef.current &&
 			  event.target &&
 			  !passPopupRef.current.contains(event.target as Node)
@@ -241,22 +252,15 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 	getOtherUser(room.name, user.gameLogin)
 	: room?.name;
 
-	const buttonNerfed: CSSProperties = {cursor: 'default',}
+	const buttonNerfed: CSSProperties = {cursor: room?.type === 'direct' ? 'default' : 'pointer',}
 
     return (
 		<div className='ChatRoom'>
 			<div> 
 			{/* Popup On Error */}
-			{showPopup && (
-                    <div className="popupMsg" ref={popupRef}>
-                    <div className="popupMsg-content">
-                        <span className="closeMsg" onClick={() => setShowPopup(false)}>
-                        &times;
-                        </span>
-                        <p className="popupMsgText">{popMsg}</p>
-                    </div>
-                    </div>
-                    )}
+            {showPopup && <div ref={popupRef} className='passPopup'>
+                <div className='popupMsgText'>{popMsg}</div>
+			</div>}
 			</div>
 
 			{/* Left Block with users options*/}
@@ -279,7 +283,7 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
    			{/* Popup on user selection */}
 	<div>
 	{selectedTarget && <PopupChat user={selectedTarget} position={popupPosition} setSelectedTarget={setSelectedTarget} socket={socket}
-	 room={room} clientName={user.username} changeComponent={changeComponent} field={usersField} whitelist={whitelist} returnTo={returnTo} />}
+	 room={room} clientName={user.username} changeComponent={changeComponent} field={usersField} whitelist={whitelist} returnTo={returnTo} friends={friends}/>}
    </div>
 
 		<div className='RightBlock'>

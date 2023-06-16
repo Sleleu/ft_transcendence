@@ -114,7 +114,7 @@ export class MessageService {
    async deleteRoom(roomId: number) {
     return this.prisma.room.update({
       where: { id: roomId },
-      data: { active: false, name: roomId.toString() },
+      data: { active: false },
     });
 
   }

@@ -60,12 +60,10 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent, message, sta
         socket?.on('connect_error', (error) => {
             console.log('Connection error:', error);
         });
-
         socket?.on('errorMessage', (msg) => {
             setPopMsg(msg);
             setShowPopup(true);
         })
-
         socket?.on('passError', (response) => {
             setPopMsg(response.message);
             setShowPopup(true);
@@ -191,10 +189,6 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent, message, sta
 				</form>}
 
             {/* Ask password popup */}
-            {/* {showPass && <form ref={passRef} className='passPopup' onSubmit={submitPass}>
-				<input className='createPopupInput' type='password' placeholder='Password...' value={pass} onChange={handlePassTyping}/>
-				<button className='PassButton'>Submit</button>
-				</form>} */}
 
                 {showPass && <form ref={passRef} className='passPopup' onSubmit={submitPass}>
 				<div className='PassTop'>

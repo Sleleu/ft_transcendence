@@ -69,6 +69,12 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
     this.server.to(`user_${user.id}`).emit('receiveFriend', { friends: friendUser })
     this.server.to(`user_${user.id}`).emit('receiveReq', { req: request })
     this.server.to(`user_${body.id}`).emit('receiveFriend', { friends: friendFriend });
+    const target = await this.messageService.searchUserId(body.id);
+    if (!target)
+      return ;
+    this.server.to(`user_${body.id}`).emit('refreshFriends', user, false);
+    this.server.to(`user_${user.id}`).emit('refreshFriends', target, false);
+
   }
 
   @SubscribeMessage('refuseFriend')
@@ -91,6 +97,11 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
     this.server.to(`user_${user.id}`).emit('receiveFriend', { friends: friendUser })
     const friendFriend = await this.friendService.getFriendsByUserId(+body.id)
     this.server.to(`user_${body.id}`).emit('receiveFriend', { friends: friendFriend });
+    const target = await this.messageService.searchUserId(body.id);
+    if (!target)
+      return ;
+    this.server.to(`user_${body.id}`).emit('refreshFriends', user, true);
+    this.server.to(`user_${user.id}`).emit('refreshFriends', target, true);
   }
 
   @SubscribeMessage('bloqueUser')
@@ -118,7 +129,7 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
     this.server.to(`user_${body.id}`).emit('receiveFriend', { friends: friendFriend });
     const target = await this.messageService.searchUserId(body.id);
     if (target)
-      this.server.to(`user_${user.id}`).emit('refreshBlocked', target);
+      this.server.to(`user_${user.id}`).emit('refreshBlocked', target, false);
   }
 
   @SubscribeMessage('invitePlay')

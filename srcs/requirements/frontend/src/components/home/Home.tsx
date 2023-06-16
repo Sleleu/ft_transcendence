@@ -245,7 +245,7 @@ useEffect(() => {
                         message={activeComponent.substring(9)} status='PRIVATE'/>}
                         {activeComponent.startsWith('pubchat') && <RoomSelect user={user} socket={socket} changeComponent={changeComponent}
                         message={activeComponent.substring(8)} status='PUBLIC'/>}
-                        {activeComponent.startsWith("room") && <ChatRoom roomIdStr={extractText(activeComponent)} user={user} socket={socket} changeComponent={changeComponent} />}
+                        {activeComponent.startsWith("room") && <ChatRoom roomIdStr={activeComponent.substring(4)} user={user} socket={socket} changeComponent={changeComponent} />}
 
                         {activeComponent === "leader" && <Classement rank={userRank} changeComponent={changeComponent} />}
                         {activeComponent === "bronzeLead" && <Classement rank={'bronze'} changeComponent={changeComponent} />}

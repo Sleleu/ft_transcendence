@@ -13,6 +13,7 @@ interface PopupProps {
   changeComponent: (component: string) => void;
   field: string;
   whitelist: User[];
+  friends: User[];
   returnTo: string;
 }
 
@@ -23,7 +24,7 @@ interface popupInfo {
   clientAdmin: boolean;
 }
 
-const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, socket, room, clientName, changeComponent, field, whitelist, returnTo}) => {
+const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, socket, room, clientName, changeComponent, field, whitelist, returnTo, friends}) => {
 
 	const [isVisible, setIsVisible] = useState(true);
 	const [ban, setBan] = useState('Ban');
@@ -95,7 +96,6 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, so
 
   const handleSendMessage = () => {
     changeComponent(`${returnTo}`);
-    // socket?.emit('leave', {roomId: roomId, name: clientName});
     socket?.emit('createDirectMessage', {targetId: user.id});
   };
 
@@ -148,6 +148,7 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, so
   }
 
   const isWhitelisted =  whitelist.some((guy) => guy.id === user.id);
+  const isFriend = friends.some((guy) => guy.id === user.id);
 
   return (
     <div style={popupStyle} onClick={handleClickOutside} onMouseLeave={handleClickOutside}>
@@ -155,7 +156,7 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, so
       <button style={Buttons} onClick={handleSeeProfile}>See Profile</button>
       {room?.type != 'direct' && <button style={Buttons} onClick={handleSendMessage}>Send Message</button>}
       <button style={Buttons} onClick={handleInviteToPlay}>Invite to Play</button>
-      {field !== 'friends' && <button style={Buttons} onClick={handleAddFriend}>Add Friend</button>}
+      {field !== 'friends' && !isFriend && <button style={Buttons} onClick={handleAddFriend}>Add Friend</button>}
       <button style={Buttons} onClick={handleBlock}>Block</button>
       {clientAdmin && field !== 'friends' && <button style={Buttons} onClick={handleBan}>{ban}</button>}
       {clientAdmin && field === 'salon' && <button style={Buttons} onClick={handleKick}>Kick</button>}
