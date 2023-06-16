@@ -73,6 +73,20 @@ export const setDefaultAvatar = async () => {
   return response.json();
 };
 
+export const getPublicUserInfo = async (id : number) => {
+  const response = await fetch(`http://${DOMAIN}:${DOMAIN_PORT}/users/public-profile/${id}`, {
+    method: 'GET',
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    const errorJson = await response.json();
+    throw new Error(errorJson.message || 'Unknown error');
+  }
+
+  return response.json();
+};
+
 
 export const getUserProfile = () => baseRequest("/users/profile", "GET");
 

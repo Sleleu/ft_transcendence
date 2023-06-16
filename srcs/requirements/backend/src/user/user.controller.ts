@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, NotFoundException, Param, Post, Put, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { JwtGuard } from 'src/auth/guard';
 import { UserService } from './user.service';
@@ -98,4 +98,12 @@ export class UserController {
 	  return { message: 'Default avatar set successfully.' };
 	}
 	
+	@Get('public-profile/:id')
+	getPublicUserInfo(@Param('id') id: string) {
+	  const parsedId = parseInt(id);
+	  if (isNaN(parsedId)) {
+		throw new HttpException('Invalid id', 400);
+	  }
+	  return this.userService.getPublicUserInfo(parsedId);
+	}
 }

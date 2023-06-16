@@ -81,7 +81,7 @@ export class UserService {
         if (gameLogin.length < 5 || gameLogin.length > 30) {
             throw new HttpException('Game login must have between 5 and 30 characters', 400);
         }
-        const validCharacters = /^[a-zA-Z0-9_-éèàç]+$/
+        const validCharacters = /^[a-zA-Z0-9_éèàç-]+$/
         if (!validCharacters.test(gameLogin)) {
             throw new HttpException('Game login can only contain alphanumeric characters, hyphens and underscores', 400);
         }
@@ -151,7 +151,7 @@ export class UserService {
         return updatedUser;
       }
     
-      async setAvatarSelected(id: number) {
+    async setAvatarSelected(id: number) {
         const user = await this.prismaService.user.update({
             where: {id: id},
             data: { avatarSelected: true },
@@ -173,4 +173,30 @@ export class UserService {
           throw new NotFoundException('User not found');
         }
       }
+
+    async getPublicUserInfo(id: number) {
+        try {
+          const publicInfo = await this.prismaService.user.findUnique({
+            where: {
+              id: id,
+            },
+            select: {
+              createAt: true,
+              gameLogin: true,
+              elo: true,
+              win: true,
+              loose: true,
+              avatar: true,
+            }
+            });
+            console.log("test public user : ", publicInfo)
+            if (!publicInfo) {
+              throw new HttpException('User not found', 404);
+            }
+            return publicInfo;
+        } catch (error) {
+          console.error(error);
+          throw new HttpException('Error retrieving user information', 400);
+        }
+    }
 }

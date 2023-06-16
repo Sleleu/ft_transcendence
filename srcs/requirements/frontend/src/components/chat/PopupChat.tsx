@@ -112,6 +112,10 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedUser, sock
     changeComponent('invitePlay' + user.id)
   };
 
+  const handleViewProfile = () => {
+    changeComponent('PublicProfile' + user.id)
+  };
+
   const handleAddFriend = () => {
     socket?.emit('send', { id: user.id });
   };
@@ -152,6 +156,7 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedUser, sock
   return (
     <div className="popup" style={popupStyle} onClick={handleClickOutside} onMouseLeave={handleClickOutside}>
       <span style={UsernameStyle}>{user.username}</span>
+      <button style={Buttons} onClick={handleViewProfile}>View Profile</button>
       <button style={Buttons} onClick={handleSendMessage}>Send Message</button>
       <button style={Buttons} onClick={handleInviteToPlay}>Invite to Play</button>
       <button style={Buttons} onClick={handleAddFriend}>Add Friend</button>

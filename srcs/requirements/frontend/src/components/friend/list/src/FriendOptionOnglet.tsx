@@ -38,6 +38,8 @@ const FriendOptionOnglet = ({ changeComponent, context, txt, friend, change, soc
     const handleClick = () => {
         if (context === 'watchGame')
             watchGame()
+        else if (context === 'viewProfile')
+            viewProfile()
         else if (context === 'sendMessage')
             sendMessage()
         else if (context === 'block')
@@ -81,6 +83,11 @@ const FriendOptionOnglet = ({ changeComponent, context, txt, friend, change, soc
     const sendMessage = () => {
         changeComponent('chat');
         socket?.emit('createDirectMessage', {targetId: friend.id});
+    }
+
+    const viewProfile = () => {
+        const compo = "PublicProfile" + friend.id
+        changeComponent(compo);
     }
 
     const watchGame = () => {

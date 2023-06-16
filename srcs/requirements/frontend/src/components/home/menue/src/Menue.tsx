@@ -1,12 +1,14 @@
 import React, { FC } from 'react'
 import '../css/Menue.css'
 import Play from '../../play/src/Play'
+import { User } from '../../../types';
 
 interface MenueProps {
     changeComponent: (component: string) => void;
+    user: User;
 }
 
-const Menue:FC<MenueProps> = ({changeComponent}) => {
+const Menue:FC<MenueProps> = ({changeComponent, user}) => {
 
   return (
     <div className='containerMenue'>
@@ -20,7 +22,7 @@ const Menue:FC<MenueProps> = ({changeComponent}) => {
                     <h3 className='friendTxt'>Friends</h3>
                 </div>
                 <div className='containerStat'
-                onClick={() => changeComponent('stat')}
+                onClick={() => changeComponent('PublicProfile' + user.id)}
                 >
                     <div className='statLogo' />
                     <h3 className='statTxt'>Statistics</h3>

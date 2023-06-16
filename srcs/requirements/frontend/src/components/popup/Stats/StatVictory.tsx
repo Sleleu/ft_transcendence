@@ -1,13 +1,13 @@
 import React, {useState, CSSProperties} from 'react';
-import { User } from '../../types';
+import { PublicUserInfo, User } from '../../types';
 import crown from '../../../img/history/crown.png'
 import skull from '../../../img/history/skull.png'
 
 interface Props {
-    user: User;
+    profile: PublicUserInfo;
 }
 
-const StatVictory: React.FC<Props> = ({user}) => {
+const StatVictory: React.FC<Props> = ({profile}) => {
 
     const StatVictory: CSSProperties = {
         flexBasis:'25%', height:'75%', alignSelf:'center',
@@ -20,6 +20,7 @@ const StatVictory: React.FC<Props> = ({user}) => {
         alignSelf:'center', fontSize:'56px',
         position: 'relative',
         display:'flex', flexDirection:'column', justifyContent:'center',
+        alignItems: 'center'
 
     }
     const Bottom: CSSProperties = {
@@ -33,7 +34,7 @@ const StatVictory: React.FC<Props> = ({user}) => {
        marginLeft:'-9px'
     }
     const Crown: CSSProperties = {
-        width:'50px', height:'45px', marginTop:'-5px', marginBottom:'-5px', marginRight:'-6px',
+        width:'50px', height:'50px', marginTop:'-5px', marginBottom:'-5px', marginRight:'-6px',
     }
     const textSkull: CSSProperties = {
         display:'flex', flexDirection: 'row', justifyContent:'center', 
@@ -42,23 +43,23 @@ const StatVictory: React.FC<Props> = ({user}) => {
          width:'30px', height:'28px', marginTop:'3px', marginRight:'6px',
      }
 
-      const ratio : number = user.win + user.loose === 0 ? 0 : (user.win  / (user.win + user.loose) * 100); 
+    let ratio: string = profile.win + profile.loose === 0 ? '0' : ((profile.win / (profile.win + profile.loose)) * 100).toFixed(1);
+    ratio = ratio.endsWith('.0') ? ratio.slice(0, -2) : ratio;
 
     return (
         <div style={StatVictory}>
-            <span>Victories</span>
-            <div style={Center}>
-                <span>{ratio}</span>
-                <span>%</span>
+            <span className='text bold neon-little-yellow'>Victories</span>
+            <div style={Center} className='text bold neon-purple'>
+                <span>{ratio}%</span>
             </div>
             <div style={Bottom}>
                 <div style={textCrown}>
                     <img src={crown} alt='crown' style={Crown}/>
-                    <span>{user.win} W</span>
+                    <span className='text neon-green'>{profile.win} Win</span>
                 </div>
                 <div style={textSkull}>
                     <img src={skull} alt='skull' style={Skull}/>
-                    <span>{user.loose} D</span>
+                    <span className='text neon-red'>{profile.loose} Defeat</span>
                 </div>
             </div>
         </div>

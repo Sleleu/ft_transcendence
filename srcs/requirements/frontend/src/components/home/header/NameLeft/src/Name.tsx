@@ -34,7 +34,7 @@ const Name = ({ user, changeComponent }: { user: User, changeComponent: (compone
     <div className='containerName'>
       <div className='containerRoseName'>
         <div className='containerTextName'
-          onClick={() => changeComponent('stat')}
+          onClick={() => changeComponent('PublicProfile' + user.id)}
         >
           <h1 className='nameText' style={nameSize}>{NamePars(login)}</h1>
         </div>
