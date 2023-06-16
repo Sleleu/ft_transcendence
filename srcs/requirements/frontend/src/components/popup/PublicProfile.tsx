@@ -3,19 +3,11 @@ import StatVictory from './Stats/StatVictory';
 import StatElo from './Stats/StatElo';
 import StatMatch from './Stats/StatMatch';
 import { getPublicUserInfo } from '../Api';
+import { PublicUserInfo } from '../types';
 
 interface PublicProfileProps {
   profileId: string | number;
   changeComponent: (component: string) => void;
-}
-
-interface PublicUserInfo {
-  state: boolean;
-  gameLogin: string;
-  elo: number;
-  win: number;
-  loose: number;
-  avatar: string;
 }
 
 const PublicProfile: React.FC<PublicProfileProps> = ({profileId, changeComponent}) => {
@@ -44,6 +36,7 @@ const PublicProfile: React.FC<PublicProfileProps> = ({profileId, changeComponent
 
   return (
     <div style={Container}>
+        {profile && <StatVictory profile={profile}/>}
       {profile ? <div>{profile.gameLogin}</div> : <div className='text bold'>Loading...</div>}
     </div>
   )

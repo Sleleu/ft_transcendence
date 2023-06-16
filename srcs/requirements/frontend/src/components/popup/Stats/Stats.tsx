@@ -23,7 +23,7 @@ const Stats: React.FC<Props> = ({user, changeComponent}) => {
 
   return (
     <div style={Container}>
-        <StatVictory user={user}/>
+        {/* <StatVictory user={user}/> */}
         <div style={{color: 'white'}}>
           {user.gameLogin}
         </div>

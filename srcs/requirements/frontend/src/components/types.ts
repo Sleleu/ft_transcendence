@@ -20,3 +20,12 @@ export interface rankData {
   loose: number;
   rank?: number;
 }
+
+export interface PublicUserInfo {
+  state: boolean;
+  gameLogin: string;
+  elo: number;
+  win: number;
+  loose: number;
+  avatar: string;
+}
