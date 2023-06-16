@@ -4,12 +4,13 @@ import { Messaging } from 'react-cssfx-loading'
 import { CSSProperties } from 'styled-components'
 
 interface props {
-    name: string
+    name: string | undefined
     changeComponent: (str: string) => void
     changeMode: () => void
     socket?: Socket
     friendId: number | undefined
     mode: string
+    previousActiveComponent: () => void
 }
 
 interface FriendProps {
@@ -17,7 +18,7 @@ interface FriendProps {
     id: number
 }
 
-const InvitePlay = ({ name, changeComponent, socket, friendId, mode, changeMode }: props) => {
+const InvitePlay = ({ name, changeComponent, socket, friendId, mode, changeMode, previousActiveComponent }: props) => {
     const [find, setFind] = useState(false)
     const [vs, setVs] = useState('void')
     const [refuse, setRefuse] = useState(false)
@@ -45,8 +46,8 @@ const InvitePlay = ({ name, changeComponent, socket, friendId, mode, changeMode 
                     method: "GET",
                     credentials: "include",
                 });
-                const username = await data.text()
-                setVs(username)
+                const gameLogin = await data.text()
+                setVs(gameLogin)
                 await delay(3000)
                 const change = 'game' + friendId
                 changeComponent(change)
@@ -64,7 +65,8 @@ const InvitePlay = ({ name, changeComponent, socket, friendId, mode, changeMode 
         socket?.on('refused', async () => {
             setRefuse(true)
             await delay(3000)
-            changeComponent('friend')
+            // changeComponent(previousActiveComponent)
+            previousActiveComponent()
         })
         return () => {
             socket?.off('refused')

@@ -24,6 +24,8 @@ export class SocketsQueueGateway implements OnGatewayConnection, OnGatewayDiscon
     @SubscribeMessage('addQueuen')
     async addQueue(@ConnectedSocket() client: Socket) {
         const user = this.socketService.getUser(client.id);
+        if (!user)
+            return ;
         const stack = this.queueService.addToStack(user.id)
         if (stack) {
             if (stack[0] === user.id)
@@ -36,6 +38,8 @@ export class SocketsQueueGateway implements OnGatewayConnection, OnGatewayDiscon
     @SubscribeMessage('addQueueb')
     async addQueueBonus(@ConnectedSocket() client: Socket) {
         const user = this.socketService.getUser(client.id);
+        if (!user)
+            return ;
         const stack = this.queueService.addToStackBonus(user.id)
         if (stack) {
             if (stack[0] === user.id)
@@ -62,12 +66,16 @@ export class SocketsQueueGateway implements OnGatewayConnection, OnGatewayDiscon
     @SubscribeMessage('quitQueuen')
     quitQueue(@ConnectedSocket() client: Socket) {
         const user = this.socketService.getUser(client.id)
+    if (!user)
+      return ;
         this.queueService.quitQueue(user.id)
     }
 
     @SubscribeMessage('quitQueueb')
     quitQueueBonus(@ConnectedSocket() client: Socket) {
         const user = this.socketService.getUser(client.id)
+        if (!user)
+            return ;
         this.queueService.quitQueueBonus(user.id)
     }
 }

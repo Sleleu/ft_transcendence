@@ -30,6 +30,8 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
   @SubscribeMessage('getFriend')
   async getFriendsByUserId(@ConnectedSocket() client: Socket) {
     const user = this.socketService.getUser(client.id);
+    if (!user)
+      return ;
     const friends = await this.friendService.getFriendsByUserId(user.id);
     return friends;
   }
@@ -37,12 +39,17 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
   @SubscribeMessage('getFriendReq')
   async getFriendReq(@ConnectedSocket() client: Socket) {
     const user = this.socketService.getUser(client.id);
+    if (!user)
+      return ;
     return this.friendService.getFriendReq(user.id)
   }
 
   @SubscribeMessage('send')
   async sendFriendReq(@ConnectedSocket() client: Socket, @MessageBody() body: { id: number }) {
     const user = this.socketService.getUser(client.id);
+    if (!user)
+      return ;
+    try{
     const request = await this.friendService.createFriendRequest(user.id, +body.id)
     if (!request)
       return;
@@ -53,11 +60,18 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
         friendSocket.emit('friendRequestNotification', { req: request });
       }
     }
+    }
+    catch (e)
+    {
+      console.log(e.message)
+    }
   }
 
   @SubscribeMessage('acceptFriend')
   async acceptFriendReq(@ConnectedSocket() client: Socket, @MessageBody() body: { id: number }) {
     const user = this.socketService.getUser(client.id);
+    if (!user)
+      return ;
     await this.friendService.acceptFriendRequest(+user.id, +body.id)
     const friendSocketId = this.socketService.findSocketById(+body.id)
     const friendFriend = await this.friendService.getFriendsByUserId(+body.id)
@@ -76,6 +90,8 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
   @SubscribeMessage('refuseFriend')
   async refuseFriendReq(@ConnectedSocket() client: Socket, @MessageBody() body: { id: number }) {
     const user = this.socketService.getUser(client.id);
+    if (!user)
+      return ;
     await this.friendService.refuseFriendRequest(+user.id, +body.id)
     const request = this.friendService.getFriendReq(user.id)
     client.emit('receiveReq', { req: request })
@@ -84,6 +100,8 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
   @SubscribeMessage('deleteFriend')
   async deleteFriend(@ConnectedSocket() client: Socket, @MessageBody() body: { id: number }) {
     const user = this.socketService.getUser(client.id);
+    if (!user)
+      return ;
     await this.friendService.deleteFriendById(+user.id, +body.id)
     const friendUser = await this.friendService.getFriendsByUserId(+user.id)
     client.emit('receiveFriend', { friends: friendUser })
@@ -100,6 +118,8 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
   @SubscribeMessage('bloqueUser')
   async bloqueUser(@ConnectedSocket() client: Socket, @MessageBody() body: { id: number }) {
     const user = this.socketService.getUser(client.id);
+    if (!user)
+      return ;
     await this.friendService.bloqueUserById(+user.id, +body.id)
     await this.friendService.refuseFriendRequest(+user.id, +body.id)
     const friendUser = await this.friendService.getFriendsByUserId(+user.id)
@@ -111,6 +131,8 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
   @SubscribeMessage('bloqueFriend')
   async bloqueFriend(@ConnectedSocket() client: Socket, @MessageBody() body: { id: number }) {
     const user = this.socketService.getUser(client.id);
+    if (!user)
+      return ;
     await this.friendService.bloqueUserById(+user.id, +body.id)
     const friendUser = await this.friendService.getFriendsByUserId(+user.id)
     client.emit('receiveFriend', { friends: friendUser })
@@ -127,6 +149,8 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
   @SubscribeMessage('invitePlay')
   async invitePlay(@ConnectedSocket() client: Socket, @MessageBody() body: { id: number }) {
     const user = this.socketService.getUser(client.id);
+    if (!user)
+      return ;
     const friendSocketId = this.socketService.findSocketById(+body.id)
     if (friendSocketId) {
       const friendSocket = this.server.sockets.sockets.get(friendSocketId)
@@ -139,6 +163,8 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
   @SubscribeMessage('acceptInvitation')
   async acceptInvit(@ConnectedSocket() client: Socket, @MessageBody() body: { id: number }) {
     const user = this.socketService.getUser(client.id);
+    if (!user)
+      return ;
     const friendSocketId = this.socketService.findSocketById(+body.id)
     if (friendSocketId) {
       const friendSocket = this.server.sockets.sockets.get(friendSocketId)
@@ -148,6 +174,7 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
       }
     }
   }
+
   @SubscribeMessage('refuseInvitation')
   async refuseInvit(@ConnectedSocket() client: Socket, @MessageBody() body: { id: number }) {
     const friendSocketId = this.socketService.findSocketById(+body.id)

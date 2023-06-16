@@ -5,13 +5,13 @@ import { Socket } from 'socket.io-client';
 
 interface props {
     mode: string
-    name: string
+    name: string | undefined
     socket?: Socket
     changeComponent: (str: string) => void
 }
 
 interface Opponent {
-    username: string
+    username : string
     id: number
 }
 

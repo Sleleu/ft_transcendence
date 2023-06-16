@@ -38,7 +38,7 @@ export class SocketsGateway {
       }
     }
     catch (e) {
-      console.log("Socket error : User not found");
+      console.log("Socket error : handleConnection refused");
     }
   }
 
@@ -76,7 +76,6 @@ export class SocketsGateway {
       const friendSocket = friendSockets[+friendId];
       const friendFriend = await this.friendService.getFriendsByUserId(+friendId);
       friendSocket.emit('receiveFriend', { friends: friendFriend });
-      console.log('req', friendFriend)
     }
   }
 }

@@ -247,8 +247,8 @@ useEffect(() => {
 
                         {visible === true && <ConfirmationPopUp onConfirm={onConfirm} onVisible={onVisible} opacity={true} message={message} />}
                         {activeComponent === "play" && <Play changeComponent={changeComponent} />}
-                        {activeComponent.startsWith("invitePlay") && <InvitePlay changeComponent={changeComponent} name={user.username} socket={socket} friendId={+extractId(activeComponent)} mode={modeInvite} changeMode={changeMode} />}
                         {activeComponent.startsWith("game") && <Game changeComponent={changeComponent} socket={socket} opponentID={extractId(activeComponent.substring(0,activeComponent.length - 1))} gameMode={activeComponent[activeComponent.length - 1]} watchmode={false}/>}
+                        {activeComponent.startsWith("invitePlay") && <InvitePlay changeComponent={changeComponent} name={user.gameLogin} socket={socket} friendId={+extractId(activeComponent)} mode={modeInvite} changeMode={changeMode} previousActiveComponent={front}/>}
                         {activeComponent === "GameOver" && <GameOver changeComponent={changeComponent} />}
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent} />}
                         {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} refreshUser={getUser} />}
@@ -265,7 +265,7 @@ useEffect(() => {
                         {activeComponent === "ultimeLead" && <Classement rank={'ultime'} changeComponent={changeComponent} />}
                         {activeComponent.startsWith("watch") && <Game changeComponent={changeComponent} socket={socket} opponentID={extractId(activeComponent)} gameMode={activeComponent[activeComponent.length - 1]} watchmode={true} />}
 						{/* {activeComponent.startsWith("PublicProfile") && <PublicProfil id={extractId(activeComponent)}> */}
-                        {activeComponent.startsWith("queue") && <Queue mode={extractText(activeComponent)} name={user.username} socket={socket} changeComponent={changeComponent} />}
+                        {activeComponent.startsWith("queue") && <Queue mode={extractText(activeComponent)} name={user.gameLogin} socket={socket} changeComponent={changeComponent} />}
                         {activeComponent === "rank" && <Rank user={user} changeComponent={changeComponent} />}
                         {activeComponent === "Choices" && <GameChoice changeComponent={changeComponent} />}
                     </div>
