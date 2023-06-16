@@ -103,6 +103,10 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 			else
 				setConnected((prevList) => [...prevList, newUser]);
         })
+		socket?.on('refreshBlocked', (newUser: User) => {
+				console.log('blocked', newUser);
+				setBlocked((prevList) => [...prevList, newUser]);
+        })
 		socket?.on('kickUser', (response) => {
             changeComponent(`${returnTo}-You got kicked from ${response.name}`);
         })
@@ -224,6 +228,21 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 	const [askPass, setAskPass] = useState(false);
 	const returnTo : string = (room?.type === 'public' || room?.type === 'protected')  ? 'pubchat' : 'privchat';
 
+	function getOtherUser(roomName: string, username: string | undefined): string | null {
+		const [userA, userB] = roomName.split(' - ');
+		if (username === userA) {
+		  return userB;
+		} else if (username === userB) {
+		  return userA;
+		}
+		return null;
+	}
+	const nameDisplay = room?.type ==='direct' ?
+	getOtherUser(room.name, user.gameLogin)
+	: room?.name;
+
+	const buttonNerfed: CSSProperties = {cursor: 'default',}
+
     return (
 		<div className='ChatRoom'>
 			<div> 
@@ -243,22 +262,22 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 			{/* Left Block with users options*/}
         <div className='UsersBlock'>
 			<div className='UsersTopBar'>
-			<button style={salonButton} className='salonButton' onClick={() => selectUsersField('salon')}>SALON</button>
-			<button style={blockedButton} className='blockedButton' onClick={() => selectUsersField('banned')}>BANNED</button>
-			<button style={friendsButton} className='friendsButton' onClick={() => selectUsersField('friends')}>FRIENDS</button>
+			{room?.type !== 'direct' && <button style={salonButton} className='salonButton' onClick={() => selectUsersField('salon')}>SALON</button>}
+			{room?.type !== 'direct' && <button style={blockedButton} className='blockedButton' onClick={() => selectUsersField('banned')}>BANNED</button>}
+			{room?.type !== 'direct' && <button style={friendsButton} className='friendsButton' onClick={() => selectUsersField('friends')}>FRIENDS</button>}
 			</div>
 			<div className='UsersList' style={UsersList}>
 			{usersField === 'salon' && filteredWhitelist.map((target) => <EntryUsersChat socket={socket} user={user}
-			 target={target} field='salon' changeComponent={changeComponent} handleUserClick={handleUserClick} connected={connected} key={target.id} admins={admins} owner={owner} blocked={blocked}/>)}
+			 target={target} field='salon' changeComponent={changeComponent} handleUserClick={handleUserClick} connected={connected} key={target.id} admins={admins} owner={owner} blocked={blocked} room={room}/>)}
 			{usersField === 'banned' && banned.map((target) => <EntryUsersChat socket={socket} user={user}
-			 target={target} field='banned' changeComponent={changeComponent} handleUserClick={handleUserClick} connected={connected} key={target.id} admins={admins} owner={owner} blocked={blocked}/>)}
+			 target={target} field='banned' changeComponent={changeComponent} handleUserClick={handleUserClick} connected={connected} key={target.id} admins={admins} owner={owner} blocked={blocked} room={room}/>)}
 			{usersField === 'friends' && friends.map((target) => <EntryUsersChat socket={socket} user={user}
-			 target={target} field='friends' changeComponent={changeComponent} handleUserClick={handleUserClick} connected={connected} key={target.id} admins={admins} owner={owner} blocked={blocked}/>)}
+			 target={target} field='friends' changeComponent={changeComponent} handleUserClick={handleUserClick} connected={connected} key={target.id} admins={admins} owner={owner} blocked={blocked} room={room}/>)}
 			</div>
 	    </div>
-	<div>
-
+		
    			{/* Popup on user selection */}
+	<div>
 	{selectedTarget && <PopupChat user={selectedTarget} position={popupPosition} setSelectedTarget={setSelectedTarget} socket={socket}
 	 room={room} clientName={user.username} changeComponent={changeComponent} field={usersField} whitelist={whitelist} returnTo={returnTo} />}
    </div>
@@ -267,14 +286,14 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 					
    			{/* Upper Block with Chatroom Options */}
 			   <div className='RoomBlock'>
-			   <span className='RoomRank' style={rankColor}> <div>Rank : {roomRank} </div> </span>
-			   <button className='RoomName' onClick={handleRoomClick}> <div>{room?.name}</div> </button>
+			  {room?.type !== 'direct' && <span className='RoomRank' style={rankColor}> <div>Rank : {roomRank} </div> </span>}
+			   <button className='RoomName' onClick={handleRoomClick} style={buttonNerfed}> <div>{nameDisplay}</div> </button>
 			   <button className='Leave' 
 			   onClick={() => changeComponent(returnTo)}>
 				<div>Leave</div> </button>
 			   </div>
    			{/* Popup on room click */}
-			{roomClicked && <RoomOptions position={popupPosition} socket={socket} changeComponent={changeComponent} setRoomClicked={setRoomClicked} user={user} admins={admins} room={room} setAskPass={setAskPass} type={type} returnTo={returnTo} />}
+			{roomClicked && room?.type !== 'direct' && <RoomOptions position={popupPosition} socket={socket} changeComponent={changeComponent} setRoomClicked={setRoomClicked} user={user} admins={admins} room={room} setAskPass={setAskPass} type={type} returnTo={returnTo} />}
 
 			{/* Popup for password */}
 				{askPass && <form ref={passPopupRef} className='passPopup' onSubmit={submitPass}>
@@ -287,7 +306,7 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 
 				{/* display messages */}
 				<div className='MessagesBlock'>
-				{messages.map((message) => <MessageEntry author={message.author} text={message.text}  key={message.id} admins={admins} owner={owner} handleUserClick={handleUserClick} blocked={blocked}/>)}
+				{messages.map((message) => <MessageEntry author={message.author} text={message.text}  key={message.id} admins={admins} owner={owner} handleUserClick={handleUserClick} blocked={blocked} room={room}/>)}
 				</div>
 
 				{/* input for messages */}	

@@ -95,7 +95,7 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, so
 
   const handleSendMessage = () => {
     changeComponent(`${returnTo}`);
-    socket?.emit('leave', {roomId: roomId, name: clientName});
+    // socket?.emit('leave', {roomId: roomId, name: clientName});
     socket?.emit('createDirectMessage', {targetId: user.id});
   };
 
@@ -143,13 +143,17 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, so
   const handleAddToChat = () => {
     socket?.emit('addToChat', {friendId: user.id, roomId:roomId});
   }
+  
+  const handleSeeProfile = () => {
+  }
 
   const isWhitelisted =  whitelist.some((guy) => guy.id === user.id);
 
   return (
     <div style={popupStyle} onClick={handleClickOutside} onMouseLeave={handleClickOutside}>
       <span style={UsernameStyle}>{user.gameLogin}</span>
-      <button style={Buttons} onClick={handleSendMessage}>Send Message</button>
+      <button style={Buttons} onClick={handleSeeProfile}>See Profile</button>
+      {room?.type != 'direct' && <button style={Buttons} onClick={handleSendMessage}>Send Message</button>}
       <button style={Buttons} onClick={handleInviteToPlay}>Invite to Play</button>
       {field !== 'friends' && <button style={Buttons} onClick={handleAddFriend}>Add Friend</button>}
       <button style={Buttons} onClick={handleBlock}>Block</button>

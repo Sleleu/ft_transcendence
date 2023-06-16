@@ -185,9 +185,20 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 
 
 	@SubscribeMessage('findRoomMessages')
-	findRoom(@MessageBody('id') id: number) {
-	  const messages = this.messagesService.getMessagesByRoom(id);
-	  return messages;
+	async findRoomMessages(@ConnectedSocket() client: Socket,
+	@MessageBody('id') id: number) {
+		const user = await this.socketService.getUser(client.id);
+			if (!user)
+				return ;
+		const messages = await this.messagesService.getMessagesByRoom(id);
+		const blockedUsers = await this.messagesService.getBlockedUsers(user.id);
+
+		const filteredMessages = messages.filter((message) => {
+			const authorId = message.author.id;
+			return !blockedUsers.some((blockedUser) => blockedUser.id === authorId);
+		  });
+		
+		return filteredMessages;
 	}
 	
 	@SubscribeMessage('createMessage')
@@ -469,17 +480,26 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 	@SubscribeMessage('createDirectMessage')
 	async createDirectMessage(@MessageBody('targetId') targetId: number,
 	@ConnectedSocket() client: Socket) {
+		try {
 		const userA = await this.socketService.getUser(client.id);
 		if (!userA)
 			return ;
 		const userB = await this.messagesService.searchUserId(targetId);
 		if (!userA || !userB)
 			throw new ForbiddenException('User does not exist');
+
+		const blockedA = await this.messagesService.getBlockedUsers(userA.id);
+		const blockedB = await this.messagesService.getBlockedUsers(userB.id);
+		if (blockedA.some((user) => user.id === userB.id))
+			throw new ForbiddenException('This user is blocked !');
+		if (blockedB.some((user) => user.id === userA.id))
+			throw new ForbiddenException('This user has blocked you !');
+
 		const roomExists = await this.messagesService.findDirectMsg(userA.id, userB.id);
 		if (roomExists)
 		{
 			client.join(roomExists.id.toString());
-			client.emit('joinSuccess', {id: roomExists.id, roomName: roomExists.name});
+			client.emit('passSuccess', {id: roomExists.id});
 		}
 		else
 		{
@@ -488,8 +508,11 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 				throw new ForbiddenException('Room cannot be created');
 			client.join(room.id.toString());
 			client.emit('newRoom', room);
-			this.server.to(`user_${targetId}`).emit('kickUser', {name: room.name});
-			client.emit('joinSuccess', {id: room.id, roomName: room.name});
+			this.server.to(`user_${targetId}`).emit('newRoom', room);
+			client.emit('passSuccess', {id: room.id});
+		}
+		} catch (e) {
+			client.emit('msgError', { message: e.message });
 		}
 	}
 
@@ -526,12 +549,22 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		const room = await this.messagesService.getRoomById(roomId);
 		if (!room)
 			throw new ForbiddenException('Room does not exist');
+		if (room.type === 'direct')
+			throw new ForbiddenException('Cannot add user to private message');
 		const verifyClient = await this.messagesService.isAdmin(room.id, user.id);
 		if (!verifyClient)
 			throw new ForbiddenException('User is not an admin');
 		const target = await this.messagesService.searchUserId(friendId);
 		if (!target)
 			throw new ForbiddenException('Target does not exist');
+
+		const blockedA = await this.messagesService.getBlockedUsers(user.id);
+		const blockedB = await this.messagesService.getBlockedUsers(target.id);
+		if (blockedA.some((blocked) => blocked.id === target.id))
+			throw new ForbiddenException('This user is blocked !');
+		if (blockedB.some((blocked) => blocked.id === user.id))
+			throw new ForbiddenException('This user has blocked you !');
+	
 		this.messagesService.addWhitelistUser(room.id, friendId);
 		this.server.to(room.id.toString()).emit('refreshWhiteList', target, false);
 		if (room.type === 'private' || room.type === 'direct')

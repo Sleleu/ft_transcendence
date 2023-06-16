@@ -276,20 +276,20 @@ export class MessageService {
     }
     const messagesFiltered = messages.map(filteredMessage);
     return messagesFiltered;
-}
+} 
 
   async findDirectMsg(idA: number, idB: number) {
     const directIdA: string = idA.toString() + idB.toString();
     const roomA = await this.prisma.room.findFirst({
       where: {directId: directIdA},
     })
-    if (roomA)
+    if (roomA && roomA.active)
     return roomA;
     const directIdB: string = idB.toString() + idA.toString();
     const roomB = await this.prisma.room.findFirst({
       where: {directId: directIdB},
     })
-    if (roomB)
+    if (roomB && roomB.active)
       return roomB;
     return null;
   }
@@ -297,7 +297,7 @@ export class MessageService {
     const exists = await this.findDirectMsg(userA.id, userB.id);
     if (exists)
       return exists;
-    const name = userA.username + ' - ' + userB.username;
+    const name = userA.gameLogin + ' - ' + userB.gameLogin;
     const directId: string = userA.id.toString() + userB.id.toString();
     const room = await this.prisma.room.create({
       data: {
@@ -403,8 +403,18 @@ export class MessageService {
     });
   }
 
-  async verifyBlock(userId: number, blockedId: number) {
+  async getBlockedUsers(userId: number) {
+    const blocked = await this.prisma.bloqueUser.findMany({
+      where: { senderId: userId },
+      include: { recipient: true },
+    });
+    const filteredBlocked = blocked.map((block) => block.recipient);
 
+    const filteredUser = (user: User): any => {
+      const { access_token, ...filteredData } = user;
+      return filteredData;
+    };
+    return filteredBlocked.map(filteredUser);
   }
 
 }

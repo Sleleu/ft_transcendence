@@ -23,8 +23,8 @@ const RoomOptions: React.FC<Props> = ({position, setRoomClicked, user, admins, c
     const isAdmin = admins.some((admin) => admin.id === user.id);
 
     const handleQuit = () => {
-        socket?.emit('quitRoom', {roomId: room?.id});
-        changeComponent(`${returnTo}`);
+      socket?.emit('quitRoom', {roomId: room?.id});
+      changeComponent(`${returnTo}`);
     }
     const handleDelete = () => {
       socket?.emit('deleteRoom', {roomId: room?.id});

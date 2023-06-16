@@ -1,6 +1,7 @@
 import React from 'react'
 import { CSSProperties } from 'styled-components';
 import { User } from '../types';
+import { Room } from './chatTypes';
 
 
 interface Props {
@@ -10,12 +11,13 @@ interface Props {
     owner: User | undefined;
     handleUserClick: (target: User, event: React.MouseEvent<HTMLSpanElement>) => void;
     blocked: User[];
+    room?: Room;
 }
 
-const MessageEntry:React.FC<Props> = ({author, text, admins, owner, handleUserClick, blocked}) => {
+const MessageEntry:React.FC<Props> = ({author, text, admins, owner, handleUserClick, blocked, room}) => {
 	
   let roomRank: string;
-	if (owner) {
+	if (owner && room?.type !== 'direct') {
 		roomRank =  author.id === owner.id ? 'Owner' :
 		admins.some((admin) => admin.id === author.id) ? 'Admin' : 'Member';
 	}	else {

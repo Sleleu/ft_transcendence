@@ -3,6 +3,7 @@ import { SocketsService } from './sockets.service';
 import { Server, Socket } from 'socket.io';
 import { FriendService } from 'src/friend/friend.service';
 import { QueueService } from './queue.service';
+import { MessageService } from './message.service';
 
 
 @WebSocketGateway({ cors: true })
@@ -25,7 +26,8 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
   constructor(
     private readonly socketService: SocketsService,
     private readonly friendService: FriendService,
-    private readonly queueService: QueueService) { }
+    private readonly queueService: QueueService,
+    private readonly messageService: MessageService,) { }
 
   @SubscribeMessage('getFriend')
   async getFriendsByUserId(@ConnectedSocket() client: Socket) {
@@ -114,6 +116,9 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
     this.server.to(`user_${user.id}`).emit('receiveFriend', { friends: friendUser })
     const friendFriend = await this.friendService.getFriendsByUserId(+body.id)
     this.server.to(`user_${body.id}`).emit('receiveFriend', { friends: friendFriend });
+    const target = await this.messageService.searchUserId(body.id);
+    if (target)
+      this.server.to(`user_${user.id}`).emit('refreshBlocked', target);
   }
 
   @SubscribeMessage('invitePlay')

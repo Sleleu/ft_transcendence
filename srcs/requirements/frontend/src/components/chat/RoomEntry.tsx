@@ -18,16 +18,16 @@ interface Props {
 	key: number;
   handleSelect: (id: number, roomName: string, type: string, owner?: string) => void;
   socket?: Socket;
+  user: User;
 }
 
-const RoomEntry:React.FC<Props> = ({room, handleSelect, socket}) => {
+const RoomEntry:React.FC<Props> = ({room, handleSelect, socket, user}) => {
 
 const [owner, setOwner] = useState(room.owner);
 const [newMsg, setNewMsg] = useState<boolean>(false);
 const [roomType, setRoomType] = useState<string>(room.type);
 
 const RoomsContainer: CSSProperties = {
-  // border: newMsg ? '1px solid #0f0' : '1px solid #fff',
   boxShadow: newMsg ? 'inset 0 0 30px #0a0' : 'null',
 }
 const Type: CSSProperties = {
@@ -57,6 +57,19 @@ useEffect(() => {
 
   }, []);
 
+	function getOtherUser(roomName: string, username: string | undefined): string | null {
+		const [userA, userB] = roomName.split(' - ');
+		if (username === userA) {
+		  return userB;
+		} else if (username === userB) {
+		  return userA;
+		}
+		return null;
+	}
+	const nameDisplay = room?.type ==='direct' ?
+	getOtherUser(room.name, user.gameLogin)
+	: room?.name;
+  
   return (
     <div className='RoomBox' style={RoomsContainer} onClick={() => handleSelect(room.id, room.name, roomType, owner?.username)}>
       {room.type !== 'direct' && <div style={Block}>
@@ -72,7 +85,7 @@ useEffect(() => {
         <span style={Type}>{roomType.toUpperCase()}</span>
       </div>}
       {room.type === 'direct' && <div style={Block}>
-        <span>{room.name}</span>
+        <span className='directMsgEntry'>{nameDisplay}</span>
       </div>}
       {!newMsg && <img src={msgGrey} className='iconMsg'></img>}
       {newMsg && <img src={msgGreen} className='iconMsg'></img>}

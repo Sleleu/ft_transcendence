@@ -180,8 +180,8 @@ const RoomSelect:React.FC<Props> = ({user, socket, changeComponent, message, sta
             <div className='SelectScreen'>
             {roomsDisplayed === 'PUBLIC' && publicRooms.length === 0 && <div className='EmptySelection'>You don't have any rooms yet !</div>}
             {roomsDisplayed === 'PRIVATE' && privateRooms.length === 0 && <div className='EmptySelection'>You don't have any rooms yet !</div>}
-            {roomsDisplayed === 'PUBLIC' && publicRooms.map((room) => <RoomEntry room={room} key={room.id} handleSelect={handleSelect} socket={socket}/>)}
-            {roomsDisplayed === 'PRIVATE' && privateRooms.map((room) => <RoomEntry room={room} key={room.id} handleSelect={handleSelect} socket={socket}/>)}
+            {roomsDisplayed === 'PUBLIC' && publicRooms.map((room) => <RoomEntry room={room} key={room.id} handleSelect={handleSelect} socket={socket} user={user}/>)}
+            {roomsDisplayed === 'PRIVATE' && privateRooms.map((room) => <RoomEntry room={room} key={room.id} handleSelect={handleSelect} socket={socket} user={user}/>)}
             </div>
 
             {/* Create Room popup */}
