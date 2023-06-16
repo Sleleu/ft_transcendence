@@ -535,7 +535,7 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		this.messagesService.addWhitelistUser(room.id, friendId);
 		this.server.to(room.id.toString()).emit('refreshWhiteList', target, false);
 		if (room.type === 'private' || room.type === 'direct')
-			this.server.to(`user_${friendId}`).emit('kickUser', {name: room.name});
+			this.server.to(`user_${friendId}`).emit('newRoom', room);
 		}
 		catch (e) {
 			client.emit('msgError', { message: e.message });

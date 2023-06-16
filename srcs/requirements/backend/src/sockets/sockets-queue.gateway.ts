@@ -23,43 +23,48 @@ export class SocketsQueueGateway implements OnGatewayConnection, OnGatewayDiscon
 
     @SubscribeMessage('addQueuen')
     async addQueue(@ConnectedSocket() client: Socket) {
-        const user = await this.socketService.getUser(client.id);
-        if (!user)
-            return ;
-        const stack = this.queueService.addToStack(user.id)
-        if (stack) {
-            if (stack[0] === user.id)
+        try {
+
+            const user = await this.socketService.getUser(client.id);
+            if (!user)
+            {  
+                console.log('User undefined');
+                return ;
+            }
+            const stack = await this.queueService.addToStack(user.id)
+            if (stack) {
+                if (stack[0] === user.id)
                 await this.send(client, stack, 1, 0)
-            else
+                else
                 await this.send(client, stack, 0, 1)
+            }            
+        }
+        catch (e) {
+            client.emit('errorQueue', e.message);
         }
     }
 
     @SubscribeMessage('addQueueb')
     async addQueueBonus(@ConnectedSocket() client: Socket) {
-        const user = await this.socketService.getUser(client.id);
+        try {
+            const user = await this.socketService.getUser(client.id);
         if (!user)
             return ;
-        const stack = this.queueService.addToStackBonus(user.id)
+        const stack = await this.queueService.addToStackBonus(user.id)
         if (stack) {
             if (stack[0] === user.id)
                 await this.send(client, stack, 1, 0)
             else
                 await this.send(client, stack, 0, 1)
         }
+    }        catch (e) {
+        client.emit('errorQueue', e.message);
+    }
     }
 
     async send(client: Socket, stack: number[], userIndex: number, vsIndex: number) {
         const opponent = await this.queueService.retUser(stack[userIndex])
         client.emit('vsName', { opponent: opponent })
-        // const friendSocketId = this.socketService.findSocketById(stack[userIndex])
-        // if (friendSocketId) {
-        //     const friendSocket = this.server.sockets.sockets.get(friendSocketId)
-        //     if (friendSocket) {
-        //         const Opponent = await this.queueService.retUser(stack[vsIndex])
-        //         friendSocket.emit('vsName', { opponent: Opponent })
-        //     }
-        // }
 
         const Opponent = await this.queueService.retUser(stack[vsIndex]);
         if (Opponent)
