@@ -151,7 +151,7 @@ export class UserService {
         return updatedUser;
       }
     
-      async setAvatarSelected(id: number) {
+    async setAvatarSelected(id: number) {
         const user = await this.prismaService.user.update({
             where: {id: id},
             data: { avatarSelected: true },
@@ -173,4 +173,29 @@ export class UserService {
           throw new NotFoundException('User not found');
         }
       }
+
+    async getPublicUserInfo(id: number) {
+        try {
+          const publicInfo = await this.prismaService.user.findUnique({
+            where: {
+              id: id,
+            },
+            select: {
+              gameLogin: true,
+              elo: true,
+              win: true,
+              loose: true,
+              avatar: true,
+            }
+            });
+            console.log("test public user : ", publicInfo)
+            if (!publicInfo) {
+              throw new HttpException('User not found', 404);
+            }
+            return publicInfo;
+        } catch (error) {
+          console.error(error);
+          throw new HttpException('Error retrieving user information', 400);
+        }
+    }
 }
