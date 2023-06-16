@@ -32,6 +32,23 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	handleDisconnect(client: Socket) {
 	}
 
+	updatePrismaData(connectedClients: (Socket<any> | undefined)[], game_service: GameService): void{
+		if (connectedClients[0] && connectedClients[1])
+		{
+			const player2 = this.socketService.getUser(connectedClients[1]?.id);
+			const player1 = this.socketService.getUser(connectedClients[0]?.id);
+			if (game_service.getGameState().playerScore > game_service.getGameState().opponentScore){
+				player1.win++;
+				player2.loose++;
+			} else if (game_service.getGameState().playerScore < game_service.getGameState().opponentScore){
+				player1.loose++;
+				player2.win++;
+			}
+			console.log("debugging: ", player1.username , " with " , player1.win , player2.username,  " with " , player2.win )
+
+		}
+	}
+
 	startGameInterval(clients: (Socket<any> | undefined)[]): void {
 		let game_service = this.getGameService(clients);
 		let connectedClients = clients;
@@ -44,15 +61,7 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		this.interval = setInterval(() => {
 		if (game_service?.getwinner() && connectedClients[1] && connectedClients[0])
 		{
-			const player2 = this.socketService.getUser(connectedClients[1]?.id);
-			const player1 = this.socketService.getUser(connectedClients[0]?.id);
-			if (game_service.getGameState().playerScore > game_service.getGameState().opponentScore){
-				player1.win++;
-				player2.loose++;
-			} else if (game_service.getGameState().playerScore < game_service.getGameState().opponentScore){
-				player1.loose++;
-				player2.win++;
-			}
+			this.updatePrismaData(connectedClients, game_service)
 			connectedClients.forEach((client)=> {
 				if (client)
 				{
@@ -64,7 +73,6 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		else if (connectedClients.length === 2  && !game_service?.getGameState().pause)
 		{
 			game_service?.bounceBall();
-			console.log("number of connected clients: ", connectedClients.length)
 			connectedClients.forEach((client)=> {
 				if (client)
 					client.emit('updateBallPosition', game_service?.getGameState());
@@ -105,7 +113,6 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 
 		if (!this.find_clients(client1, client2))
 		{
-			console.log("creating the game service")
 			const game_service = new GameService;
 			this.gameSessions.set([client1, client2], game_service);
 			this.gameSessions.get([client1, client2])?.setnumofPlayers();
@@ -128,29 +135,26 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		return false;
 	  }
 
-	async updatePlayerStatus(client: (Socket<any> | undefined)) {
+	async updatePlayerStatus(client: (Socket<any> | undefined), status: string) {
 		const token = client?.handshake.headers.cookie?.substring(14);
 		if (token)
 		{
 			const user = await this.socketService.getUserWithToken(token);
-			this.socketService.changeState(+user.id, 'is playing')
+			this.socketService.changeState(+user.id, status)
 		}
 	}
 
 	@SubscribeMessage('join-room')
 	joinroom(@MessageBody() gameMode: gameModeDto, @ConnectedSocket() client: Socket): void{
-
-		//CREATING A NEW NODE TO THE GAME SESSION USING CLIENT AND THE OPPONENTID
 		const opponent = this.socketService.findSocketById(+(gameMode.opponentid));
 		if (opponent && (!this.find_session(client, this.server.sockets.sockets.get(opponent)))){
 			let clients = [client, this.server.sockets.sockets.get(opponent)];
 			let i = 0;
-			console.log("didnt find the pair of clients created one");
 			this.getGameService(clients)?.setSpeed(gameMode.Mode);
 			for (const client of clients) {
 				if (client)
 					client.emit('start', ++i);
-				this.updatePlayerStatus(client);
+				this.updatePlayerStatus(client, "is playing");
 			}
 			this.getGameService(clients)?.startGame();
 			this.startGameInterval(clients);
@@ -168,6 +172,7 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		  if (connectedClients.includes(client)) {
 			connectedClients.forEach((clients) => {
 				clients?.emit("game-over");
+				this.updatePlayerStatus(clients, "online");
 			})
 			this.getGameService(connectedClients)?.resetGame();
 			this.stopGameInterval();
@@ -213,6 +218,8 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 					game_serv.resetGame();
 					connectedClients[leavingplayerind]?.emit("player-left");
 					connectedClients[opponentIndex]?.emit("game-over");
+					this.updatePlayerStatus(connectedClients[leavingplayerind], "online");
+					this.updatePlayerStatus(connectedClients[opponentIndex], "online");
 					this.stopGameInterval();
 					this.deleteSession(connectedClients);
 				}
@@ -240,7 +247,16 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 				break;
 			}
 		  }
+	}
 
-
+	@SubscribeMessage('spectator-left')
+	spectatorLeft(@ConnectedSocket() client: Socket): void{
+		for (const [key, gameService] of this.gameSessions.entries()) {
+			if (gameService.lookupSpectator(client))
+			{
+				gameService.removeSpectator(client);
+				break;
+			}
+		}
 	}
 }

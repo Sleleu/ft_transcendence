@@ -57,6 +57,8 @@ function Home() {
     const front = () => {
         if (activeComponent.startsWith("game"))
             socket?.emit("player-left");
+        if (activeComponent.startsWith("watch"))
+            socket?.emit("spectator-left")
         if (stack.length === 1) {
             setActiveComponent(stack[stack.length - 1])
             return;
@@ -65,7 +67,7 @@ function Home() {
             setActiveComponent('play')
             return;
         }
-        if (stack[stack.length - 1].startsWith("game"))
+        if (stack[stack.length - 1].startsWith("game") || stack[stack.length - 1].startsWith("watch") )
         {
             setActiveComponent(stack[stack.length - 2]);
             pop();
@@ -98,9 +100,10 @@ function Home() {
     }
 
     const changeComponent = (component: string) => {
-        if (activeComponent.startsWith("game")){
+        if (activeComponent.startsWith("game"))
             socket?.emit("player-left");
-        }
+        if (activeComponent.startsWith("watch"))
+            socket?.emit("spectator-left");
         if (activeComponent !== component && !activeComponent.startsWith("queue") && !activeComponent.startsWith('invitePlay')) {
             push(activeComponent)
         }

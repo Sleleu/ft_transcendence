@@ -74,17 +74,17 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
       setState(gameState);
     });
 
-    socket?.on('start', (_playerID: number) => {
-      console.log("client side event: start with id of: ", _playerID);
+    socket?.on('start', (ID: number) => {
+      console.log("client side event: start with id of: ", ID);
       setState((prevState) => ({
         ...prevState,
         pause: false,
-        playerID: _playerID,
+        playerID: ID,
       }));
     });
 
     socket?.on('updateBallPosition', (gameState: GameState) => {
-      console.log("client side event: updateBallPosition ", socket.id);
+      console.log("client side event: updateBallPosition ");
       setState((prevState) => ({
         ...prevState,
         deltaX: gameState.deltaX,
@@ -104,7 +104,7 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
     });
 
     return () => {
-      socket?.emit("GameOver");
+      // socket?.emit("GameOver");
     };
   }, []);
 

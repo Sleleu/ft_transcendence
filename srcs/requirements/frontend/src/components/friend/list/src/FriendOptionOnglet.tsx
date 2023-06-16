@@ -85,7 +85,6 @@ const FriendOptionOnglet = ({ changeComponent, context, txt, friend, change, soc
 
     const watchGame = () => {
         const compo = "watch" + friend.id
-        // console.log("watch requested: ", friend.id)
         changeComponent(compo)
     }
 

@@ -38,6 +38,15 @@ export class GameService {
 		}
 	}
 
+	lookupSpectator(lookup: Socket<any>): boolean{
+		for (let i = 0; i < this.spectators.length ; i++)
+		{
+			if (this.spectators[i] === lookup)
+				return true;
+		}
+		return false;
+	}
+
 	spectatorGameEnded(): void {
 		this.spectators.forEach((spectator) => {
 			spectator.emit('game-over');
@@ -51,7 +60,6 @@ export class GameService {
 	}
 
 	getGameState() : GameState{
-	// console.log("server service: gameState");
 		return this.gameState;
 	}
 
@@ -103,10 +111,8 @@ export class GameService {
 	updateScores(): void{
 		if (this.gameState.deltaX !== -1) {
 			this.gameState.playerScore++;
-			console.log("player scores");
 		} else {
 			this.gameState.opponentScore++;
-			console.log("opponent scores");
 		}
 	}
 
@@ -118,11 +124,9 @@ export class GameService {
 
 	bounceBall():void{
 		const newstate = this.gameState.ball + (this.gameState.deltaY + this.gameState.deltaX);
-		// console.log(newstate);
-		if (this.rightleftEdge(newstate)) {
-			//they missed the ball , the direction should change for next start
-			this.gameState.deltaX = -this.gameState.deltaX;
+		if (this.rightleftEdge(newstate)) {//they missed the ball
 			this.gameState.ball = Math.round((ROW_SIZE * COL_SIZE) / 2) + ROW_SIZE;
+			this.updateScores();
 		}
 		else{
 			if (this.topbottomEdge(newstate))
