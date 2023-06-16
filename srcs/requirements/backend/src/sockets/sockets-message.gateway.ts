@@ -63,16 +63,18 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		return owner;
 	}
 	@SubscribeMessage('createRoom')
-	async createRoom(@MessageBody() dto: CreateRoomDto,
+	async createRoom(@MessageBody('roomName') roomName: string,
+	@MessageBody('type') type: string,
 	@ConnectedSocket() client: Socket) {
+		console.log(roomName);
 		try {
-			if (dto.name.length > 7)
+			if (roomName.length > 14)
 				throw new ForbiddenException('Room name too long');
 			const user = this.socketService.getUser(client.id);
-			const exists = await this.messagesService.getRoomByName(dto.name);
+			const exists = await this.messagesService.getRoomByName(roomName);
 			if (exists)
-			throw new ForbiddenException('Room alerady exists');
-			const room = await this.messagesService.createRoom(dto, user.id);
+				throw new ForbiddenException('Room alerady exists');
+			const room = await this.messagesService.createRoom(user.id, roomName, type);
 			this.messagesService.addWhitelistUser(room.id, user.id);
 			this.messagesService.promoteAdmin(room.id, user.id);
 			if (room.type === 'private')
@@ -85,9 +87,35 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 			client.emit('createError', { message: e.message });
 		}
 	}
+
+	@SubscribeMessage('verifyPassword')
+	async verifyPassword(@MessageBody('roomId') roomId: number,
+	@MessageBody('password') password: string,
+	@ConnectedSocket() client: Socket) {
+		try {
+			const room = await this.messagesService.getRoomById(roomId);
+			if (!room)
+				throw new ForbiddenException('Room does not exist');
+				const user = this.socketService.getUser(client.id);
+				const admin = await this.messagesService.isAdmin(room.id, user.id);
+				
+			if (room.type != 'protected' || admin)
+				client.emit('passSuccess', {id: room.id});
+			else
+			{
+				if (!password || !room.password)
+					throw new ForbiddenException('Access Forbidden');
+				const passwordMatch = await argon.verify(room.password, password);
+				if (!passwordMatch)
+					throw new ForbiddenException('Wrong password provided');
+			}
+			client.emit('passSuccess', {id: room.id});
+		} catch (e) {
+			client.emit('passError', { message: e.message });
+		}
+	}
 	@SubscribeMessage('join')
 	async joinRoom(@MessageBody('roomId') roomId: number,
-	@MessageBody('password') password: string,
 	 @ConnectedSocket() client: Socket) {
 		try {
 		const room = await this.messagesService.getRoomById(roomId);
@@ -103,32 +131,21 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		  if (!whitelisted)
 			throw new ForbiddenException('Access to private room forbidden');
 		}
-		if (room.type === 'protected')
-		{
-			if (!whitelisted)
-			{
-				if (!password || !room.password)
-					throw new ForbiddenException('Access Forbidden');
-				const passwordMatch = await argon.verify(room.password, password);
-				if (!passwordMatch)
-					throw new ForbiddenException('Wrong password provided');
-			}
-		}
 		client.join(roomId.toString());
 		console.log(user.username, 'joined room :', room.name);
 		if (room.type === 'protected' || room.type === 'public')
 		{
 			if (!whitelisted)
 			{
-				this.messagesService.addWhitelistUser(room.id, user.id);
+				await this.messagesService.addWhitelistUser(room.id, user.id);
 				this.server.to(roomId.toString()).emit('refreshWhiteList', user, false);
 			}
 		}
 		await this.messagesService.connectedUser(room.id, user.id);
-		client.emit('joinSuccess', {id: room.id, roomName: room.name});
+		client.emit('joinSuccess', room.name);
 		this.server.to(roomId.toString()).emit('refreshConnected', user, false);
 	} catch (e) {
-		client.emit('joinError', { message: e.message });
+		client.emit('joinError',  e.message );
 	}
 	}
 

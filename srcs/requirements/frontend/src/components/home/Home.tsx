@@ -13,7 +13,6 @@ import Settings from '../settings/Settings';
 import Stats from '../popup/Stats/Stats';
 import Login from '../Login/Login';
 import CreateAccount from '../Login/CreateAccount';
-import Chat from '../chat/Chat';
 import Friend from '../friend/list/src/friend';
 import { User } from '../types'
 import Cookies from 'js-cookie';

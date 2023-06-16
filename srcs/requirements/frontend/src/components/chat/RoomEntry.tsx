@@ -23,7 +23,7 @@ interface Room {
 interface Props {
 	room: Room;
 	key: number;
-  handleSelect: (id: number, roomName: string, type: string) => void;
+  handleSelect: (id: number, roomName: string, type: string, owner: string) => void;
   socket?: Socket;
 }
 
@@ -33,37 +33,17 @@ const [owner, setOwner] = useState<string>('');
 const [newMsg, setNewMsg] = useState<boolean>(false);
 
 const RoomsContainer: CSSProperties = {
-  height:'100px', margin: '7px', color: '#fff', fontSize:'24px', flex: 'none',
-  border: newMsg ? '1px solid #0f0' : '1px solid #fff',
+  // border: newMsg ? '1px solid #0f0' : '1px solid #fff',
   boxShadow: newMsg ? 'inset 0 0 30px #0a0' : 'null',
-  borderRadius: '30px', cursor: 'pointer', display: 'flex', justifyContent: 'space-around',
-}
-const legend: CSSProperties = {
-  fontSize: '18px', fontStyle: 'italic',
-}
-const Owner: CSSProperties = {
-  color:'#ee3388',
-}
-const Salon: CSSProperties = {
-  fontWeight: '600', color:'#00ccdd',
-}
-const Conversation: CSSProperties = {
-  fontWeight: '600', color:'#5ff', fontSize: '36px',
 }
 const Type: CSSProperties = {
   color: (room.type === 'public') ? '#00ee13'
   : (room.type === 'protected') ? '#eeaa00'
   : '#ff0000',
 }
-const InSalon: CSSProperties = {
-  color:'#ffdd77',
-}
+
 const Block: CSSProperties = {
   display: 'flex', flexDirection:'column', justifyContent: 'space-around',
-}
-const MSG: CSSProperties = {
-  height: '40%',
-  alignSelf: 'center',
 }
 
 useEffect(() => {
@@ -82,28 +62,24 @@ useEffect(() => {
 }, []);
 
   return (
-    <div style={RoomsContainer} onClick={() => handleSelect(room.id, room.name, room.type)}>
+    <div className='RoomBox' style={RoomsContainer} onClick={() => handleSelect(room.id, room.name, room.type, owner)}>
       {room.type !== 'direct' && <div style={Block}>
-      <span style={legend}>Salon Name</span>
-        <span style={Salon}>{room.name}</span>
+      <span className='legend'>Salon Name</span>
+        <span className='salon'>{room.name}</span>
       </div>}
       {room.type !== 'direct' && <div style={Block}>
-        <span style={legend}>Owner</span>
-        <span style={Owner}>{owner}</span>
+        <span className='legend'>Owner</span>
+        <span className='ownerTxt'>{owner}</span>
       </div>}
       {room.type !== 'direct' && <div style={Block}>
-        <span style={legend}>Status</span>
+        <span className='legend'>Status</span>
         <span style={Type}>{room.type.toUpperCase()}</span>
       </div>}
-      {/* {room.type !== 'direct' && <div style={Block}>
-        <span style={legend}>In salon</span>
-        <span style={InSalon}>-42</span>
-      </div>} */}
       {room.type === 'direct' && <div style={Block}>
-        <span style={Conversation}>{room.name}</span>
+        <span>{room.name}</span>
       </div>}
-      {!newMsg && <img src={msgGrey} style={MSG}></img>}
-      {newMsg && <img src={msgGreen} style={MSG}></img>}
+      {!newMsg && <img src={msgGrey} className='iconMsg'></img>}
+      {newMsg && <img src={msgGreen} className='iconMsg'></img>}
 
     </div>
   )

@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, HttpException, Injectable } from '@nestjs/common';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { CreateRoomDto, MessageObj, RoomObj } from './entities/message.entity';
@@ -86,15 +86,19 @@ export class MessageService {
     return rooms?.connected;
   }
 
-  async createRoom(dto: CreateRoomDto, userId: number) {
-    let hash: string = '';
-    if (dto.password)
-      hash = await argon.hash(dto.password);
+  async createRoom(userId: number, roomName: string, type: string) {
+    // let hash: string = '';
+    // if (dto.password)
+    //   hash = await argon.hash(dto.password);
+    const validCharacters = /^[a-zA-Z0-9_-éèàç]+$/
+    if (!validCharacters.test(roomName)) {
+        throw new ForbiddenException('Game login can only contain alphanumeric characters, hyphens and underscores');
+    }
     const room = await this.prisma.room.create({
       data: {
-        name: dto.name,
-        type: dto.type,
-        password: hash,
+        name: roomName,
+        type: type,
+        // password: hash,
         owner: { connect: { id: userId } },
       }
     });

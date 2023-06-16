@@ -42,20 +42,30 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 	 const passPopupRef = useRef<HTMLFormElement>(null);
 
 	 useEffect(() => {
-        socket?.emit('getChatRoomData', {roomId:roomId}, (data: ChatRoomData) => {
-			setWhiteList(data.whitelist);
-			setAdmins(data.admins);
-			setBanned(data.banned);
-			setConnected(data.connected);
-			setFriends(data.friends);
-			setBlocked(data.blocked);
-			setRoom(data.room);
-			setOwner(data.owner);
-			setType(data.room.type);
-		});
-        socket?.emit('findRoomMessages', {id:roomId}, (messages: Message[]) => {
+		socket?.emit('join', {roomId:roomId});
+
+		socket?.on('joinSuccess', (roomName) => {
+			socket?.emit('getChatRoomData', {roomId:roomId}, (data: ChatRoomData) => {
+				setWhiteList(data.whitelist);
+				setAdmins(data.admins);
+				setBanned(data.banned);
+				setConnected(data.connected);
+				setFriends(data.friends);
+				setBlocked(data.blocked);
+				setRoom(data.room);
+				setOwner(data.owner);
+				setType(data.room.type);
+			});
+		})
+		socket?.on('joinError', (message) => {
+			changeComponent('chat');
+			console.log('Error :', message);
+		})
+
+		socket?.emit('findRoomMessages', {id:roomId}, (messages: Message[]) => {
 			setMessages(messages);
 		});
+
 		socket?.on('refreshMessages', (newMsg: Message, undo: boolean) => {
             if (undo)
 				setMessages((prev) => prev.filter((old) => old.id !== newMsg.id))
@@ -178,8 +188,8 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 
 	const [inputText, setInputText] = useState<string>('');
 	const handleTyping = (event: React.ChangeEvent<HTMLInputElement>) => {
-		if (inputText.length >= 200)
-			return ;
+        if (event.target.value.length >= 200)
+            return ;
 		setInputText(event.target.value);
 	};
 	const submitMessage = (e: React.FormEvent) => {
@@ -190,7 +200,7 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 	const [inputPass, setInputPass] = useState<string>('');
 	const [showPass, setShowPass] = useState<string>('password');
 	const handlePass = (event: React.ChangeEvent<HTMLInputElement>) => {
-		if (inputPass.length >= 20)
+		if (event.target.value.length >= 20)
 			return ;
 		setInputPass(event.target.value);
 	};
