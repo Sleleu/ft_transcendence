@@ -22,6 +22,7 @@ export interface rankData {
 }
 
 export interface PublicUserInfo {
+  createAt: string;
   state: boolean;
   gameLogin: string;
   elo: number;

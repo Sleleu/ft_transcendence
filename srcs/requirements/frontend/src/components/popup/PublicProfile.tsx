@@ -4,6 +4,8 @@ import StatElo from './Stats/StatElo';
 import StatMatch from './Stats/StatMatch';
 import { getPublicUserInfo } from '../Api';
 import { PublicUserInfo } from '../types';
+import StatProfile from './Stats/StatProfile';
+import StatRanking from './Stats/StatRanking';
 
 interface PublicProfileProps {
   profileId: string | number;
@@ -37,7 +39,8 @@ const PublicProfile: React.FC<PublicProfileProps> = ({profileId, changeComponent
   return (
     <div style={Container}>
         {profile && <StatVictory profile={profile}/>}
-      {profile ? <div>{profile.gameLogin}</div> : <div className='text bold'>Loading...</div>}
+        {profile && <StatProfile profile={profile}/>}
+        {profile && <StatRanking profile={profile}/>}
     </div>
   )
 }

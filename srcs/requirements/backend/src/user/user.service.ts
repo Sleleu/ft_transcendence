@@ -181,6 +181,7 @@ export class UserService {
               id: id,
             },
             select: {
+              createAt: true,
               gameLogin: true,
               elo: true,
               win: true,

@@ -74,6 +74,18 @@
 	  				0 0 151px #40ddff;
 }
 
+.neon-big-cyan {
+	text-shadow:
+					0 0 7px #40ddff,
+					0 0 10px #40ddff,
+					0 0 21px #40ddff,
+					0 0 42px #40ddff,
+	  				0 0 82px #40ddff,
+					0 0 92px #40ddff,
+					0 0 102px #40ddff,
+	  				0 0 151px #40ddff;
+}
+
 .neon-yellow {
 	text-shadow:
 					0 0 7px #ffe600,
@@ -86,6 +98,13 @@
 	  				0 0 151px #ffe600;
 }
 
+.neon-little-yellow {
+	text-shadow:
+					0 0 7px #ffe600,
+					0 0 10px #ffe600,
+					0 0 21px #ffe600;
+}
+
 .neon-purple {
 	text-shadow:
 					0 0 7px #f975ed,
@@ -96,6 +115,18 @@
 					0 0 92px #f975ed,
 					0 0 102px #f975ed,
 	  				0 0 151px #f975ed;
+}
+
+.neon-dark-purple {
+	text-shadow:
+					0 0 7px #a436ff,
+					0 0 10px #a436ff,
+					0 0 21px #a436ff,
+					0 0 42px #a436ff,
+	  				0 0 82px #a436ff,
+					0 0 92px #a436ff,
+					0 0 102px #a436ff,
+	  				0 0 151px #a436ff;
 }
 
 .neon-red {
@@ -120,4 +151,10 @@
 					0 0 92px #00ff00,
 					0 0 102px #00ff00,
 	  				0 0 151px #00ff00;
+}
+
+.neon-white {
+	text-shadow:
+					0 0 7px white,
+					0 0 21px white;
 }

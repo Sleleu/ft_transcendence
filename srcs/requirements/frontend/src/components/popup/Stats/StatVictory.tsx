@@ -48,7 +48,7 @@ const StatVictory: React.FC<Props> = ({profile}) => {
 
     return (
         <div style={StatVictory}>
-            <span className='text bold neon-yellow'>Victories</span>
+            <span className='text bold neon-little-yellow'>Victories</span>
             <div style={Center} className='text bold neon-purple'>
                 <span>{ratio}%</span>
             </div>
