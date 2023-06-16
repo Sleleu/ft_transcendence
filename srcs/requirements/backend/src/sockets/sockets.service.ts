@@ -51,4 +51,23 @@ export class SocketsService {
       data: { state: newState }
     })
   }
+
+
+  async changeWin(userId: number, Win: boolean) {
+    // console.log("changing win to: ", numWin)
+    if (Win)
+    {
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { win: {increment: 1} }
+      })
+    }
+    else
+    {
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { loose: {increment: 1} }
+      })
+    }
+  }
 }

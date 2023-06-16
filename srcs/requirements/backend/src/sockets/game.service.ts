@@ -163,29 +163,3 @@ export class GameService {
 		return player1Edges.includes(pos) || player2Edges.includes(pos);
 	}
 }
-
-	// updateBallPosition(bounceBallDto: BounceBallDto): void{
-	// 	this.gameState.deltaX = bounceBallDto.deltaX;
-	// 	this.gameState.deltaY = bounceBallDto.deltaY;
-	// 	this.gameState.ball = this.gameState.ball + bounceBallDto.deltaY + bounceBallDto.deltaX;
-	// }
-
-	// isScore(pos: number): boolean {
-	// 	const { deltaX, ball } = this.gameState;
-	// 	if (deltaX === -1) {
-	// 	  // Ball moving towards the opponent's side
-
-	// 	  const opponentScoreRange = [COL_SIZE - 1, COL_SIZE, 0];
-	// 	  const isOpponentScore = opponentScoreRange.includes(pos % COL_SIZE) && ball >= pos;
-	// 	  console.log(`Opponent score: pos=${pos}, ball=${ball}, isScore=${isOpponentScore}`);
-
-	// 		return isOpponentScore;
-	// 	} else {
-	// 		// Ball moving towards the player's side
-	// 		const playerScoreRange = [0, 1];
-	// 		const isPlayerScore = playerScoreRange.includes(pos % COL_SIZE) && ball <= pos;
-	// 		console.log(`Player score: pos=${pos}, ball=${ball}, isScore=${isPlayerScore}`);
-
-	// 		return isPlayerScore;
-	// 	}
-	// }

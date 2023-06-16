@@ -19,7 +19,6 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 
 	constructor(
 		private readonly socketService: SocketsService,
-		private readonly gameService: GameService,
 		private readonly prismaService: PrismaService
 		) {}
 
@@ -32,20 +31,28 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	handleDisconnect(client: Socket) {
 	}
 
+	async updatePlayerWinLoose(client: (Socket<any>), won: boolean) {
+		const token = client?.handshake.headers.cookie?.substring(14);
+		if (token)
+		{
+			const user = await this.socketService.getUserWithToken(token);
+			this.socketService.changeWin(+user.id, won);
+		}
+	}
+
 	updatePrismaData(connectedClients: (Socket<any> | undefined)[], game_service: GameService): void{
 		if (connectedClients[0] && connectedClients[1])
 		{
-			const player2 = this.socketService.getUser(connectedClients[1]?.id);
-			const player1 = this.socketService.getUser(connectedClients[0]?.id);
-			if (game_service.getGameState().playerScore > game_service.getGameState().opponentScore){
-				player1.win++;
-				player2.loose++;
-			} else if (game_service.getGameState().playerScore < game_service.getGameState().opponentScore){
-				player1.loose++;
-				player2.win++;
+			if (game_service.getGameState().playerScore > game_service.getGameState().opponentScore)
+			{
+				this.updatePlayerWinLoose(connectedClients[0], true);
+				this.updatePlayerWinLoose(connectedClients[1], false);
 			}
-			console.log("debugging: ", player1.username , " with " , player1.win , player2.username,  " with " , player2.win )
-
+			else if (game_service.getGameState().playerScore < game_service.getGameState().opponentScore)
+			{
+				this.updatePlayerWinLoose(connectedClients[0], false);
+				this.updatePlayerWinLoose(connectedClients[1], true);
+			}
 		}
 	}
 
@@ -61,7 +68,7 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		this.interval = setInterval(() => {
 		if (game_service?.getwinner() && connectedClients[1] && connectedClients[0])
 		{
-			this.updatePrismaData(connectedClients, game_service)
+			this.updatePrismaData(connectedClients, game_service);
 			connectedClients.forEach((client)=> {
 				if (client)
 				{
@@ -215,7 +222,7 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 				{
 					game_serv.getGameState().playerScore = leavingplayerind === 0 ? 0 : 10;
 					game_serv.getGameState().opponentScore = leavingplayerind === 0 ? 10 : 0;
-					game_serv.resetGame();
+					this.updatePrismaData(connectedClients, game_serv)
 					connectedClients[leavingplayerind]?.emit("player-left");
 					connectedClients[opponentIndex]?.emit("game-over");
 					this.updatePlayerStatus(connectedClients[leavingplayerind], "online");
