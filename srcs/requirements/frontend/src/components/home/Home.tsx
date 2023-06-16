@@ -108,6 +108,10 @@ function Home() {
             setVisible(true)
         })
 
+        sock.on('closePopup', () => {
+            setVisible(false);
+        })
+
         return () => {
             socket?.disconnect();
             socket?.off('invitePlayReq')

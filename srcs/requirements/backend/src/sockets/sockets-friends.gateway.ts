@@ -119,10 +119,10 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
   @SubscribeMessage('invitePlay')
   async invitePlay(@ConnectedSocket() client: Socket, @MessageBody() body: { id: number }) {
     const user = await this.socketService.getUser(client.id);
-    if (!user)
+    const isGaming = await this.queueService.isGaming(+body.id);
+    if (!user || isGaming)
       return ;
     this.server.to(`user_${body.id}`).emit('invitePlayReq', { friendId: user.id });
-
   }
 
   @SubscribeMessage('acceptInvitation')
@@ -130,11 +130,16 @@ export class SocketsFriendsGateway implements OnGatewayConnection, OnGatewayDisc
     const user = await this.socketService.getUser(client.id);
     if (!user)
       return ;
-        const friend = await this.queueService.retUser(user.id)
-        this.server.to(`user_${body.id}`).emit('accepted', { friend });
-      }
+    const friend = await this.queueService.retUser(user.id)
+    this.server.to(`user_${body.id}`).emit('accepted', { friend });
+    this.server.to(`user_${user.id}`).emit('closePopup');
+  }
   @SubscribeMessage('refuseInvitation')
   async refuseInvit(@ConnectedSocket() client: Socket, @MessageBody() body: { id: number }) {
+    const user = await this.socketService.getUser(client.id);
+    if (!user)
+      return ;
      this.server.to(`user_${body.id}`).emit('refused');
+     this.server.to(`user_${user.id}`).emit('closePopup');
   }
 }
