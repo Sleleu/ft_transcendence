@@ -29,6 +29,7 @@ import { check2FA, check2FAVerified, unsetTwoFAVerified, getUserProfile, logout 
 import SelectLogin from '../Login/SelectLogin';
 import SelectAvatar from '../Login/SelectAvatar';
 import GameOver from './play/src/Game-over';
+import PublicProfile from '../popup/PublicProfile';
 
 function Home() {
 
@@ -261,7 +262,7 @@ useEffect(() => {
                         {activeComponent === "crackLead" && <Classement rank={'crack'} changeComponent={changeComponent} />}
                         {activeComponent === "ultimeLead" && <Classement rank={'ultime'} changeComponent={changeComponent} />}
                         {activeComponent.startsWith("watch") && <Game changeComponent={changeComponent} socket={socket} opponentID={extractId(activeComponent)} gameMode={activeComponent[activeComponent.length - 1]} watchmode={true} />}
-						{/* {activeComponent.startsWith("PublicProfile") && <PublicProfil id={extractId(activeComponent)}> */}
+						{activeComponent.startsWith("PublicProfile") && <PublicProfile profileid={extractId(activeComponent)} changeComponent={changeComponent} />}
                         {activeComponent.startsWith("queue") && <Queue mode={extractText(activeComponent)} name={user.username} socket={socket} changeComponent={changeComponent} />}
                         {activeComponent === "rank" && <Rank user={user} changeComponent={changeComponent} />}
                         {activeComponent === "Choices" && <GameChoice changeComponent={changeComponent} />}
