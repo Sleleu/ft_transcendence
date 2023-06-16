@@ -1,16 +1,14 @@
-import React, {useRef, useState} from 'react'
+import React, {useState} from 'react'
 import CreateAccount from './CreateAccount';
 import LogPage from './LogPage';
 import '../home/Home.css'
 import { CSSProperties } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import KingPong from './../../img/King_Pong.svg'
+import Logo42 from './../../img/42_Logo.png'
 
 interface Props {
     updateToken: (token: string) => void;
-}
-interface Account {
-    username: string,
-    password: string,
 }
 
 const Login:React.FC<Props> = ({updateToken}) => {
@@ -18,21 +16,21 @@ const Login:React.FC<Props> = ({updateToken}) => {
     const navigate = useNavigate()
     const [hover, setHover] = useState<boolean>(false);
 
-
-    const Buttons: CSSProperties = {
-        display: 'flex', justifyContent: 'space-between',
-        width: '65%',
+    const CenterDiv: CSSProperties = {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
     }
 
-    const Box42: CSSProperties = {
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-        width: '45%', height: '110%', borderRadius: '5px',
-        padding: '4%',
-        fontWeight: '800', fontFamily: 'Montserrat, sans-serif', color: '#000',
+    const ImageStyle: CSSProperties = {
+        width: '70%',
+        height: '70%',
+    }
 
-        border: 'none',
-        textAlign: 'center',
-        zIndex: 1, cursor: hover ? 'pointer' : 'auto',
+    const LogoStyle: CSSProperties = {
+        width: '40px',
+        height: '40px',
+        marginRight: '10px'
     }
 
     const handleHover = () => {
@@ -46,15 +44,17 @@ const Login:React.FC<Props> = ({updateToken}) => {
 		    console.log('AUTH_URL is undefined');
     };
 
-  return (
-    <div className="baground">
-      <div className='containerFullPage'>
-        <div style={Buttons}>
-          <button style={Box42} onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={handleSubmit}>Log with 42</button>
+    return (
+        <div className="baground">
+            <div style={CenterDiv}>
+            <img src={KingPong} alt="King Pong"  style={ImageStyle} />
+            <button className='btn-42' onMouseEnter={handleHover} onMouseLeave={handleHover} onClick={handleSubmit}>
+                Log with
+                <img src={Logo42} alt="Logo 42" style={LogoStyle} />
+            </button>
+            </div>
         </div>
-      </div>
-    </div>
-  )
+    )
 }
 
 export default Login
