@@ -8,7 +8,9 @@ import { User, Message } from '@prisma/client';
 
 @Injectable()
 export class SocketsService {
-  private clientToUser: { [clientId: string]: User } = {};
+  // private clientToUser: { [clientId: string]: User } = {};
+
+  private clientProfileMap: Map<string, User> = new Map<string, User>();
 
   constructor(private prisma: PrismaService) { }
 
@@ -22,27 +24,37 @@ export class SocketsService {
     return user;
   }
 
-  identify(user: User, clientId: string) {
-    this.clientToUser[clientId] = user;
-
-    return Object.values(this.clientToUser);
+  async setClientMap(user: User, clientId: string) {
+    this.clientProfileMap.set(clientId, user);
   }
 
-  supClient(id: string) {
-    delete this.clientToUser[id];
+
+
+  // identify(user: User, clientId: string) {
+  //   this.clientToUser[clientId] = user;
+
+  //   return Object.values(this.clientToUser);
+  // }
+
+  // supClient(id: string) {
+  //   delete this.clientToUser[id];
+  // }
+
+  // findSocketById(id: number) {
+  //   const clientId = Object.keys(this.clientToUser).find(
+  //     (key) => this.clientToUser[key].id === id
+  //   );
+  //   // console.log('CLIENTID:',  id);
+  //   // console.log( this.clientToUser);
+  //   return clientId;
+  // }
+
+  async getUser(clientId: string) {
+    return this.clientProfileMap.get(clientId);
   }
 
-  findSocketById(id: number) {
-    const clientId = Object.keys(this.clientToUser).find(
-      (key) => this.clientToUser[key].id === id
-    );
-    // console.log('CLIENTID:',  id);
-    // console.log( this.clientToUser);
-    return clientId;
-  }
-
-  getUser(clientId: string) {
-    return this.clientToUser[clientId];
+  supClient(clientId: string) {
+    this.clientProfileMap.delete(clientId);
   }
 
   async changeState(userId: number, newState: string) {

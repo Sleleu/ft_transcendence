@@ -56,28 +56,31 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	joinroom(@MessageBody() opponentid: number, @ConnectedSocket() client: Socket): void{
 		console.log("server side: joining a room: ");
 
-		this.connectedClients[0] = client;
-		const opponent = this.socketService.findSocketById(+opponentid);
-		console.log("opponentid is ", opponentid, opponent);
-		if (opponent)
-		{
-			console.log("found the opponent");
-			this.connectedClients[1] = this.server.sockets.sockets.get(opponent);
-		}
+		// this.connectedClients[0] = client;
+		// const opponent = this.socketService.findSocketById(+opponentid);
+		// console.log("opponentid is ", opponentid, opponent);
+		// if (opponent)
+		// {
+		// 	console.log("found the opponent");
+		// 	this.connectedClients[1] = this.server.sockets.sockets.get(opponent);
+		// }
 
-		if (this.connectedClients.length === 2){
-			let i = 0;
-			this.connectedClients.forEach((client)=> {
-				if (client)
-				{
-					client.emit('start', ++i);
-					this.startGame(client);
-				}
-			});
-			console.log("server: starting the game: ");
-		}
-		else
-			console.log("server:waiting for the second player");
+		// if (this.connectedClients.length === 2){
+		// 	let i = 0;
+		// 	this.connectedClients.forEach((client)=> {
+		// 		if (client)
+		// 		{
+		// 			client.emit('start', ++i);
+		// 			this.startGame(client);
+		// 		}
+		// 	});
+		// console.log("server: starting the game: ");
+		// }
+		// else
+		// 	console.log("server:waiting for the second player");
+		client.emit('start', 0);
+		this.server.to(`user_${opponentid}`).emit('start, 1');
+		console.log("server: starting the game: ");
 	}
 
 	@SubscribeMessage('start')

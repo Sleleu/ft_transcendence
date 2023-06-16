@@ -23,7 +23,9 @@ export class SocketsQueueGateway implements OnGatewayConnection, OnGatewayDiscon
 
     @SubscribeMessage('addQueuen')
     async addQueue(@ConnectedSocket() client: Socket) {
-        const user = this.socketService.getUser(client.id);
+        const user = await this.socketService.getUser(client.id);
+        if (!user)
+            return ;
         const stack = this.queueService.addToStack(user.id)
         if (stack) {
             if (stack[0] === user.id)
@@ -35,7 +37,9 @@ export class SocketsQueueGateway implements OnGatewayConnection, OnGatewayDiscon
 
     @SubscribeMessage('addQueueb')
     async addQueueBonus(@ConnectedSocket() client: Socket) {
-        const user = this.socketService.getUser(client.id);
+        const user = await this.socketService.getUser(client.id);
+        if (!user)
+            return ;
         const stack = this.queueService.addToStackBonus(user.id)
         if (stack) {
             if (stack[0] === user.id)
@@ -48,26 +52,33 @@ export class SocketsQueueGateway implements OnGatewayConnection, OnGatewayDiscon
     async send(client: Socket, stack: number[], userIndex: number, vsIndex: number) {
         const opponent = await this.queueService.retUser(stack[userIndex])
         client.emit('vsName', { opponent: opponent })
-        const friendSocketId = this.socketService.findSocketById(stack[userIndex])
-        if (friendSocketId) {
-            const friendSocket = this.server.sockets.sockets.get(friendSocketId)
-            if (friendSocket) {
-                const Opponent = await this.queueService.retUser(stack[vsIndex])
-                friendSocket.emit('vsName', { opponent: Opponent })
-            }
-        }
+        // const friendSocketId = this.socketService.findSocketById(stack[userIndex])
+        // if (friendSocketId) {
+        //     const friendSocket = this.server.sockets.sockets.get(friendSocketId)
+        //     if (friendSocket) {
+        //         const Opponent = await this.queueService.retUser(stack[vsIndex])
+        //         friendSocket.emit('vsName', { opponent: Opponent })
+        //     }
+        // }
 
+        const Opponent = await this.queueService.retUser(stack[vsIndex]);
+        if (Opponent)
+            this.server.to(`user_${stack[userIndex]}`).emit('vsName', { opponent: Opponent })
     }
 
     @SubscribeMessage('quitQueuen')
-    quitQueue(@ConnectedSocket() client: Socket) {
-        const user = this.socketService.getUser(client.id)
+   async quitQueue(@ConnectedSocket() client: Socket) {
+        const user = await this.socketService.getUser(client.id)
+        if (!user)
+            return ;
         this.queueService.quitQueue(user.id)
     }
 
     @SubscribeMessage('quitQueueb')
-    quitQueueBonus(@ConnectedSocket() client: Socket) {
-        const user = this.socketService.getUser(client.id)
+   async quitQueueBonus(@ConnectedSocket() client: Socket) {
+        const user = await this.socketService.getUser(client.id)
+        if (!user)
+            return ;
         this.queueService.quitQueueBonus(user.id)
     }
 }
