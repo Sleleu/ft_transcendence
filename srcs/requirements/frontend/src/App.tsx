@@ -3,9 +3,8 @@ import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useState} from 'react';
 import Home from './components/home/Home';
-import Login from './components/Login/Login';
+import New_Login from './components/Login/New_Login';
 import PrivateRoute from './PrivateRoute';
-import RoomSelect from './components/chat/RoomSelect';
 
 function App() {
 
@@ -19,7 +18,7 @@ function App() {
     <Router>
       <div>
         <Routes>
-          <Route path="/" Component={(props) => <Login {...props} updateToken={updateToken} />} />
+          <Route path="/" Component={(props) => <New_Login {...props} updateToken={updateToken} />} />
           <Route path='/home'
           element={
           <PrivateRoute>
