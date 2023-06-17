@@ -133,7 +133,6 @@ export class GameService {
 				this.gameState.deltaY = -this.gameState.deltaY;
 			else if (this.touchingPaddleEdge(newstate) || this.touchingPaddle(newstate)){
 				this.gameState.deltaX = -this.gameState.deltaX;
-				this.updateScores();
 			}
 			this.gameState.ball = newstate;
 		}
