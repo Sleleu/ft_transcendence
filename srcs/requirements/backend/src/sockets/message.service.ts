@@ -123,13 +123,15 @@ export class MessageService {
     const rooms = this.prisma.room.findMany();
     return rooms;
   }
-  async getRoomByName(roomName: string) {
-    const room = await this.prisma.room.findFirst({
-      where : {
-        name: roomName,
-      },
-    });
-    return room;
+  async roomExist(roomName: string) {
+
+      const rooms = await this.prisma.room.findMany({
+        where : {
+          name: roomName,
+        },
+      });
+    const activeRoom = rooms.some((room) => room.active === true);
+    return activeRoom;
   }
   async getRoomById(roomId: number) {
     const room = await this.prisma.room.findUnique({

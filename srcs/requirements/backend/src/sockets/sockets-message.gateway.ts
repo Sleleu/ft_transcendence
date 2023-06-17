@@ -76,7 +76,7 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 				return ;
 			if (type === 'public' || type === 'protected')
 			{
-				const exists = await this.messagesService.getRoomByName(roomName);
+				const exists = await this.messagesService.roomExist(roomName);
 				if (exists)
 					throw new ForbiddenException('Room alerady exists');
 			}
@@ -169,6 +169,24 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 	}
 	}
 
+
+	async isUserInRoom(roomName: string, user: User) {
+		const room = this.server.sockets.adapter.rooms.get(roomName);
+	
+		if (room) {
+		  for (const clientId of room) {
+			const client = this.server.sockets.sockets.get(clientId);
+			if (!client)
+				return false;
+			const clientUserProfile = await this.socketService.getUser(client.id);
+	
+			if (clientUserProfile?.id === user.id) {
+			  return true;
+			}
+		  }
+		}
+		return false;
+	}
 	@SubscribeMessage('leave')
 	async leaveRoom(@ConnectedSocket() client: Socket,
 	@MessageBody('roomId') roomId: number) {
@@ -179,8 +197,11 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		if (!room)
 			throw new ForbiddenException('No room found');
 		client.leave(roomId.toString());
-		await this.messagesService.disconnectedUser(room.id, user.id);
-		this.server.to(roomId.toString()).emit('refreshConnected', user, true);
+		const inRoom = await this.isUserInRoom(roomId.toString(), user);
+		if (!inRoom) {
+			await this.messagesService.disconnectedUser(room.id, user.id);
+			this.server.to(roomId.toString()).emit('refreshConnected', user, true);
+		}
 		console.log(user.username, 'left room :', room.name);
 	}
 

@@ -77,7 +77,6 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 				setFriends((prevList) => [...prevList, newUser]);
         })
 		socket?.on('refreshMessages', (newMsg: Message, undo: boolean) => {
-			console.log('newMsg : ', newMsg);
             if (undo)
 				setMessages((prev) => prev.filter((old) => old.id !== newMsg.id))
 			else
