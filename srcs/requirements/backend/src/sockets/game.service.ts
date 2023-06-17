@@ -17,12 +17,12 @@ export class GameService {
 	private gameState: GameState = {
 		player1: board.map((x) => x * COL_SIZE + PADDLE_EDGE_SPACE),
 		player2: board.map((x) => (x + 1) * COL_SIZE - (PADDLE_EDGE_SPACE + 1)),
-		ball: Math.round((ROW_SIZE * COL_SIZE) / 2) + ROW_SIZE, // Initial ball position
-		deltaX: -1, // Initial ball delta x
-		deltaY: -(COL_SIZE), // Initial ball delta y
-		playerScore: 0, // Initial player score
-		opponentScore: 0, // Initial opponent score
-		pause: true, // Initial game state (paused)
+		ball: Math.round((ROW_SIZE * COL_SIZE) / 2) + ROW_SIZE,
+		deltaX: -1,
+		deltaY: -(COL_SIZE),
+		playerScore: 0,
+		opponentScore: 0,
+		pause: true,
 		numofPlayers: 0,
 		gameSpeed: 0,
 	};
@@ -74,16 +74,15 @@ export class GameService {
 	}
 
 	resetGame(): void{
-		// console.log("server service: resetGame");
 		this.gameState = {
-			player1: board.map((x) => x * COL_SIZE ), // Reset player board
-			player2: board.map((x) => (x + 1) * COL_SIZE - (1)), // Reset opponent board
-			ball: Math.round((ROW_SIZE * COL_SIZE) / 2) + ROW_SIZE, // Reset ball position
-			deltaX: -1, // Reset ball delta x
-			deltaY: -(COL_SIZE), // Reset ball delta y
-			playerScore: 0, // Reset player score
-			opponentScore: 0, // Reset opponent score
-			pause: true, // Reset game state (paused)
+			player1: board.map((x) => x * COL_SIZE + PADDLE_EDGE_SPACE),
+			player2: board.map((x) => (x + 1) * COL_SIZE - (PADDLE_EDGE_SPACE + 1)),
+			ball: Math.round((ROW_SIZE * COL_SIZE) / 2) + ROW_SIZE,
+			deltaX: -1,
+			deltaY: -(COL_SIZE),
+			playerScore: 0,
+			opponentScore: 0,
+			pause: true,
 			numofPlayers: 0,
 			gameSpeed: 0,
 		};
@@ -151,7 +150,7 @@ export class GameService {
 	private touchingPaddle(pos: number): boolean {
 		const { player1, player2, deltaX } = this.gameState;
 		const paddle =
-			deltaX === -1 ? player1: player2.map((x) => x + deltaX);
+			deltaX === -1 ? player1: player2;
 		return paddle.includes(pos);
 	}
 
