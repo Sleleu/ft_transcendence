@@ -14,35 +14,36 @@ export {
     PLAYER,
     BALL,
 }
-
-const backgroundStyle : CSSProperties= {
-    height: "35px",
-    width: "35px",
+const backgroundStyle: CSSProperties = {
+    height: "2vh",
+    width: "2vh",
     borderStyle: "solid",
     justifyContent: "center",
-    backgroundColor : "black",
-    borderRadius: "2px",
-}
-const playerStyle : CSSProperties = {
-    height: "35px",
-    width: "35px",
+    backgroundColor: "black",
+  };
+
+  const playerStyle: CSSProperties = {
+    height: "2vh",
+    width: "2vh",
     borderStyle: "solid",
     justifyContent: "center",
-    backgroundColor : "blue",
-    color: "white"
-}
+    backgroundColor: "blue",
+    color: "blue",
+    margin: "-4px",
+  };
 
-const ballStyle : CSSProperties = {
-    height: "35px",
-    width: "35px",
+  const ballStyle: CSSProperties = {
+    height: "3vh",
+    width: "3vh",
     display: "block",
     backgroundColor: "yellow",
     justifyContent: "center",
     borderRadius: "100%",
-    color:"white",
+    color: "white",
     zIndex: "10",
-    position: 'relative'
-}
+    position: "relative",
+  };
+
 
 const getStyle = (val: number) =>{
 	if (val === BACKGROUND){

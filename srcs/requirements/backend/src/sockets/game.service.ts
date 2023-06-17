@@ -3,11 +3,11 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { GameState, BounceBallDto} from './dto/game.dto';
 import { Server, Socket } from 'socket.io';
 
-const PADDLE_BOARD_SIZE = 3;
+const PADDLE_BOARD_SIZE = 5;
 const PADDLE_EDGE_SPACE = 1;
 
-const ROW_SIZE = 10;
-const COL_SIZE = 20;
+const ROW_SIZE = 10 * 2;
+const COL_SIZE = 20 * 2;
 
 const board = [...Array(PADDLE_BOARD_SIZE)].map((_, pos) => pos);
 
@@ -76,8 +76,8 @@ export class GameService {
 	resetGame(): void{
 		// console.log("server service: resetGame");
 		this.gameState = {
-			player1: board.map((x) => x * COL_SIZE + PADDLE_EDGE_SPACE), // Reset player board
-			player2: board.map((x) => (x + 1) * COL_SIZE - (PADDLE_EDGE_SPACE + 1)), // Reset opponent board
+			player1: board.map((x) => x * COL_SIZE ), // Reset player board
+			player2: board.map((x) => (x + 1) * COL_SIZE - (1)), // Reset opponent board
 			ball: Math.round((ROW_SIZE * COL_SIZE) / 2) + ROW_SIZE, // Reset ball position
 			deltaX: -1, // Reset ball delta x
 			deltaY: -(COL_SIZE), // Reset ball delta y
@@ -117,7 +117,7 @@ export class GameService {
 	}
 
 	getwinner(): boolean{
-		if (this.gameState.playerScore === 10 || this.gameState.opponentScore === 10)
+		if (this.gameState.playerScore === 100 || this.gameState.opponentScore === 100)
 			return true;
 		return false;
 	}

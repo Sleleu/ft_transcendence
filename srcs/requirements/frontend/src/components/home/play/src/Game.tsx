@@ -5,11 +5,11 @@ import '../css/Game.css'
 import GameOver from './Game-over';
 
 /* size */
-const ROW_SIZE = 10;
-const COL_SIZE = 20;
+const ROW_SIZE = 10 * 2;
+const COL_SIZE = 20 * 2;
 
 /* paddle */
-const PADDLE_BOARD_SIZE = 3;
+const PADDLE_BOARD_SIZE = 5;
 const PADDLE_EDGE_SPACE = 1;
 
 type GameState = {
@@ -175,21 +175,29 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
       });
     }, [state]);
 
-    return <div className="style">{board}</div>;
-  });
+    const containerStyle: CSSProperties = {
+      width: `${COL_SIZE}vh`, // Adjust the size according to your needs
+      height: `${ROW_SIZE}vh`, // Adjust the size according to your needs
+    };
 
-  const divider = [...Array(ROW_SIZE / 2 + 2)].map((_, index) => <div key={index}>{"|"}</div>);
+    return <div className="style" style={containerStyle}>{board}</div>;
+  });
 
   return (
     <div id="game" className="outer">
-      <div className="style">
-        {/* <div className="style">{board}</div> */}
-        <Board state={state} />
-        <div className="score">{state.playerScore}</div>
-        <div className="dividerStyle">{divider} </div>
-        <div className="dividerStyle">{state.opponentScore}</div>
+        <div className="style">
+          <div className="dividerContainer">
+            <div className="dividerStyle">|</div>
+          </div>
+          <div className="boardContainer">
+            <Board state={state}/>
+          </div>
+          <div className="scoresContainer">
+            <div className="score">{state.playerScore}</div>
+            <div className="score">{state.opponentScore}</div>
+          </div>
+        </div>
       </div>
-    </div>
   );
 };
 
