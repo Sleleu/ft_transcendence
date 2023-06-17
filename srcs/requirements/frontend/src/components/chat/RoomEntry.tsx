@@ -54,7 +54,11 @@ useEffect(() => {
       if (room.id === roomId)
 			  setRoomType(newType);
     })
-
+    return () => {
+            socket?.off('newMessage');
+            socket?.off('joinSuccess');
+            socket?.off('refreshRoomSelectType');
+        };
   }, []);
 
 	function getOtherUser(roomName: string, username: string | undefined): string | null {

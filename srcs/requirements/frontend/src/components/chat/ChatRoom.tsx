@@ -77,6 +77,7 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 				setFriends((prevList) => [...prevList, newUser]);
         })
 		socket?.on('refreshMessages', (newMsg: Message, undo: boolean) => {
+			console.log('newMsg : ', newMsg);
             if (undo)
 				setMessages((prev) => prev.filter((old) => old.id !== newMsg.id))
 			else
@@ -144,6 +145,18 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 			document.removeEventListener('mousedown', handleClickOutside);
             socket?.emit('leave', {roomId: roomId}, () => {})
             socket?.off('message');
+            socket?.off('joinSuccess');
+            socket?.off('joinError');
+            socket?.off('refreshFriends');
+            socket?.off('refreshMessages');
+            socket?.off('refreshType');
+            socket?.off('refreshWhiteList');
+            socket?.off('refreshAdmins');
+            socket?.off('refreshBanned');
+            socket?.off('refreshConnected');
+            socket?.off('refreshBlocked');
+            socket?.off('kickUser');
+            socket?.off('msgError');
         };
     }, []);
 

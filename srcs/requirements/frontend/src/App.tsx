@@ -5,7 +5,6 @@ import { useState} from 'react';
 import Home from './components/home/Home';
 import Login from './components/Login/Login';
 import PrivateRoute from './PrivateRoute';
-import RoomSelect from './components/chat/RoomSelect';
 
 function App() {
 

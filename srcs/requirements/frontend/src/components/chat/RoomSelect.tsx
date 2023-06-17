@@ -1,7 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react'
 import { CSSProperties } from 'react'
 import { io, Socket } from 'socket.io-client';
-import CreateRoom from './_CreateRoom';
 import { User } from '../types';
 import RoomEntry from './RoomEntry';
 import retLogo from '../../img/navBar/returnLogo.png'
