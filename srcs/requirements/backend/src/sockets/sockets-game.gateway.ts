@@ -40,21 +40,51 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		}
 	}
 
-	updatePrismaData(connectedClients: (Socket<any> | undefined)[], game_service: GameService): void{
-		if (connectedClients[0] && connectedClients[1])
-		{
-			if (game_service.getGameState().playerScore > game_service.getGameState().opponentScore)
-			{
-				this.updatePlayerWinLoose(connectedClients[0], true);
-				this.updatePlayerWinLoose(connectedClients[1], false);
-			}
-			else if (game_service.getGameState().playerScore < game_service.getGameState().opponentScore)
-			{
-				this.updatePlayerWinLoose(connectedClients[0], false);
-				this.updatePlayerWinLoose(connectedClients[1], true);
-			}
+	calculateNewElo(currentElo: number, opponentElo: number, win: boolean): number {
+		let K: number;
+	
+		if (currentElo < 1000) {
+			K = 160;
+		} else if (currentElo < 2000) {
+			K = 120;
+		} else if (currentElo < 3000) {
+			K = 80;
+		} else if (currentElo < 4000) {
+			K = 40;
+		} else {
+			K = 20;
 		}
+	
+		const expectedScore = 1 / (1 + Math.pow(10, (opponentElo - currentElo) / 400));
+		const actualScore = win ? 1 : 0;
+		return currentElo + K * (actualScore - expectedScore);
 	}
+	  
+
+	async updatePlayerElo(client: Socket<any>, opponent: Socket<any>, won: boolean) {
+		const token = client?.handshake.headers.cookie?.substring(14);
+		const opponentToken = opponent?.handshake.headers.cookie?.substring(14);
+		
+		if (token && opponentToken) {
+		  const user = await this.socketService.getUserWithToken(token);
+		  const opp = await this.socketService.getUserWithToken(opponentToken);
+	  
+		  const newElo = this.calculateNewElo(user.elo, opp.elo, won);
+		  this.socketService.updateElo(+user.id, newElo);
+		}
+	  }
+	  
+	  updatePrismaData(connectedClients: (Socket<any> | undefined)[], game_service: GameService): void{
+		if (connectedClients[0] && connectedClients[1]) {
+		  const won = game_service.getGameState().playerScore > game_service.getGameState().opponentScore;
+		  this.updatePlayerWinLoose(connectedClients[0], won);
+		  this.updatePlayerElo(connectedClients[0], connectedClients[1], won);
+		  
+		  this.updatePlayerWinLoose(connectedClients[1], !won);
+		  this.updatePlayerElo(connectedClients[1], connectedClients[0], !won);
+		}
+	  }
+	  
 
 	startGameInterval(clients: (Socket<any> | undefined)[]): void {
 		let game_service = this.getGameService(clients);

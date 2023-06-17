@@ -70,4 +70,13 @@ export class SocketsService {
       })
     }
   }
+
+  async updateElo(userId: number, newElo: number) {
+    await this.prisma.user.update({
+        where: { id: userId },
+        data: { elo: Math.round(newElo) },
+    });
+  }
+
+  
 }
