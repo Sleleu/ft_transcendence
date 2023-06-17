@@ -176,8 +176,8 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
     }, [state]);
 
     const containerStyle: CSSProperties = {
-      width: `${COL_SIZE}vh`, // Adjust the size according to your needs
-      height: `${ROW_SIZE}vh`, // Adjust the size according to your needs
+      width: `${COL_SIZE}vh`,
+      height: `${ROW_SIZE}vh`,
     };
 
     return <div className="style" style={containerStyle}>{board}</div>;

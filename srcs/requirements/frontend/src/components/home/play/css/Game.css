@@ -20,42 +20,43 @@
 
   .scoresContainer {
     display: flex;
-    width: 100%;
-    margin-top: 1vh;
+    width: 50vh;
+    height: 5vh;
     justify-content: space-around;
-    align-items: stretch;
     position: absolute;
+    left: 50%;
     top: 5%;
-    transform: translateY(-50%);
+    transform: translate(-50%, -50%);
+    z-index: 1;
   }
 
   .dividerContainer {
     display: flex;
-    width: 73%;
-    height: 78%;
+    width: 120vh;
+    height: 60vh;
     justify-content: center;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     position: absolute;
-    z-index: 1;
   }
 
   .dividerStyle {
     background: white;
-    width: 1px; /* Add this line */
+    width: 2px; /* Add this line */
     height: 100%;
-  }
-
-  .score {
-    font-size: 2vh;
-    color: white;
     z-index: 1;
   }
 
+  .score {
+    font-size: 6vh;
+    color: white;
+
+  }
+
   .style {
-    width: 73%;
-    height: 78%;
+    width: 120vh;
+    height: 60vh;
     display: grid;
     grid-template: repeat(20, 1fr) / repeat(40, 1fr);
     flex-direction: column;
@@ -63,16 +64,18 @@
     align-items: center;
     margin: 0 auto;
     position: relative; /* Add this line */
-
 }
+
  .boardContainer {
-    width: 60vw;
-    height: 30vh;
-    flex: 1;
     display: flex;
+    width: 120vh;
+    height: 60vh;
     justify-content: center;
-    align-items: center;
-    margin: 0;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    z-index: 1;
 }
 
   .containerGameOver {

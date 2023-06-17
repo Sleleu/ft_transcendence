@@ -117,7 +117,7 @@ export class GameService {
 	}
 
 	getwinner(): boolean{
-		if (this.gameState.playerScore === 100 || this.gameState.opponentScore === 100)
+		if (this.gameState.playerScore === 10 || this.gameState.opponentScore === 10)
 			return true;
 		return false;
 	}
