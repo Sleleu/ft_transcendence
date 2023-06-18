@@ -116,14 +116,12 @@ function CreateAccount(props: Props) {
     };
 
     const postAccount = async (data: Account) => {
-			console.log("data : ", data)
             const response = await fetch(`http://${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_DOMAIN_PORT}/auth/signup`, {
 				method: "POST",
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(data) });
 				if (response.ok) {
 					const Token = await response.text()
-					console.log ("response text : ", Token)
 					
 					// Save the token in the local storage
 					Cookies.set('Authorization', Token);

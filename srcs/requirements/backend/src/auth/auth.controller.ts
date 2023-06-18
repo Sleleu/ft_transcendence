@@ -20,9 +20,7 @@ export class AuthController {
 			console.log('Error on createUser()');
 			return (false);
 		}
-		console.log('User created !', newUser.username, newUser.id);
 		const Token =  await this.authService.signToken(newUser.id, newUser.username);
-		console.log("token in signup :", Token);
 		res.cookie("Authorization", Token)
 		return res.status(201).send(Token);
 	}
@@ -31,7 +29,6 @@ export class AuthController {
   signin(@Body() dto: AuthDto, @Res() res : Response) {
 
 	const JwtToken = this.authService.signup(dto);
-	console.log("test token in auth/signin :  ", JwtToken);
 	res.cookie('Authorization', JwtToken, {
 		httpOnly: true
 	});

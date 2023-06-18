@@ -54,7 +54,6 @@ export class UserController {
 		if (!req.user) {
 			throw new NotFoundException('User not found');
 		}
-		console.log({ user: req.user }) 
 		const id = req.user.id;
 		return this.userService.updateGameLogin(id, gameLogin);
 	}
@@ -69,7 +68,6 @@ export class UserController {
 
 	@Delete('deleteBlock/:blockId')
 	async RmBlock(@Param('blockId') id: number) {
-	//	console.log('')
 		await this.userService.deleteBlock(+id)
 	}
 

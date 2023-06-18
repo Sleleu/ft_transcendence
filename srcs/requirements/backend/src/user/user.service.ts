@@ -1,4 +1,4 @@
-import { ForbiddenException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as fs from 'fs';
@@ -38,7 +38,6 @@ export class UserService {
     }
 
     async getUserFromToken(token: string) {
-        console.log("Passage dans getProfile()")
         try {
             const decoded = this.jwtService.verify(token);
             if (!decoded) {
@@ -67,8 +66,6 @@ export class UserService {
     }
 
     async updateGameLogin(id: number, gameLogin: string) {
-        console.log("test dans update username", id, gameLogin);
-    
         const existingUser = await this.prismaService.user.findFirst({
             where: { id: id }
         });
@@ -189,7 +186,6 @@ export class UserService {
               avatar: true,
             }
             });
-            console.log("test public user : ", publicInfo)
             if (!publicInfo) {
               throw new HttpException('User not found', 404);
             }

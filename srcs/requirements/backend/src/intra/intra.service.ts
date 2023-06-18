@@ -13,7 +13,6 @@ export class IntraService {
     private configService: ConfigService,
   ) {}
 	async getToken(code : string) {
-		console.log(code);
 		const data = {
 			grant_type : 'authorization_code',
 			client_id : this.configService.get('CLIENT_ID'),
@@ -28,7 +27,6 @@ export class IntraService {
 		  };
 		  return axios.post('https://api.intra.42.fr/oauth/token', data, config)
 		  .then((response)=> {
-			console.log(response.data)
 			return (response.data);
 		  })
 		  .catch(error => {
@@ -42,7 +40,6 @@ export class IntraService {
 				'Authorization' : `Bearer ${accessToken.access_token}`
 			}
 		}
-		// console.log("TOKEN TEST", accessToken.access_token);
 		return axios.get('https://api.intra.42.fr/v2/me', config)
 		.then((response)=> {
 			const User : User42 = {
@@ -52,8 +49,6 @@ export class IntraService {
 				id: response.data.id,
 				twoFactorAuthenticationSecret: '',
 			}
-			//console.log('response.data : ', response.data);
-			// console.log('User : ', User);
 			if (!User){
 				throw new HttpException('Error', HttpStatus.FORBIDDEN);
 			}
@@ -72,11 +67,7 @@ export class IntraService {
 			}
 		})
 		if (!userExists)
-		{
-			console.log("User do not exist")
 			return (true);
-		}
-		console.log("User already exist");
 		return (false);
 	}
 
@@ -92,7 +83,6 @@ export class IntraService {
 			console.log('Error on createUser()');
 			return (false);
 		}
-		console.log('User created !');
 		return (true);
 	}
 
@@ -109,7 +99,6 @@ export class IntraService {
 		  expiresIn: '1days',
 		  secret: secret,
 		});
-		//console.log("passage dans getJwtToken()")
 		return token;
 	  }
 }

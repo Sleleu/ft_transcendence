@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Res, HttpException, HttpStatus, Req, Post, ForbiddenException, Body } from '@nestjs/common';
+import { Controller, Get, Query, Res, HttpException, HttpStatus, Req } from '@nestjs/common';
 import { IntraService } from './intra.service';
 import { Response, Request } from 'express';
 import { ApiToken } from './intra.interface';
@@ -40,9 +40,6 @@ export class IntraController {
 			if (!User)
 				throw new HttpException('Cannot create new user from createUser()', HttpStatus.FORBIDDEN);
 			const JwtToken = await this.intraService.getJwtToken(User?.id, User?.username)
-			// console.log("jwt token : ", JwtToken);
-			// console.log("User : ", User.username);
-			// add le token au user
 			await this.prismaService.user.update({
 				where : {
 					username : User.username,
@@ -51,8 +48,6 @@ export class IntraController {
 					access_token : JwtToken,
 				}
 			})
-			
-			// redirect home
 			res.cookie('Authorization', JwtToken, {
 				httpOnly: true
 			});
@@ -62,7 +57,6 @@ export class IntraController {
 	@Get('verify-session')
 	async verifySession(@Req() req : Request) {
 	  const sessionId = req.cookies.Authorization
-		console.log("verify session cookie :", req.cookies.Authorization)
 	  const session = await this.prismaService.user.findFirst({
 		where: {
 			access_token: sessionId

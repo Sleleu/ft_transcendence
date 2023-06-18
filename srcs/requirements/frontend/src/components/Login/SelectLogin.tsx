@@ -27,7 +27,6 @@ const SelectLogin: React.FC<SelectLoginProps> = ({user, onLoginUpdated}) => {
             return;
         }
         const data = await response.json();
-        console.log(data);
         onLoginUpdated(); // callback pour retourner sur home
     } catch (error) {
         if (error instanceof Error) {
