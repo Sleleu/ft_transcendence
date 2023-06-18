@@ -1,9 +1,6 @@
 import React, {useState} from 'react'
-import CreateAccount from './CreateAccount';
-import LogPage from './LogPage';
 import '../home/Home.css'
 import { CSSProperties } from 'styled-components';
-import { useNavigate } from 'react-router-dom';
 import KingPong from './../../img/King_Pong.svg'
 import Logo42 from './../../img/42_Logo.png'
 
@@ -13,7 +10,6 @@ interface Props {
 
 const Login:React.FC<Props> = ({updateToken}) => {
 
-    const navigate = useNavigate()
     const [hover, setHover] = useState<boolean>(false);
 
     const CenterDiv: CSSProperties = {

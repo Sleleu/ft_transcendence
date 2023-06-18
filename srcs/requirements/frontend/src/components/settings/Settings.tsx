@@ -90,7 +90,7 @@ interface settingsProps {
 	refreshUser: () => void;
 }
 
-function Settings({ user, changeComponent, refreshUser }: settingsProps) {
+function Settings({ user, refreshUser }: settingsProps) {
 
 	const [selectedOption, setSelectedOption] = useState('avatar'); // stock l'option selectionnee
 

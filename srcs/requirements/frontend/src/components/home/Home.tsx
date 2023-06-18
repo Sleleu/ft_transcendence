@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import './Home.css'
 import { useNavigate } from "react-router-dom"
 import { useState, useEffect } from 'react';
@@ -11,12 +11,8 @@ import Rank from '../popup/Rank/Rank';
 import Classement from '../popup/Rank/Classement';
 import Settings from '../settings/Settings';
 import Stats from '../popup/Stats/Stats';
-import Login from '../Login/Login';
-import CreateAccount from '../Login/CreateAccount';
-import Chat from '../chat/Chat';
 import Friend from '../friend/list/src/friend';
 import { User } from '../types'
-import Cookies from 'js-cookie';
 import Game from './play/src/Game';
 import RoomSelect from '../chat/RoomSelect';
 import { io, Socket } from 'socket.io-client';

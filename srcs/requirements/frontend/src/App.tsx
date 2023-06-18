@@ -3,7 +3,6 @@ import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useState} from 'react';
 import Home from './components/home/Home';
-import New_Login from './components/Login/New_Login';
 import PrivateRoute from './PrivateRoute';
 import Login from './components/Login/Login';
 
