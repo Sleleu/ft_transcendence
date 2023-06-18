@@ -139,13 +139,13 @@ export class UserService {
         // Delete old avatar file
         if (user.avatar && user.avatar.startsWith(`http://${process.env.DOMAIN}:5000/avatars/`)) {
             const oldAvatarFilename = user.avatar.split('/').pop();
-            if (oldAvatarFilename) {
-            const oldAvatarFilepath = path.join('./avatars', oldAvatarFilename);
-            try {
-                await fs.promises.unlink(oldAvatarFilepath);
-            } catch (err) {
-                console.error(`Failed to delete old avatar: ${err}`);
-            }
+            if (oldAvatarFilename && oldAvatarFilename !== 'default_avatar.jpeg') {
+                const oldAvatarFilepath = path.join('./avatars', oldAvatarFilename);
+                try {
+                    await fs.promises.unlink(oldAvatarFilepath);
+                } catch (err) {
+                    console.error(`Failed to delete old avatar: ${err}`);
+                }
             }
         }
         return updatedUser;
