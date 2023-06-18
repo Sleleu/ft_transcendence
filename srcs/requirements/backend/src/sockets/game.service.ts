@@ -55,7 +55,7 @@ export class GameService {
 
 	updateSpectators(gameState: GameState): void {
 		this.spectators.forEach((spectator) => {
-		  spectator.emit('gameState', gameState); // Emit game state update to spectators
+		  spectator.emit('gameState', gameState);
 		});
 	}
 

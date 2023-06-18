@@ -3,10 +3,12 @@ import '../css/Game.css'
 
 interface GameOverProps {
     changeComponent: (component: string) => void;
-}
+    // msg: string;
+  }
 
 const GameOver:FC<GameOverProps> = ({changeComponent}) => {
-  
+
+  // console.log(msg);
   const click = () => {
     changeComponent('Choices')
   }

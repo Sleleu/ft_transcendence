@@ -42,7 +42,7 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 
 	calculateNewElo(currentElo: number, opponentElo: number, win: boolean): number {
 		let K: number;
-	
+
 		if (currentElo < 1000) {
 			K = 160;
 		} else if (currentElo < 2000) {
@@ -54,37 +54,36 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		} else {
 			K = 20;
 		}
-	
+
 		const expectedScore = 1 / (1 + Math.pow(10, (opponentElo - currentElo) / 400));
 		const actualScore = win ? 1 : 0;
 		return currentElo + K * (actualScore - expectedScore);
 	}
-	  
+
 
 	async updatePlayerElo(client: Socket<any>, opponent: Socket<any>, won: boolean) {
 		const token = client?.handshake.headers.cookie?.substring(14);
 		const opponentToken = opponent?.handshake.headers.cookie?.substring(14);
-		
+
 		if (token && opponentToken) {
 		  const user = await this.socketService.getUserWithToken(token);
 		  const opp = await this.socketService.getUserWithToken(opponentToken);
-	  
+
 		  const newElo = this.calculateNewElo(user.elo, opp.elo, won);
 		  this.socketService.updateElo(+user.id, newElo);
 		}
 	  }
-	  
+
 	  updatePrismaData(connectedClients: (Socket<any> | undefined)[], game_service: GameService): void{
 		if (connectedClients[0] && connectedClients[1]) {
 		  const won = game_service.getGameState().playerScore > game_service.getGameState().opponentScore;
 		  this.updatePlayerWinLoose(connectedClients[0], won);
 		  this.updatePlayerElo(connectedClients[0], connectedClients[1], won);
-		  
+
 		  this.updatePlayerWinLoose(connectedClients[1], !won);
 		  this.updatePlayerElo(connectedClients[1], connectedClients[0], !won);
 		}
-	  }
-	  
+	}
 
 	startGameInterval(clients: (Socket<any> | undefined)[]): void {
 		let game_service = this.getGameService(clients);
@@ -99,13 +98,14 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		if (game_service?.getwinner() && connectedClients[1] && connectedClients[0])
 		{
 			this.updatePrismaData(connectedClients, game_service);
-			connectedClients.forEach((client)=> {
-				if (client)
-				{
-					client.emit('game-over', game_service?.getGameState());
-					this.gameOver(client);
-				}
-			});
+			this.gameOver(connectedClients);
+			// connectedClients.forEach((client)=> {
+			// 	if (client)
+			// 	{
+			// 		client.emit('game-over');
+			// 		this.gameOver(client);
+			// 	}
+			// });
 		}
 		else if (connectedClients.length === 2  && !game_service?.getGameState().pause)
 		{
@@ -203,14 +203,14 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 			console.log("opponent doesnt exist");
 	}
 
-	@SubscribeMessage('game-over')
-	gameOver(@ConnectedSocket() client: Socket): void{
+	// @SubscribeMessage('game-over')
+	gameOver(clients: (Socket<any> | undefined)[]): void{
 		for (const connectedClients of this.gameSessions.keys()) {
-		  if (connectedClients.includes(client)) {
-			connectedClients.forEach((clients) => {
-				clients?.emit("game-over");
-				this.updatePlayerStatus(clients, "online");
-			})
+		  if (connectedClients.includes(clients[0]) || connectedClients.includes(clients[1])) {
+			// connectedClients.forEach((client) => {
+			// 	client?.emit('game-over');
+			// 	this.updatePlayerStatus(client, "online");
+			// })
 			this.getGameService(connectedClients)?.resetGame();
 			this.stopGameInterval();
 			this.deleteSession(connectedClients);
@@ -254,7 +254,7 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 					game_serv.getGameState().opponentScore = leavingplayerind === 0 ? 10 : 0;
 					this.updatePrismaData(connectedClients, game_serv)
 					connectedClients[leavingplayerind]?.emit("player-left");
-					connectedClients[opponentIndex]?.emit("game-over");
+					connectedClients[opponentIndex]?.emit("game-over", "You Won!!!");
 					this.updatePlayerStatus(connectedClients[leavingplayerind], "online");
 					this.updatePlayerStatus(connectedClients[opponentIndex], "online");
 					this.stopGameInterval();

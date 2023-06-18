@@ -59,9 +59,8 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
     }
 
     socket?.on('game-over', () => {
-      console.log("client side event: game-over");
       resetGame();
-      changeComponent("GameOver");
+      changeComponent('GameOver');
     });
 
     socket?.on('player-left', () => {
