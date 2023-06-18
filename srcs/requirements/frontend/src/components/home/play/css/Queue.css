@@ -119,10 +119,10 @@
     justify-content: center;
     font-size: 70px;
     font-weight: 700;
-    color: black;
+    color: white;
     text-shadow:
-        0 0 10px #fff,
-        0 0 42px white;
+        0 0 10px cyan,
+        0 0 42px cyan;
 }
 
 .containerQ {
