@@ -22,6 +22,7 @@ type GameState = {
   playerScore: number;
   opponentScore: number;
   playerID: number;
+  elapsedTime: number;
 };
 
 const InitialState = (): GameState => {
@@ -36,6 +37,7 @@ const InitialState = (): GameState => {
     opponentScore: 0,
     pause: true,
     playerID: 0,
+    elapsedTime: 0,
   };
 };
 
@@ -49,33 +51,29 @@ interface GameProps {
 
 const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMode, watchmode}) => {
   const [state, setState] = useState<GameState>(InitialState());
+
   useEffect(() => {
     if (watchmode)
       socket?.emit('join-as-spectator', opponentID)
     else
     {
-      console.log("client side: joining a room");
       socket?.emit('join-room', {Mode: gameMode, opponentid: opponentID});// pass the game mode as well
     }
 
     socket?.on('game-over', (msg: string) => {
-      console.log("client side game-over: ", msg)
       resetGame();
       changeComponent('GameOver'+ msg);
     });
 
     socket?.on('player-left', () => {
-      console.log("client side event: player left");
       resetGame();
     });
 
     socket?.on('gameState', (gameState: GameState) => {
-      console.log("client side event: gameState");
       setState(gameState);
     });
 
     socket?.on('start', (ID: number) => {
-      console.log("client side event: start with id of: ", ID);
       setState((prevState) => ({
         ...prevState,
         pause: false,
@@ -84,7 +82,6 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
     });
 
     socket?.on('updateBallPosition', (gameState: GameState) => {
-      console.log("client side event: updateBallPosition ");
       setState((prevState) => ({
         ...prevState,
         deltaX: gameState.deltaX,
@@ -92,6 +89,7 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
         ball: gameState.ball,
         playerScore: gameState.playerScore,
         opponentScore: gameState.opponentScore,
+        elapsedTime: gameState.elapsedTime,
       }));
     });
 
@@ -184,19 +182,27 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
 
   return (
     <div id="game" className="outer">
-        <div className="style">
-          <div className="dividerContainer">
-            <div className="dividerStyle">|</div>
-          </div>
-          <div className="boardContainer">
-            <Board state={state}/>
-          </div>
-          <div className="scoresContainer">
-            <div className="score">{state.playerScore}</div>
-            <div className="score">{state.opponentScore}</div>
-          </div>
+          {(gameMode === 'b' || watchmode) && (
+            <div className="timer">
+              {"timer: "}
+              {Math.floor(state.elapsedTime / 60).toString().padStart(2, '0')}:
+              {(state.elapsedTime % 60).toString().padStart(2, '0')}
+            </div>
+          )}
+          <div className="style">
+            <div className="dividerContainer">
+              <div className="dividerStyle">|</div>
+            </div>
+            <div className="boardContainer">
+              <Board state={state}/>
+            </div>
+            <div className="scoresContainer">
+              <div className="score">{state.playerScore}</div>
+              <div className="score">{state.opponentScore}</div>
+            </div>
         </div>
       </div>
+
   );
 };
 

@@ -8,7 +8,6 @@ interface GameOverProps {
 
 const GameOver:FC<GameOverProps> = ({changeComponent, msg}) => {
 
-  console.log("inside game-over: ", msg);
   const click = () => {
     changeComponent('Choices')
   }

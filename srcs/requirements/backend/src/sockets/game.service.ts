@@ -14,6 +14,7 @@ const board = [...Array(PADDLE_BOARD_SIZE)].map((_, pos) => pos);
 @Injectable()
 export class GameService {
 	private spectators: Socket<any>[] = [];
+	private startTime: number =  Date.now();
 	private gameState: GameState = {
 		player1: board.map((x) => x * COL_SIZE + PADDLE_EDGE_SPACE),
 		player2: board.map((x) => (x + 1) * COL_SIZE - (PADDLE_EDGE_SPACE + 1)),
@@ -25,6 +26,7 @@ export class GameService {
 		pause: true,
 		numofPlayers: 0,
 		gameSpeed: 0,
+		elapsedTime: 0,
 	};
 
 	addSpectator(spectator: Socket<any>): void {
@@ -65,6 +67,7 @@ export class GameService {
 
 	startGame(): void {
 		this.gameState.pause = false;
+		this.startTime = Date.now();
 		console.log("server service: startGame");
 	}
 
@@ -85,14 +88,15 @@ export class GameService {
 			pause: true,
 			numofPlayers: 0,
 			gameSpeed: 0,
+			elapsedTime: 0,
 		};
 	}
 
 	setSpeed(Mode: string): void{
 		if (Mode === 'n')
-			this.gameState.gameSpeed = 4;
-		else
 			this.gameState.gameSpeed = 8;
+		else
+			this.gameState.gameSpeed = 12;
 	}
 
 	movePlayer1(movePlayer: number[]): void{
@@ -116,10 +120,25 @@ export class GameService {
 	}
 
 	getwinner(): boolean{
-		if (this.gameState.playerScore === 10 || this.gameState.opponentScore === 10)
+		if (this.gameState.playerScore === 1000 || this.gameState.opponentScore === 1000)
 			return true;
 		return false;
 	}
+
+	updateTime(): ()=>void {
+		if (!this.gameState.pause) {
+			const interval = setInterval(() => {
+			const currentTime = Date.now();
+			const elapsedTimeInSeconds = Math.floor((currentTime - this.startTime) / 1000);
+			this.gameState.elapsedTime = elapsedTimeInSeconds;
+		  }, 1000);
+
+		  return () => {
+			clearInterval(interval);
+		  };
+		}
+		return () => {};
+	  }
 
 	bounceBall():void{
 		const newstate = this.gameState.ball + (this.gameState.deltaY + this.gameState.deltaX);

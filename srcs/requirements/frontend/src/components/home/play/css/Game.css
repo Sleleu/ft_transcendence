@@ -63,7 +63,7 @@
     justify-content: center;
     align-items: center;
     margin: 0 auto;
-    position: relative; /* Add this line */
+    position: relative;
 }
 
  .boardContainer {
@@ -116,3 +116,39 @@
     filter: drop-shadow(0 0 0.5vh white);
     transition: box-shadow 0.3s ease;
   }
+
+  .playerName {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    /* transform: rotate(-90deg);
+    transform-origin: center; */
+    font-size: 50px;
+    font-weight: 700;
+    color: white;
+    text-shadow:
+        0 0 10px cyan,
+        0 0 42px cyan;
+}
+
+.timer {
+  position: absolute;
+  top: 2%;
+  left: 2%;
+  height: 8%;
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  font-size: 30px;
+  font-weight: 700;
+  color: white;
+  text-shadow:
+      0 0 10px cyan,
+      0 0 42px cyan;
+}
