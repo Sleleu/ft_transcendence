@@ -1,11 +1,10 @@
 import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer, ConnectedSocket, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { SocketsService } from './sockets.service';
 import { Server, Socket } from 'socket.io';
-import { BounceBallDto, movePaddleDto, gameModeDto} from './dto/game.dto';
+import { movePaddleDto, gameModeDto} from './dto/game.dto';
 import { Interval } from '@nestjs/schedule';
 import { GameService } from './game.service';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { profile } from 'console';
 import { connect } from 'http2';
 import { session } from 'passport';
@@ -19,7 +18,6 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 
 	constructor(
 		private readonly socketService: SocketsService,
-		private readonly prismaService: PrismaService
 		) {}
 
 	afterInit() {
@@ -99,13 +97,6 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		{
 			this.updatePrismaData(connectedClients, game_service);
 			this.gameOver(connectedClients);
-			// connectedClients.forEach((client)=> {
-			// 	if (client)
-			// 	{
-			// 		client.emit('game-over');
-			// 		this.gameOver(client);
-			// 	}
-			// });
 		}
 		else if (connectedClients.length === 2  && !game_service?.getGameState().pause)
 		{
@@ -203,18 +194,30 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 			console.log("opponent doesnt exist");
 	}
 
-	// @SubscribeMessage('game-over')
+	notifyClients(connectedClients: (Socket<any> | undefined)[], gameserv: GameService, flag: boolean): void{
+		const won = gameserv.getGameState().playerScore > gameserv.getGameState().opponentScore;
+
+		const winnerindex = won === true ? 0: 1;
+		const looserindex = won === true ? 1: 0;
+		if (flag === false){
+			connectedClients[looserindex]?.emit("game-over", "Game Over!\n");
+			connectedClients[winnerindex]?.emit("game-over", "Congratulation!\n");
+		}else{
+			connectedClients[looserindex]?.emit("player-left");
+			connectedClients[winnerindex]?.emit("game-over", "Opponent Left\n");
+		}
+		this.updatePlayerStatus(connectedClients[0], "online");
+		this.updatePlayerStatus(connectedClients[1], "online");
+	}
+
 	gameOver(clients: (Socket<any> | undefined)[]): void{
-		for (const connectedClients of this.gameSessions.keys()) {
-		  if (connectedClients.includes(clients[0]) || connectedClients.includes(clients[1])) {
-			// connectedClients.forEach((client) => {
-			// 	client?.emit('game-over');
-			// 	this.updatePlayerStatus(client, "online");
-			// })
-			this.getGameService(connectedClients)?.resetGame();
-			this.stopGameInterval();
-			this.deleteSession(connectedClients);
-			break;
+		for (const [connectedClients, game_serv] of this.gameSessions.entries()) {
+			if (connectedClients.includes(clients[0]) || connectedClients.includes(clients[1])) {
+				this.notifyClients(connectedClients, game_serv, false);
+				this.getGameService(connectedClients)?.resetGame();
+				this.stopGameInterval();
+				this.deleteSession(connectedClients);
+				break;
 		  }
 		}
 	}
@@ -253,10 +256,11 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 					game_serv.getGameState().playerScore = leavingplayerind === 0 ? 0 : 10;
 					game_serv.getGameState().opponentScore = leavingplayerind === 0 ? 10 : 0;
 					this.updatePrismaData(connectedClients, game_serv)
-					connectedClients[leavingplayerind]?.emit("player-left");
-					connectedClients[opponentIndex]?.emit("game-over", "You Won!!!");
-					this.updatePlayerStatus(connectedClients[leavingplayerind], "online");
-					this.updatePlayerStatus(connectedClients[opponentIndex], "online");
+					this.notifyClients(connectedClients, game_serv, true);
+					// connectedClients[leavingplayerind]?.emit("player-left");
+					// connectedClients[opponentIndex]?.emit("game-over", "You Won!!!");
+					// this.updatePlayerStatus(connectedClients[leavingplayerind], "online");
+					// this.updatePlayerStatus(connectedClients[opponentIndex], "online");
 					this.stopGameInterval();
 					this.deleteSession(connectedClients);
 				}

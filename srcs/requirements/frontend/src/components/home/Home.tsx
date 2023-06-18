@@ -160,6 +160,8 @@ function Home() {
 
 	const handleLogout = async () => {
 		try {
+          if (activeComponent.startsWith("game"))
+            socket?.emit("player-left");
           await unsetTwoFAVerified();
 		  await logout();
 		  navigate('/');
@@ -246,7 +248,7 @@ useEffect(() => {
                         {activeComponent === "play" && <Play changeComponent={changeComponent} />}
                         {activeComponent.startsWith("game") && <Game changeComponent={changeComponent} socket={socket} opponentID={extractId(activeComponent.substring(0,activeComponent.length - 1))} gameMode={activeComponent[activeComponent.length - 1]} watchmode={false}/>}
                         {activeComponent.startsWith("invitePlay") && <InvitePlay changeComponent={changeComponent} name={user.gameLogin} socket={socket} friendId={+extractId(activeComponent)} mode={modeInvite} changeMode={changeMode} previousActiveComponent={front}/>}
-                        {activeComponent === "GameOver" && <GameOver changeComponent={changeComponent} />}
+                        {activeComponent.startsWith("GameOver") && <GameOver changeComponent={changeComponent} msg={activeComponent.substring(8,activeComponent.length - 1)} />}
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent} user={user} />}
                         {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} refreshUser={getUser} />}
                         {activeComponent === "historic" && <History />}

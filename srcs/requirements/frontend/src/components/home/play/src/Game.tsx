@@ -2,7 +2,7 @@ import React, { useEffect, useState, CSSProperties, useMemo } from 'react';
 import Box, { BACKGROUND, PLAYER, BALL } from './box';
 import { io, Socket } from 'socket.io-client';
 import '../css/Game.css'
-import GameOver from './Game-over';
+import GameOver from '../src/Game-over'
 
 /* size */
 const ROW_SIZE = 10 * 2;
@@ -58,9 +58,10 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
       socket?.emit('join-room', {Mode: gameMode, opponentid: opponentID});// pass the game mode as well
     }
 
-    socket?.on('game-over', () => {
+    socket?.on('game-over', (msg: string) => {
+      console.log("client side game-over: ", msg)
       resetGame();
-      changeComponent('GameOver');
+      changeComponent('GameOver'+ msg);
     });
 
     socket?.on('player-left', () => {
@@ -103,7 +104,6 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
     });
 
     return () => {
-      // socket?.emit("GameOver");
     };
   }, []);
 

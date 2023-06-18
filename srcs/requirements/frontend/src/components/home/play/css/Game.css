@@ -79,8 +79,8 @@
 }
 
   .containerGameOver {
-    min-width: 20vw;
-    min-height: 10vh;
+    min-width: 460px;
+    min-height: 250px;
     background-color: rgba(0, 0, 0, 0.8);
     height: 27vh;
     width: 35%;
@@ -95,7 +95,7 @@
 
   .gameoverText {
     color: white;
-    font-size: calc(15px + 5vh);
+    font-size: calc(20px + 5vh);
     font-weight: 700;
     text-shadow: 0 0 0.5vh #fff, 0 0 2vh white;
     transition: text-shadow 0.3s ease;

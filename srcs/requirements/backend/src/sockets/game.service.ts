@@ -49,7 +49,7 @@ export class GameService {
 
 	spectatorGameEnded(): void {
 		this.spectators.forEach((spectator) => {
-			spectator.emit('game-over');
+			spectator.emit('game-over', "Game Ended!");
 		  });
 	}
 
