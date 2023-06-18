@@ -549,6 +549,8 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		const room = await this.messagesService.getRoomById(roomId);
 		if (!room)
 			throw new ForbiddenException('Room does not exist');
+			if (room.owner.id !== user.id)
+				throw new ForbiddenException('You are not the owner of this room !');
 		const verifyClient = await this.messagesService.isAdmin(room.id, user.id);
 		if (!verifyClient)
 			throw new ForbiddenException('Client is not an admin');
