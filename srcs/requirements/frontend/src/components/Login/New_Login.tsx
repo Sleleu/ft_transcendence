@@ -8,7 +8,7 @@ interface Props {
     updateToken: (token: string) => void;
 }
 
-const Login:React.FC<Props> = ({updateToken}) => {
+const NewLogin:React.FC<Props> = ({updateToken}) => {
 
     const [hover, setHover] = useState<boolean>(false);
 
@@ -53,4 +53,4 @@ const Login:React.FC<Props> = ({updateToken}) => {
     )
 }
 
-export default Login
+export default NewLogin
