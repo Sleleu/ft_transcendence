@@ -3,6 +3,7 @@ import React, { CSSProperties} from 'react';
 
 interface BoxProps {
     name: number;
+    mode: string;
   }
 
 const BACKGROUND = 0;
@@ -22,7 +23,17 @@ const backgroundStyle: CSSProperties = {
     backgroundColor: "black",
   };
 
-  const playerStyle: CSSProperties = {
+  const playerStyleNormal: CSSProperties = {
+    height: "2vh",
+    width: "2vh",
+    borderStyle: "solid",
+    justifyContent: "center",
+    backgroundColor: "white",
+    color: "white",
+    margin: "-4px",
+  };
+
+  const playerStyleBonus: CSSProperties = {
     height: "2vh",
     width: "2vh",
     borderStyle: "solid",
@@ -44,19 +55,21 @@ const backgroundStyle: CSSProperties = {
     position: "relative",
   };
 
-
-const getStyle = (val: number) =>{
+const getStyle = (val: number, mode: string) =>{
 	if (val === BACKGROUND){
 		return {};
-	} if (val === PLAYER){
-		return playerStyle;
-	} else {
+	} if (val === PLAYER && mode === "n"){
+		return playerStyleNormal;
+	} if (val === PLAYER && mode === "b"){
+    return playerStyleBonus;
+  }
+  else {
 		return ballStyle;
 	}
 }
 
 const Box = (props : BoxProps) => <div style={backgroundStyle}>
-						<div style={getStyle(props.name)}></div>
+						<div style={getStyle(props.name, props.mode)}></div>
 					</div>
 export default Box;
 

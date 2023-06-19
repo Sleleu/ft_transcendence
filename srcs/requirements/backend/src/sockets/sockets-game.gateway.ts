@@ -73,8 +73,8 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		  const opp = await this.socketService.getUserWithToken(opponentToken);
 
 		  const newElo = this.calculateNewElo(user.elo, opp.elo, won);
-		  this.socketService.updateElo(+user.id, newElo);
 		  await this.updateHistory(client, gameserv, won, newElo);
+		  this.socketService.updateElo(+user.id, newElo);
 		}
 	  }
 
@@ -88,7 +88,7 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 			mode: gameserv.getGameState().gameSpeed === 12 ? "Bonus": "Normal",
 			pointsWon: won === true ? "1" : "0",
 			pointsLost: won === true ? "0" : "1",
-			elo: newElo.toString(),
+			elo: (newElo - (+user.elo)).toString(),
 		  };
 		  console.log("setting history with ", historyDto.result, new Date().toISOString());
 		  await this.historyService.newEntry(historyDto);
