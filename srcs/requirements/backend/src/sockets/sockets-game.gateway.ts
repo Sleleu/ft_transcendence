@@ -4,6 +4,8 @@ import { Server, Socket } from 'socket.io';
 import { movePaddleDto, gameModeDto} from './dto/game.dto';
 import { Interval } from '@nestjs/schedule';
 import { GameService } from './game.service';
+import { HistoryDto } from 'src/history/dto';
+import { HistoryService } from 'src/history/history.service';
 import { Prisma } from '@prisma/client';
 import { profile, time } from 'console';
 import { connect } from 'http2';
@@ -19,6 +21,7 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 
 	constructor(
 		private readonly socketService: SocketsService,
+		private readonly historyService: HistoryService,
 		) {}
 
 	afterInit() {
@@ -37,6 +40,8 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 			const user = await this.socketService.getUserWithToken(token);
 			this.socketService.changeWin(+user.id, won);
 		}
+		console.log("updating win and loose ", new Date().toISOString());
+
 	}
 
 	calculateNewElo(currentElo: number, opponentElo: number, win: boolean): number {
@@ -60,9 +65,10 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	}
 
 
-	async updatePlayerElo(client: Socket<any>, opponent: Socket<any>, won: boolean) {
+	async updatePlayerElo(client: Socket<any>, opponent: Socket<any>, won: boolean, gameserv: GameService) {
 		const token = client?.handshake.headers.cookie?.substring(14);
 		const opponentToken = opponent?.handshake.headers.cookie?.substring(14);
+		console.log("updating elo ", new Date().toISOString());
 
 		if (token && opponentToken) {
 		  const user = await this.socketService.getUserWithToken(token);
@@ -70,21 +76,43 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 
 		  const newElo = this.calculateNewElo(user.elo, opp.elo, won);
 		  this.socketService.updateElo(+user.id, newElo);
+		  await this.updateHistory(client, gameserv, won, newElo);
 		}
 	  }
 
-	updatePrismaData(connectedClients: (Socket<any> | undefined)[], game_service: GameService): void{
-		if (connectedClients[0] && connectedClients[1]) {
-		  const won = game_service.getGameState().playerScore > game_service.getGameState().opponentScore;
-		  this.updatePlayerWinLoose(connectedClients[0], won);
-		  this.updatePlayerElo(connectedClients[0], connectedClients[1], won);
+	  async updateHistory(client: Socket<any>, gameserv: GameService, won: boolean, newElo: number) {
+		const token = client?.handshake.headers.cookie?.substring(14);
+		if (token) {
+		  const user = await this.socketService.getUserWithToken(token);
+		  const historyDto: HistoryDto = {
+			userID: user.id.toString(),
+			result: gameserv.getGameState().playerScore.toString() + "-" + gameserv.getGameState().opponentScore.toString(),
+			mode: gameserv.getGameState().gameSpeed === 12 ? "Bonus": "Normal",
+			pointsWon: won === true ? "1" : "0",
+			pointsLost: won === true ? "0" : "1",
+			elo: newElo.toString(),
+		  };
+		  console.log("setting history with ", historyDto.result, new Date().toISOString());
+		  await this.historyService.newEntry(historyDto);
+		}
+	  }
 
-		  this.updatePlayerWinLoose(connectedClients[1], !won);
-		  this.updatePlayerElo(connectedClients[1], connectedClients[0], !won);
+	async updatePrismaData(connectedClients: (Socket<any> | undefined)[], game_service: GameService): Promise<void>{
+		if (connectedClients[0] && connectedClients[1]) {
+			console.log("updating prisma data", new Date().toISOString());
+		  const won = game_service.getGameState().playerScore > game_service.getGameState().opponentScore;
+
+		  await Promise.all([
+			this.updatePlayerWinLoose(connectedClients[0], won),
+			this.updatePlayerElo(connectedClients[0], connectedClients[1], won, game_service),
+
+			this.updatePlayerWinLoose(connectedClients[1], !won),
+			this.updatePlayerElo(connectedClients[1], connectedClients[0], !won, game_service),
+			]);
 		}
 	}
 
-	startGameInterval(clients: (Socket<any> | undefined)[]): void {
+	async startGameInterval(clients: (Socket<any> | undefined)[]): Promise<void> {
 		let game_service = this.getGameService(clients);
 		let connectedClients = clients;
 		if (!game_service){
@@ -93,31 +121,36 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		}
 		const intervalDuration = 500 / game_service.getGameState().gameSpeed;
 
-		this.interval = setInterval(() => {
+		const gameLoop = async () => {
+		// this.interval = setInterval(() => {
 			const timerInterval = game_service?.updateTime();
 
 			if (game_service?.getwinner() && connectedClients[1] && connectedClients[0])
 			{
-				this.updatePrismaData(connectedClients, game_service);
-				this.gameOver(connectedClients);
+				console.log("inside interval winner");
+				await this.updatePrismaData(connectedClients, game_service);
+				this.gameOver(connectedClients, false);
 				if (timerInterval)
 					timerInterval();
 			}
-			else if (connectedClients.length === 2  && !game_service?.getGameState().pause)
-			{
+			else if (connectedClients.length === 2  && !game_service?.getGameState().pause){
 				game_service?.bounceBall();
 				connectedClients.forEach((client)=> {
 					if (client)
 						client.emit('updateBallPosition', game_service?.getGameState());
-				});}
+				});
 				game_service?.updateSpectators(game_service.getGameState());
 				if (game_service?.getGameState().gameSpeed === 12 && game_service?.getGameState().elapsedTime >= 30) {
-					this.gameOver(connectedClients);
+					await this.updatePrismaData(connectedClients, game_service);
+					this.gameOver(connectedClients, false);
 					if (timerInterval)
 						timerInterval();
 				}
-			}, intervalDuration);
-
+			}
+			setTimeout(gameLoop, intervalDuration);
+		}
+		gameLoop();
+		// }, intervalDuration);
 	}
 
 	stopGameInterval(): void {
@@ -208,6 +241,7 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	notifyClients(connectedClients: (Socket<any> | undefined)[], gameserv: GameService, flag: boolean): void{
 		const won = gameserv.getGameState().playerScore > gameserv.getGameState().opponentScore;
 
+		console.log("notify clients", new Date().toISOString());
 		const winnerindex = won === true ? 0: 1;
 		const looserindex = won === true ? 1: 0;
 		if (flag === false){
@@ -221,10 +255,11 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		this.updatePlayerStatus(connectedClients[1], "online");
 	}
 
-	gameOver(clients: (Socket<any> | undefined)[]): void{
+	gameOver(clients: (Socket<any> | undefined)[], left: boolean): void{
 		for (const [connectedClients, game_serv] of this.gameSessions.entries()) {
+			console.log("inside game over, ", Date.now())
 			if (connectedClients.includes(clients[0]) || connectedClients.includes(clients[1])) {
-				this.notifyClients(connectedClients, game_serv, false);
+				this.notifyClients(connectedClients, game_serv, left);
 				this.getGameService(connectedClients)?.resetGame();
 				this.stopGameInterval();
 				this.deleteSession(connectedClients);
@@ -256,7 +291,7 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	}
 
 	@SubscribeMessage('player-left')
-	playerleft(@ConnectedSocket() client: Socket): void{
+	async playerleft(@ConnectedSocket() client: Socket): Promise<void>{
 		for (const connectedClients of this.gameSessions.keys()) {
 			if (connectedClients.includes(client)) {
 				const leavingplayerind = connectedClients.indexOf(client);
@@ -266,12 +301,10 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 				{
 					game_serv.getGameState().playerScore = leavingplayerind === 0 ? 0 : 10;
 					game_serv.getGameState().opponentScore = leavingplayerind === 0 ? 10 : 0;
-					this.updatePrismaData(connectedClients, game_serv)
-					this.notifyClients(connectedClients, game_serv, true);
-					this.stopGameInterval();
-					this.deleteSession(connectedClients);
+					await this.updatePrismaData(connectedClients, game_serv);
+					this.gameOver(connectedClients, true);
+					break;
 				}
-			  break;
 			}
 		  }
 	}

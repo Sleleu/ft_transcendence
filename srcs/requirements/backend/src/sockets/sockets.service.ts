@@ -52,9 +52,7 @@ export class SocketsService {
     })
   }
 
-
   async changeWin(userId: number, Win: boolean) {
-    // console.log("changing win to: ", numWin)
     if (Win)
     {
       await this.prisma.user.update({
@@ -78,5 +76,4 @@ export class SocketsService {
     });
   }
 
-  
 }

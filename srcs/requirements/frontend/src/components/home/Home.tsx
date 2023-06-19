@@ -251,7 +251,7 @@ useEffect(() => {
                         {activeComponent.startsWith("GameOver") && <GameOver changeComponent={changeComponent} msg={activeComponent.substring(8,activeComponent.length - 1)} />}
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent} user={user} />}
                         {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} refreshUser={getUser} />}
-                        {activeComponent === "historic" && <History />}
+                        {activeComponent === "history" && <History />}
                         {activeComponent === "stat" && <Stats user={user} changeComponent={changeComponent} />}
                         {activeComponent === "friend" && <Friend changeComponent={changeComponent} socket={socket}/>}
                         {activeComponent === "chat" && <RoomSelect user={user} socket={socket} changeComponent={changeComponent}/>}

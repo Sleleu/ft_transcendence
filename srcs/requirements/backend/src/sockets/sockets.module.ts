@@ -15,10 +15,11 @@ import { SocketsGameGateway } from './sockets-game.gateway';
 import { GameService } from './game.service';
 import { SocketsQueueGateway } from './sockets-queue.gateway';
 import { QueueService } from './queue.service';
+import { HistoryService } from 'src/history/history.service';
 
 @Module({
   imports: [ScheduleModule.forRoot(), JwtModule.register({ secret: process.env.JWT_SECRET }), FriendModule],//shima added schedule module for the interval to run
   providers: [SocketsGateway, SocketsChatGateway, SocketsFriendsGateway, SocketsGameGateway,
-    SocketsService, FriendService, MessageService, GameService, SocketsQueueGateway, QueueService]
+    SocketsService, FriendService, MessageService, GameService, SocketsQueueGateway, QueueService, HistoryService]
 })
 export class SocketsModule { }
