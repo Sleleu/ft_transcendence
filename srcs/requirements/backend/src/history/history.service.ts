@@ -13,13 +13,13 @@ export class HistoryService {
             throw new ForbiddenException('User does not exist');
 
         const entry = await this.prisma.history.create({
-            data : { 
+            data : {
                 user: {connect: {id : id} },
                 result: dto.result,
                 mode: dto.mode,
                 pointsWon: parseInt(dto.pointsWon),
                 pointsLost: parseInt(dto.pointsLost),
-                elo: parseInt(dto.elo),  
+                elo: parseInt(dto.elo),
             }
         })
         return entry;

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { BarWave, Messaging } from "react-cssfx-loading";
 import '../css/Queue.css'
 import { Socket } from 'socket.io-client';
+import { CSSProperties } from 'styled-components';
 
 interface props {
     mode: string
@@ -19,6 +20,9 @@ const Queue = ({ mode, name, socket, changeComponent }: props) => {
     const [find, setFind] = useState(false)
     const [vs, setVs] = useState('void')
     const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+    const [errorShow, setErrorShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
+    let error : boolean = false;
 
     useEffect(() => {
         const emitStr = 'addQueue' + mode
@@ -32,9 +36,19 @@ const Queue = ({ mode, name, socket, changeComponent }: props) => {
             const change = 'game' + opponent.id + mode;
             changeComponent(change)
         })
+        socket?.on('errorQueue', async (message) => {
+            error = true;
+            setErrorMessage(message);
+            setErrorShow(true);
+            await delay(3000);
+            changeComponent('play');
+        })
+
         return () => {
             socket?.off('vsName')
-            socket?.emit(quit, {})
+            socket?.off('errorQueue')
+            if (!error)
+                socket?.emit(quit, {error: error})
         }
     }, [])
 
@@ -44,7 +58,15 @@ const Queue = ({ mode, name, socket, changeComponent }: props) => {
         else
             return 'Bonus Mode'
     }
+
+    const nameText : CSSProperties = {
+        fontSize: '48px', cursor:'default', display: 'flex', alignItems:'center', justifyContent:'center', flexDirection: 'column', paddingTop: '20%',
+    }
+
     return (
+        <div className='containerQueue'>
+        { errorShow ? <div className='nameText' style={nameText}>{errorMessage}</div> 
+         :
         <div className='containerQueue'>
             {!find ? (<div className='headerQ'>Looking For An Opponent</div>) :
                 (<div className='headerQ'>Match is about to Start</div>)}
@@ -65,7 +87,8 @@ const Queue = ({ mode, name, socket, changeComponent }: props) => {
                     </div>
                 </div>
             </div>
-        </div >
+        </div >}
+        </div>
     )
 }
 

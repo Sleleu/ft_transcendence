@@ -87,19 +87,6 @@ const HistoryEntry:React.FC<Props> = ({entry}) => {
             textShadow: win ? "0 0 30px #63E9FF, 0 0 100px #63E9FF, 0 0 150px #63E9FF" : "0 0 30px #FC3030, 0 0 100px #FC3030, 0 0 150px #FC3030",
         }
 
-        // const histo3: CSSProperties = {
-        //     flexBasis: '100px',
-        //     margin:' 2px',
-        //     fontSize: '24px',
-        //     textAlign: 'right',
-        //     paddingTop: '30px',
-        //     background: win ? 'linear-gradient(to bottom, #63E9FF 20%, #00FBB0 60%)' :
-        //     'linear-gradient(to bottom, #9A08B1 , #FC3030 90%)',
-        //     WebkitBackgroundClip: 'text',
-        //     WebkitTextFillColor: 'transparent',
-        //     textShadow: win ? "0 0 30px #63E9FF, 0 0 100px #63E9FF, 0 0 150px #63E9FF" : "0 0 30px #FC3030, 0 0 100px #FC3030, 0 0 150px #FC3030"
-        // }
-
         const histo4: CSSProperties = {
             flexGrow: '0',
             margin: '2px',

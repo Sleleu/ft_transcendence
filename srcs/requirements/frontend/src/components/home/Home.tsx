@@ -11,6 +11,8 @@ import Rank from '../popup/Rank/Rank';
 import Classement from '../popup/Rank/Classement';
 import Settings from '../settings/Settings';
 import Stats from '../popup/Stats/Stats';
+import Login from '../Login/Login';
+import CreateAccount from '../Login/CreateAccount';
 import Friend from '../friend/list/src/friend';
 import { User } from '../types'
 import Game from './play/src/Game';
@@ -26,6 +28,7 @@ import SelectLogin from '../Login/SelectLogin';
 import SelectAvatar from '../Login/SelectAvatar';
 import GameOver from './play/src/Game-over';
 import PublicProfile from '../popup/PublicProfile';
+import ChatRoom from '../chat/ChatRoom'
 
 function Home() {
 
@@ -121,6 +124,10 @@ function Home() {
             setFriendIdInvite(friendId)
             getMessage(friendId)
             setVisible(true)
+        })
+
+        sock.on('closePopup', () => {
+            setVisible(false);
         })
 
         return () => {
@@ -251,10 +258,15 @@ useEffect(() => {
                         {activeComponent.startsWith("GameOver") && <GameOver changeComponent={changeComponent} msg={activeComponent.substring(8,activeComponent.length - 1)} />}
                         {activeComponent === "menue" && <Menue changeComponent={changeComponent} user={user} />}
                         {activeComponent === "settings" && <Settings user={user} changeComponent={changeComponent} refreshUser={getUser} />}
-                        {activeComponent === "history" && <History />}
+                        {activeComponent === "history" && <History changeComponent={changeComponent}/>}
                         {activeComponent === "stat" && <Stats user={user} changeComponent={changeComponent} />}
                         {activeComponent === "friend" && <Friend changeComponent={changeComponent} socket={socket}/>}
-                        {activeComponent === "chat" && <RoomSelect user={user} socket={socket} changeComponent={changeComponent}/>}
+
+                        {activeComponent.startsWith('privchat') && <RoomSelect user={user} socket={socket} changeComponent={changeComponent}
+                        message={activeComponent.substring(9)} status='PRIVATE'/>}
+                        {activeComponent.startsWith('pubchat') && <RoomSelect user={user} socket={socket} changeComponent={changeComponent}
+                        message={activeComponent.substring(8)} status='PUBLIC'/>}
+                        {activeComponent.startsWith("room") && <ChatRoom roomIdStr={activeComponent.substring(4)} user={user} socket={socket} changeComponent={changeComponent} />}
 
                         {activeComponent === "leader" && <Classement rank={userRank} changeComponent={changeComponent} />}
                         {activeComponent === "bronzeLead" && <Classement rank={'bronze'} changeComponent={changeComponent} />}
