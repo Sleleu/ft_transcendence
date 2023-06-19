@@ -178,6 +178,9 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
     const containerStyle: CSSProperties = {
       width: `${COL_SIZE}vh`,
       height: `${ROW_SIZE}vh`,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: '30%',
     };
 
     return <div className="style" style={containerStyle}>{board}</div>;
@@ -193,9 +196,9 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
             </div>
           )}
           <div className="style">
-            <div className="dividerContainer">
+            {/* <div className="dividerContainer">
               <div className="dividerStyle">|</div>
-            </div>
+            </div> */}
             <div className="boardContainer">
               <Board state={state}/>
             </div>
@@ -205,7 +208,6 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
             </div>
         </div>
       </div>
-
   );
 };
 

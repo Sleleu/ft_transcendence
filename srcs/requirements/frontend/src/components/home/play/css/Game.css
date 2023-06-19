@@ -25,19 +25,18 @@
     justify-content: space-around;
     position: absolute;
     left: 50%;
-    top: 5%;
-    transform: translate(-50%, -50%);
-    z-index: 1;
+    top: 50%;
+    transform: translate(-50%);
+    z-index: 2;
   }
 
   .dividerContainer {
     display: flex;
-    width: 120vh;
-    height: 60vh;
+    width: 100%;
+    height: 80%;
     justify-content: center;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    align-items: center;
+    z-index: 3;
     position: absolute;
   }
 
@@ -45,7 +44,8 @@
     background: white;
     width: 2px; /* Add this line */
     height: 100%;
-    z-index: 1;
+    position: relative;
+    z-index: 4;
   }
 
   .score {
@@ -53,30 +53,27 @@
     color: white;
 
   }
-
   .style {
-    width: 120vh;
-    height: 60vh;
+    width: 100%;
+    height: 100%;
     display: grid;
     grid-template: repeat(20, 1fr) / repeat(40, 1fr);
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin: 0 auto;
     position: relative;
-}
+    padding-top: 8%;
+  }
 
- .boardContainer {
+  .boardContainer {
     display: flex;
-    width: 120vh;
-    height: 60vh;
+    width: 100%;
+    height: 100%;
     justify-content: center;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    align-items: center;
     position: absolute;
     z-index: 1;
-}
+  }
 
   .containerGameOver {
     min-width: 460px;
@@ -117,29 +114,10 @@
     transition: box-shadow 0.3s ease;
   }
 
-  .playerName {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-    align-items: center;
-    /* transform: rotate(-90deg);
-    transform-origin: center; */
-    font-size: 50px;
-    font-weight: 700;
-    color: white;
-    text-shadow:
-        0 0 10px cyan,
-        0 0 42px cyan;
-}
-
 .timer {
   position: absolute;
   top: 2%;
   left: 2%;
-  height: 8%;
   width: 20%;
   display: flex;
   flex-direction: column;
@@ -147,8 +125,8 @@
   align-items: flex-start;
   font-size: 30px;
   font-weight: 700;
-  color: white;
+  color: rgb(243, 235, 235);
   text-shadow:
-      0 0 10px cyan,
-      0 0 42px cyan;
+      0 0 10px rgb(255, 0, 195),
+      0 0 42px rgb(255, 0, 195);
 }
