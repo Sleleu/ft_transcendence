@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { CreateRoomDto, MessageObj } from './entities/message.entity';
@@ -11,7 +11,23 @@ export class QueueService {
     private stack: number[] = []
     private stackBonus: number[] = []
 
-    addToStack(id: number): number[] | undefined {
+    async isGaming(id: number) {
+        const gamer = await this.prisma.user.findUnique({
+            where : {id : id},
+        })
+        if (gamer?.state.startsWith('is'))
+            return true;
+        return false;
+    }
+
+    async addToStack(id: number) {
+        if (await this.isGaming(id))
+            throw new HttpException('Player is alerady GAMING !', 403);        
+        const indexN = this.stack.indexOf(id);
+        const indexB = this.stackBonus.indexOf(id);
+        if (indexN != -1 || indexB != -1)
+            throw new HttpException('Player is alerady in the queue !', 403);
+
         this.stack.push(id);
         if (this.stack.length >= 2) {
             const ids = this.stack.splice(0, 2);
@@ -35,7 +51,15 @@ export class QueueService {
         }
     }
 
-    addToStackBonus(id: number): number[] | undefined {
+   async  addToStackBonus(id: number) {
+        if (await this.isGaming(id))
+        throw new HttpException('Player is alerady GAMING !', 403);        
+
+        const indexN = this.stack.indexOf(id);
+        const indexB = this.stackBonus.indexOf(id);
+        if (indexN != -1 || indexB != -1)
+            throw new HttpException('Player is alerady in the queue !', 403);
+
         this.stackBonus.push(id);
         if (this.stackBonus.length >= 2) {
             const ids = this.stackBonus.splice(0, 2);

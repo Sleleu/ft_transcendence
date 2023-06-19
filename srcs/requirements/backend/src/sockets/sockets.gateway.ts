@@ -25,10 +25,18 @@ export class SocketsGateway {
     try {
       const token = client.handshake.headers.cookie?.substring(14);
       if (token) {
-        const payload = this.jwtService.verify(token);
+        await this.jwtService.verify(token);
         const user = await this.socketService.getUserWithToken(token);
-        this.socketService.identify(user, client.id);
+
+        // Map -> key = clientId |  value = User
+        this.socketService.setClientMap(user, client.id);
+
+        // Room contenant tous les clients rattachés à un même User
+        const userRoomName = `user_${user.id}`;
+        client.join(userRoomName);
+
         console.log('Client connected:', client.id, ' ->', user.username);
+
         this.socketService.changeState(+user.id, 'online')
         this.refreshFriend(user)
       }
@@ -61,21 +69,24 @@ export class SocketsGateway {
   }
 
   async refreshFriend(user: User & { friend: Friend[] }) {
-    const friendSockets: { [friendId: number]: Socket } = {};
+    // const friendSockets: { [friendId: number]: Socket } = {};
+    const friendSockets: { [friendId: number]: string } = {};
     for (const friend of user.friend) {
-      const friendSocketId = this.socketService.findSocketById(friend.friendId);
-      if (friendSocketId) {
-        const friendSocket = this.server.sockets.sockets.get(friendSocketId);
-        if (friendSocket) {
-          friendSockets[friend.friendId] = friendSocket;
-        }
+      // const friendSocketId = this.socketService.findSocketById(friend.friendId);
+      // if (friendSocketId) {
+      //   const friendSocket = this.server.sockets.sockets.get(friendSocketId);
+      //   if (friendSocket) {
+          // friendSockets[friend.friendId] = friendSocket;
+        // }
+      // }
+          friendSockets[friend.friendId] = `user_${friend.friendId}`;
       }
-    }
     await new Promise(resolve => setTimeout(resolve, 100));
     for (const friendId of Object.keys(friendSockets)) {
       const friendSocket = friendSockets[+friendId];
       const friendFriend = await this.friendService.getFriendsByUserId(+friendId);
-      friendSocket.emit('receiveFriend', { friends: friendFriend });
+      // friendSocket.emit('receiveFriend', { friends: friendFriend });
+      this.server.to(friendSocket).emit('receiveFriend', { friends: friendFriend });
     }
   }
 }

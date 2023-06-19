@@ -10,11 +10,13 @@ export interface User {
   createAt: string;
   updateAt: string;
   state: string;
+  rank?: number;
 }
 
 export interface rankData {
   id: number;
   username: string;
+  gameLogin?: string;
   elo: number;
   win: number;
   loose: number;

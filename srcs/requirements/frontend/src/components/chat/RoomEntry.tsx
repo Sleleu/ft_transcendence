@@ -4,6 +4,7 @@ import { CSSProperties } from 'styled-components';
 import { User } from '../types';
 import msgGrey from '../../img/msgGrey.png'
 import msgGreen from '../../img/msgGreen.png'
+import { Room } from './chatTypes';
 
 interface MessageObj {
   id: number;
@@ -12,65 +13,34 @@ interface MessageObj {
   roomId: number;
 }
 
-interface Room {
-    name: string;
-    id: number;
-    type: string;
-    owner?: string;
-    inSalon?: string;
-}
-
 interface Props {
 	room: Room;
 	key: number;
-  handleSelect: (id: number, roomName: string, type: string) => void;
+  handleSelect: (id: number, roomName: string, type: string, owner?: string) => void;
   socket?: Socket;
+  user: User;
 }
 
-const RoomEntry:React.FC<Props> = ({room, handleSelect, socket}) => {
+const RoomEntry:React.FC<Props> = ({room, handleSelect, socket, user}) => {
 
-const [owner, setOwner] = useState<string>('');
+const [owner, setOwner] = useState(room.owner);
 const [newMsg, setNewMsg] = useState<boolean>(false);
+const [roomType, setRoomType] = useState<string>(room.type);
 
 const RoomsContainer: CSSProperties = {
-  height:'100px', margin: '7px', color: '#fff', fontSize:'24px', flex: 'none',
-  border: newMsg ? '1px solid #0f0' : '1px solid #fff',
   boxShadow: newMsg ? 'inset 0 0 30px #0a0' : 'null',
-  borderRadius: '30px', cursor: 'pointer', display: 'flex', justifyContent: 'space-around',
-}
-const legend: CSSProperties = {
-  fontSize: '18px', fontStyle: 'italic',
-}
-const Owner: CSSProperties = {
-  color:'#ee3388',
-}
-const Salon: CSSProperties = {
-  fontWeight: '600', color:'#00ccdd',
-}
-const Conversation: CSSProperties = {
-  fontWeight: '600', color:'#5ff', fontSize: '36px',
 }
 const Type: CSSProperties = {
-  color: (room.type === 'public') ? '#00ee13'
-  : (room.type === 'protected') ? '#eeaa00'
+  color: (roomType === 'public') ? '#00ee13'
+  : (roomType === 'protected') ? '#eeaa00'
   : '#ff0000',
 }
-const InSalon: CSSProperties = {
-  color:'#ffdd77',
-}
+
 const Block: CSSProperties = {
   display: 'flex', flexDirection:'column', justifyContent: 'space-around',
 }
-const MSG: CSSProperties = {
-  height: '40%',
-  alignSelf: 'center',
-}
 
 useEffect(() => {
-  socket?.emit('owner', {roomName: room.name}, (response:User) => {
-    setOwner(response.username);
-  })
-
   socket?.on('newMessage', (message: MessageObj) => {
     if (message.roomId === room.id)
       setNewMsg(true);
@@ -79,31 +49,50 @@ useEffect(() => {
     if (response.id === room.id)
       setNewMsg(false);
     })
-}, []);
+  
+		socket?.on('refreshRoomSelectType', (roomId: number, newType: string) => {
+      if (room.id === roomId)
+			  setRoomType(newType);
+    })
+    return () => {
+            socket?.off('newMessage');
+            socket?.off('joinSuccess');
+            socket?.off('refreshRoomSelectType');
+        };
+  }, []);
 
+	function getOtherUser(roomName: string, username: string | undefined): string | null {
+		const [userA, userB] = roomName.split(' - ');
+		if (username === userA) {
+		  return userB;
+		} else if (username === userB) {
+		  return userA;
+		}
+		return null;
+	}
+	const nameDisplay = room?.type ==='direct' ?
+	getOtherUser(room.name, user.gameLogin)
+	: room?.name;
+  
   return (
-    <div style={RoomsContainer} onClick={() => handleSelect(room.id, room.name, room.type)}>
+    <div className='RoomBox' style={RoomsContainer} onClick={() => handleSelect(room.id, room.name, roomType, owner?.username)}>
       {room.type !== 'direct' && <div style={Block}>
-      <span style={legend}>Salon Name</span>
-        <span style={Salon}>{room.name}</span>
+      <span className='legend'>Salon Name</span>
+        <span className='salon'>{room.name}</span>
       </div>}
       {room.type !== 'direct' && <div style={Block}>
-        <span style={legend}>Owner</span>
-        <span style={Owner}>{owner}</span>
+        <span className='legend'>Owner</span>
+        <span className='ownerTxt'>{owner?.gameLogin}</span>
       </div>}
       {room.type !== 'direct' && <div style={Block}>
-        <span style={legend}>Status</span>
-        <span style={Type}>{room.type.toUpperCase()}</span>
+        <span className='legend'>Status</span>
+        <span style={Type}>{roomType.toUpperCase()}</span>
       </div>}
-      {/* {room.type !== 'direct' && <div style={Block}>
-        <span style={legend}>In salon</span>
-        <span style={InSalon}>-42</span>
-      </div>} */}
       {room.type === 'direct' && <div style={Block}>
-        <span style={Conversation}>{room.name}</span>
+        <span className='directMsgEntry'>{nameDisplay}</span>
       </div>}
-      {!newMsg && <img src={msgGrey} style={MSG}></img>}
-      {newMsg && <img src={msgGreen} style={MSG}></img>}
+      {!newMsg && <img src={msgGrey} className='iconMsg'></img>}
+      {newMsg && <img src={msgGreen} className='iconMsg'></img>}
 
     </div>
   )

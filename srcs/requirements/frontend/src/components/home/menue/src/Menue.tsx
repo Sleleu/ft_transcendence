@@ -42,7 +42,7 @@ const Menue:FC<MenueProps> = ({changeComponent, user}) => {
                     <h3 className='settingsTxt'>Settings</h3>
                 </div>
                 <div className='containerChat'
-                onClick={() => changeComponent('chat')}
+                onClick={() => changeComponent('privchat')}
                 >
                     <div className='chatLogo' />
                     <h3 className='chatTxt'>Chat</h3>

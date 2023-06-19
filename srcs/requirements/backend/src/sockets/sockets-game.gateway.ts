@@ -82,12 +82,17 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		const token = client?.handshake.headers.cookie?.substring(14);
 		if (token) {
 		  const user = await this.socketService.getUserWithToken(token);
+		  const playerScore = gameserv.getGameState().playerScore;
+		  const opponentScore = gameserv.getGameState().opponentScore;
+		  const _numwon = won ? Math.max(playerScore, opponentScore) : Math.min(playerScore, opponentScore);
+		  const _numlos = !won ? Math.max(playerScore, opponentScore) : Math.min(playerScore, opponentScore);
+
 		  const historyDto: HistoryDto = {
 			userID: user.id.toString(),
-			result: gameserv.getGameState().playerScore.toString() + "-" + gameserv.getGameState().opponentScore.toString(),
+			result: won ? 'victory' : 'defeat',
 			mode: gameserv.getGameState().gameSpeed === 12 ? "Bonus": "Normal",
-			pointsWon: won === true ? "1" : "0",
-			pointsLost: won === true ? "0" : "1",
+			pointsWon: _numwon.toString(),
+			pointsLost: _numlos.toString(),
 			elo: (newElo - (+user.elo)).toString(),
 		  };
 		  console.log("setting history with ", historyDto.result, new Date().toISOString());
