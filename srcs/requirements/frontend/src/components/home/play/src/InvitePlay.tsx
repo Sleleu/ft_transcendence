@@ -60,7 +60,7 @@ const InvitePlay = ({ name, changeComponent, socket, friendId, mode, changeMode,
             setFind(true)
             setVs(friend.username)
             await delay(3000)
-            const change = 'game' + friend.id
+            const change = 'game' + friend.id + "n";
             changeComponent(change)
         })
         socket?.on('refused', async () => {

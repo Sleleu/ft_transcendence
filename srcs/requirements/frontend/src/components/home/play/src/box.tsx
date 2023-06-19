@@ -4,6 +4,7 @@ import React, { CSSProperties} from 'react';
 interface BoxProps {
     name: number;
     mode: string;
+    watch: boolean;
   }
 
 const BACKGROUND = 0;
@@ -79,23 +80,23 @@ const backgroundStyle: CSSProperties = {
 	boxShadow: "0 0 10px cyan, 0 0 20px cyan",
   };
 
-const getStyle = (val: number, mode: string) =>{
-	if (val === BACKGROUND && mode === "n"){
+const getStyle = (val: number, mode: string, watchmode: boolean) =>{
+	if (val === BACKGROUND && (mode === "n" || watchmode)){
 		return {};
 	}
-	else if (val === BACKGROUND && mode === "b")
+	else if (val === BACKGROUND && (mode === "b" || watchmode))
 		return backgroundStyleBonus;
-	if (val === PLAYER && mode === "n")
+	if (val === PLAYER && (mode === "n" || watchmode))
 		return playerStyleNormal;
-	else if (val === PLAYER && mode === "b")
+	else if (val === PLAYER && (mode === "b" || watchmode))
     	return playerStyleBonus;
-  	else if (val === BALL && mode === "n")
+  	else if (val === BALL && (mode === "n" || watchmode))
 		return ballStyleNormal;
 	else
 		return ballStyleBonus;
 }
 
 const Box = (props : BoxProps) => <div style={backgroundStyle}>
-						<div style={getStyle(props.name, props.mode)}></div>
+						<div style={getStyle(props.name, props.mode, props.watch)}></div>
 					</div>
 export default Box;
