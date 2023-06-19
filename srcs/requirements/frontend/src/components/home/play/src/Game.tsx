@@ -23,6 +23,7 @@ type GameState = {
   opponentScore: number;
   playerID: number;
   elapsedTime: number;
+  gameSpeed: number,
 };
 
 const InitialState = (): GameState => {
@@ -38,6 +39,7 @@ const InitialState = (): GameState => {
     pause: true,
     playerID: 0,
     elapsedTime: 0,
+    gameSpeed: 0,
   };
 };
 
@@ -90,6 +92,7 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
         playerScore: gameState.playerScore,
         opponentScore: gameState.opponentScore,
         elapsedTime: gameState.elapsedTime,
+        gameSpeed: gameState.gameSpeed,
       }));
     });
 
@@ -182,7 +185,7 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
 
   return (
     <div id="game" className="outer">
-          {(gameMode === 'b' || watchmode) && (
+          {(state && state.gameSpeed === 12) && (
             <div className="timer">
               {"timer: "}
               {Math.floor(state.elapsedTime / 60).toString().padStart(2, '0')}:
