@@ -125,6 +125,20 @@
         0 0 42px cyan;
 }
 
+.instruction {
+    height: 30%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    font-weight: 700;
+    color: white;
+    text-shadow:
+        0 0 10px rgb(241, 246, 246),
+        0 0 42px rgb(246, 249, 249);
+}
+
 .containerQ {
     height: 70%;
     width: 100%;

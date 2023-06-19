@@ -65,7 +65,7 @@ const Queue = ({ mode, name, socket, changeComponent }: props) => {
 
     return (
         <div className='containerQueue'>
-        { errorShow ? <div className='nameText' style={nameText}>{errorMessage}</div> 
+        { errorShow ? <div className='nameText' style={nameText}>{errorMessage}</div>
          :
         <div className='containerQueue'>
             {!find ? (<div className='headerQ'>Looking For An Opponent</div>) :
@@ -88,6 +88,7 @@ const Queue = ({ mode, name, socket, changeComponent }: props) => {
                 </div>
             </div>
         </div >}
+        <div className='instruction'>Use the up/down keys to control your paddle</div>
         </div>
     )
 }

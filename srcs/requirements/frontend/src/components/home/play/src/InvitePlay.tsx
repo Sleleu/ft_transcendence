@@ -98,6 +98,7 @@ const InvitePlay = ({ name, changeComponent, socket, friendId, mode, changeMode,
                 </div>
             </div>
         </div >
+
     )
 }
 
