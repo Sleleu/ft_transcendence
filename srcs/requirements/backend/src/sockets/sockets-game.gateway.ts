@@ -41,7 +41,6 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 			this.socketService.changeWin(+user.id, won);
 		}
 		console.log("updating win and loose ", new Date().toISOString());
-
 	}
 
 	calculateNewElo(currentElo: number, opponentElo: number, win: boolean): number {
@@ -63,7 +62,6 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		const actualScore = win ? 1 : 0;
 		return currentElo + K * (actualScore - expectedScore);
 	}
-
 
 	async updatePlayerElo(client: Socket<any>, opponent: Socket<any>, won: boolean, gameserv: GameService) {
 		const token = client?.handshake.headers.cookie?.substring(14);
@@ -122,10 +120,10 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		const intervalDuration = 500 / game_service.getGameState().gameSpeed;
 
 		const gameLoop = async () => {
-		// this.interval = setInterval(() => {
 			const timerInterval = game_service?.updateTime();
 
-			if (game_service?.getwinner() && connectedClients[1] && connectedClients[0])
+			if ((game_service?.getwinner() && connectedClients[1] && connectedClients[0]) ||
+			(game_service?.getGameState().gameSpeed === 12 && game_service?.getGameState().elapsedTime >= 30))
 			{
 				console.log("inside interval winner");
 				await this.updatePrismaData(connectedClients, game_service);
@@ -140,17 +138,10 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 						client.emit('updateBallPosition', game_service?.getGameState());
 				});
 				game_service?.updateSpectators(game_service.getGameState());
-				if (game_service?.getGameState().gameSpeed === 12 && game_service?.getGameState().elapsedTime >= 30) {
-					await this.updatePrismaData(connectedClients, game_service);
-					this.gameOver(connectedClients, false);
-					if (timerInterval)
-						timerInterval();
-				}
 			}
 			setTimeout(gameLoop, intervalDuration);
 		}
 		gameLoop();
-		// }, intervalDuration);
 	}
 
 	stopGameInterval(): void {
@@ -181,8 +172,7 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		return false;
 	}
 
-	find_session(client1: (Socket<any> | undefined), client2: (Socket<any> | undefined)): boolean{
-
+	find_session(client1: (Socket<any> | undefined), client2: (Socket<any> | undefined)): boolean {
 		if (!this.find_clients(client1, client2))
 		{
 			const game_service = new GameService;
@@ -244,6 +234,7 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		console.log("notify clients", new Date().toISOString());
 		const winnerindex = won === true ? 0: 1;
 		const looserindex = won === true ? 1: 0;
+		console.log("left is ", flag);
 		if (flag === false){
 			connectedClients[looserindex]?.emit("game-over", "Game Over!\n");
 			connectedClients[winnerindex]?.emit("game-over", "Congratulation!\n");
