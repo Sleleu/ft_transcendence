@@ -23,6 +23,14 @@ const backgroundStyle: CSSProperties = {
     backgroundColor: "black",
   };
 
+  const backgroundStyleBonus: CSSProperties = {
+    height: "2vh",
+    width: "2vh",
+    justifyContent: "center",
+    backgroundColor: "rgba(0,0,0,0.3)",
+};
+
+
   const playerStyleNormal: CSSProperties = {
     height: "2vh",
     width: "2vh",
@@ -38,16 +46,19 @@ const backgroundStyle: CSSProperties = {
     width: "2vh",
     borderStyle: "solid",
     justifyContent: "center",
-    backgroundColor: "blue",
-    color: "blue",
+    backgroundColor: "#ff00f2",
+    color: "#ff00f2",
     margin: "-4px",
+	padding: "5px",
+	boxShadow: "0 0 10px #ff00f2, 0 0 20px #ff00f2",
+	transition: "boxShadow 0.3s ease"
   };
 
-  const ballStyle: CSSProperties = {
+  const ballStyleNormal: CSSProperties = {
     height: "3vh",
     width: "3vh",
     display: "block",
-    backgroundColor: "yellow",
+    backgroundColor: "white",
     justifyContent: "center",
     borderRadius: "100%",
     color: "white",
@@ -55,21 +66,36 @@ const backgroundStyle: CSSProperties = {
     position: "relative",
   };
 
+  const ballStyleBonus: CSSProperties = {
+    height: "3vh",
+    width: "3vh",
+    display: "block",
+    backgroundColor: "cyan",
+    justifyContent: "center",
+    borderRadius: "100%",
+    color: "white",
+    zIndex: "10",
+    position: "relative",
+	boxShadow: "0 0 10px cyan, 0 0 20px cyan",
+  };
+
 const getStyle = (val: number, mode: string) =>{
-	if (val === BACKGROUND){
+	if (val === BACKGROUND && mode === "n"){
 		return {};
-	} if (val === PLAYER && mode === "n"){
-		return playerStyleNormal;
-	} if (val === PLAYER && mode === "b"){
-    return playerStyleBonus;
-  }
-  else {
-		return ballStyle;
 	}
+	else if (val === BACKGROUND && mode === "b")
+		return backgroundStyleBonus;
+	if (val === PLAYER && mode === "n")
+		return playerStyleNormal;
+	else if (val === PLAYER && mode === "b")
+    	return playerStyleBonus;
+  	else if (val === BALL && mode === "n")
+		return ballStyleNormal;
+	else
+		return ballStyleBonus;
 }
 
 const Box = (props : BoxProps) => <div style={backgroundStyle}>
 						<div style={getStyle(props.name, props.mode)}></div>
 					</div>
 export default Box;
-
