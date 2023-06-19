@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GameState, BounceBallDto} from './dto/game.dto';
 import { Server, Socket } from 'socket.io';
+import { SocketsService } from './sockets.service';
 
 const PADDLE_BOARD_SIZE = 5;
 const PADDLE_EDGE_SPACE = 1;
@@ -13,7 +14,7 @@ const board = [...Array(PADDLE_BOARD_SIZE)].map((_, pos) => pos);
 
 @Injectable()
 export class GameService {
-	private spectators: Socket<any>[] = [];
+	private spectators: number[] = [];
 	private startTime: number =  Date.now();
 	private gameState: GameState = {
 		player1: board.map((x) => x * COL_SIZE + PADDLE_EDGE_SPACE),
@@ -29,18 +30,18 @@ export class GameService {
 		elapsedTime: 0,
 	};
 
-	addSpectator(spectator: Socket<any>): void {
+	addSpectator(spectator: number): void {
 		this.spectators.push(spectator);
 	}
 
-	removeSpectator(spectator: Socket<any>): void {
+	removeSpectator(spectator: number): void {
 		const index = this.spectators.indexOf(spectator);
 		if (index !== -1) {
 		  this.spectators.splice(index, 1);
 		}
 	}
 
-	lookupSpectator(lookup: Socket<any>): boolean{
+	lookupSpectator(lookup: number): boolean{
 		for (let i = 0; i < this.spectators.length ; i++)
 		{
 			if (this.spectators[i] === lookup)
@@ -49,15 +50,15 @@ export class GameService {
 		return false;
 	}
 
-	spectatorGameEnded(): void {
+	spectatorGameEnded(server: Server): void {
 		this.spectators.forEach((spectator) => {
-			spectator.emit('game-over', "Game Ended!");
+			server.to(`user_${spectator}`).emit('game-over', "Game Ended!");
 		  });
 	}
 
-	updateSpectators(gameState: GameState): void {
+	updateSpectators(gameState: GameState, server: Server): void {
 		this.spectators.forEach((spectator) => {
-		  spectator.emit('gameState', gameState);
+			server.to(`user_${spectator}`).emit('gameState', gameState);
 		});
 	}
 

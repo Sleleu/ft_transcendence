@@ -24,6 +24,7 @@ const InvitePlay = ({ name, changeComponent, socket, friendId, mode, changeMode,
     const [refuse, setRefuse] = useState(false)
     const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+    console.log("inside invite play")
     const background: CSSProperties = {
         position: 'fixed',
         top: '0',
@@ -49,7 +50,7 @@ const InvitePlay = ({ name, changeComponent, socket, friendId, mode, changeMode,
                 const gameLogin = await data.text()
                 setVs(gameLogin)
                 await delay(3000)
-                const change = 'game' + friendId + 'n'
+                const change = 'game' + friendId + "n";
                 changeComponent(change)
             }
         }
@@ -59,7 +60,7 @@ const InvitePlay = ({ name, changeComponent, socket, friendId, mode, changeMode,
             setFind(true)
             setVs(friend.username)
             await delay(3000)
-            const change = 'game' + friend.id + 'n'
+            const change = 'game' + friend.id
             changeComponent(change)
         })
         socket?.on('refused', async () => {
@@ -97,6 +98,7 @@ const InvitePlay = ({ name, changeComponent, socket, friendId, mode, changeMode,
                     </div>
                 </div>
             </div>
+            <div className='instruction'>Use the up/down keys to control your paddle</div>
         </div >
 
     )

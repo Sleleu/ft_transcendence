@@ -54,6 +54,7 @@ interface GameProps {
 const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMode, watchmode}) => {
   const [state, setState] = useState<GameState>(InitialState());
 
+  console.log("inside game component")
   useEffect(() => {
     if (watchmode)
       socket?.emit('join-as-spectator', opponentID)
@@ -76,6 +77,7 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
     });
 
     socket?.on('start', (ID: number) => {
+      console.log("client side start recieved");
       setState((prevState) => ({
         ...prevState,
         pause: false,

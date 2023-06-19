@@ -24,24 +24,21 @@ export class SocketsService {
     return user;
   }
 
+  async getUserWithid(id: number) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+      include: { friend: true }
+    });
+    return user;
+  }
+
   async setClientMap(user: User, clientId: string) {
     this.clientProfileMap.set(clientId, user);
   }
 
-
-
-  // identify(user: User, clientId: string) {
-  //   this.clientToUser[clientId] = user;
-
-  //   return Object.values(this.clientToUser);
-  // }
-
-  // supClient(id: string) {
-  //   delete this.clientToUser[id];
-  // }
-
   findSocketById(id: number) {
-
     const idS: string[] = [];
 
     for (const [key, value] of this.clientProfileMap.entries()) {
