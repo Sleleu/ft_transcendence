@@ -103,7 +103,7 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, so
     changeComponent('invitePlay' + user.id)
   };
 
-  const handleViewProfile = () => {
+  const handleSeeProfile = () => {
     changeComponent('PublicProfile' + user.id)
   };
 
@@ -146,9 +146,6 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, so
 
   const handleAddToChat = () => {
     socket?.emit('addToChat', {friendId: user.id, roomId:roomId});
-  }
-
-  const handleSeeProfile = () => {
   }
 
   const isWhitelisted =  whitelist.some((guy) => guy.id === user.id);
