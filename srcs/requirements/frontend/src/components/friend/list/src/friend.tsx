@@ -1,4 +1,4 @@
-import React, { FC, CSSProperties } from 'react'
+import React, { FC } from 'react'
 import { useState, useEffect } from 'react';
 import '../css/friend.css'
 import { User } from '../../../types';
@@ -6,8 +6,7 @@ import FriendOnglet from './FriendOnglet';
 import FriendAdd from './FriendAdd';
 import FriendRequest from './FriendRequest';
 import FriendOption from './FriendOption';
-import { io, Socket } from 'socket.io-client';
-import { runInContext } from 'vm';
+import { Socket } from 'socket.io-client';
 
 interface FriendProps {
   changeComponent: (component: string) => void;

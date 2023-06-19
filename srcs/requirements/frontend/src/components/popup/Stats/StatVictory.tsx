@@ -1,5 +1,5 @@
-import React, {useState, CSSProperties} from 'react';
-import { PublicUserInfo, User } from '../../types';
+import React, {CSSProperties} from 'react';
+import { PublicUserInfo} from '../../types';
 import crown from '../../../img/history/crown.png'
 import skull from '../../../img/history/skull.png'
 

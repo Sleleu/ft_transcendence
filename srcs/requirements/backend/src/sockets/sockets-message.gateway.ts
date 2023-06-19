@@ -624,7 +624,8 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 				throw new ForbiddenException('Room does not exist');
 				await this.messagesService.removeWhitelistUser(room.id, user.id);
 				this.server.to(room.id.toString()).emit('refreshWhiteList', user, true);
-				this.server.to(`user_${user.id}`).emit('deleted', room.id);
+				if (room.type !== 'public' && room.type !== 'protected')
+					this.server.to(`user_${user.id}`).emit('deleted', room.id);
 			} catch (e) {
 			client.emit('msgError', { message: e.message });
 		}
@@ -671,6 +672,24 @@ export class SocketsChatGateway implements OnGatewayConnection, OnGatewayDisconn
 		client.emit('msgError', { message: e.message });
 	}
 }
+
+
+	@SubscribeMessage('displayDirect')
+	async displayDirect(@MessageBody('roomId') roomId: number,
+	@ConnectedSocket() client: Socket) {
+		const user = await this.socketService.getUser(client.id);
+		if (!user)
+		return ;
+		const room = await this.messagesService.getRoomById(roomId);
+		if (!room)
+		throw new ForbiddenException('Room does not exist');
+		const roomUsers = room.whitelist;
+		const other = roomUsers.find((guy) => guy.id !== user.id);
+		if (!other)
+			return ;
+		return other.gameLogin;
+	}
+
 
 //Ne fonctionne plus pour le moment
 // @SubscribeMessage('typing')

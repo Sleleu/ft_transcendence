@@ -7,7 +7,7 @@ import calculRank from '../../../../utils'
 
 const Name = ({ user, changeComponent }: { user: User, changeComponent: (component: string) => void }) => {
 
-  let size: number = 32
+  // let size: number = 32
 
   const calculSize = (size: string) => {
     if (size.length < 9)

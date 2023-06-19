@@ -35,6 +35,7 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 	const [owner, setOwner] = useState<User>();	
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [type, setType] = useState<string>('');
+	const [directDisplay, setDirectDisplay] = useState<string>('');
 
 	const filteredWhitelist = whitelist.filter((user) =>
 	 !banned.some((bannedUser) => bannedUser.id === user.id));
@@ -57,7 +58,10 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 				setType(data.room.type);
 			});
 		})
-		socket?.on('joinError', (response) => {
+			socket?.emit('displayDirect', {roomId: roomId}, (nameDisplay: string) => {
+				setDirectDisplay(nameDisplay);
+			}) ;
+			  socket?.on('joinError', (response) => {
 			if (!response.room)
 				changeComponent(`privchat-${response.msg}`);
 			if (response.type === 'public' || response.type === 'protected')
@@ -251,17 +255,8 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 	const [askPass, setAskPass] = useState(false);
 	const returnTo : string = (room?.type === 'public' || room?.type === 'protected')  ? 'pubchat' : 'privchat';
 
-	function getOtherUser(roomName: string, username: string | undefined): string | null {
-		const [userA, userB] = roomName.split(' - ');
-		if (username === userA) {
-		  return userB;
-		} else if (username === userB) {
-		  return userA;
-		}
-		return null;
-	}
 	const nameDisplay = room?.type ==='direct' ?
-	getOtherUser(room.name, user.gameLogin)
+	directDisplay
 	: room?.name;
 
 	const buttonNerfed: CSSProperties = {cursor: room?.type === 'direct' ? 'default' : 'pointer',}

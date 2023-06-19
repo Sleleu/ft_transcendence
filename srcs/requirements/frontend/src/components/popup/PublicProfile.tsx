@@ -1,7 +1,5 @@
 import React, { useState, useEffect, CSSProperties } from 'react';
 import StatVictory from './Stats/StatVictory';
-import StatElo from './Stats/StatElo';
-import StatMatch from './Stats/StatMatch';
 import { getPublicUserInfo } from '../Api';
 import { PublicUserInfo } from '../types';
 import StatProfile from './Stats/StatProfile';

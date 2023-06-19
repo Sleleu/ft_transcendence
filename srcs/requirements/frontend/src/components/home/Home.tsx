@@ -11,8 +11,6 @@ import Rank from '../popup/Rank/Rank';
 import Classement from '../popup/Rank/Classement';
 import Settings from '../settings/Settings';
 import Stats from '../popup/Stats/Stats';
-import Login from '../Login/Login';
-import CreateAccount from '../Login/CreateAccount';
 import Friend from '../friend/list/src/friend';
 import { User } from '../types'
 import Game from './play/src/Game';
@@ -46,7 +44,7 @@ function Home() {
     const [isLoading, setIsLoading] = useState(true);
     const [friendIdInvite, setFriendIdInvite] = useState(-1)
     const [modeInvite, setModeInvite] = useState('invite')
-    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+    // const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
     const push = (item: string) => {
         setStack([...stack, item])

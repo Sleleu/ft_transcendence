@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { BarWave, Messaging } from "react-cssfx-loading";
+import { Messaging } from "react-cssfx-loading";
 import '../css/Queue.css'
 import { Socket } from 'socket.io-client';
 import { CSSProperties } from 'styled-components';

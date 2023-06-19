@@ -2,7 +2,6 @@ import React from 'react'
 import '../css/FriendOnlget.css'
 import { User } from '../../../types'
 import calculRank from '../../../utils'
-import { relative } from 'path'
 import { CSSProperties } from 'react';
 
 type Interface = {

@@ -1,5 +1,5 @@
 import React, { FormEvent } from 'react'
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import '../css/FriendAdd.css'
 import { User } from '../../../types';
 import FriendAddOnglet from './FriendAddOnglet';

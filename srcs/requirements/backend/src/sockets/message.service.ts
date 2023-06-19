@@ -23,6 +23,7 @@ export class MessageService {
 
   constructor(private prisma: PrismaService) { }
 
+  
   async searchUser(userName : string) {
     const user = await this.prisma.user.findUnique({
       where : {
@@ -138,7 +139,7 @@ export class MessageService {
       where : {
         id: roomId,
       },
-      include: { owner: true },
+      include: { owner: true, whitelist:true },
     });
     return room;
   }

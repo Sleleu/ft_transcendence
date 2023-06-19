@@ -1,6 +1,5 @@
-import React, {useState, useEffect, CSSProperties} from 'react';
+import React, {CSSProperties} from 'react';
 import { User } from '../../types';
-import StatVictory from './StatVictory';
 import StatElo from './StatElo';
 import StatMatch from './StatMatch';
 

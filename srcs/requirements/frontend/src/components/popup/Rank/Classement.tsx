@@ -1,10 +1,8 @@
 import React from 'react'
 import { CSSProperties, useState, useEffect } from 'react'
-import { User, rankData } from '../../types'
+import { User} from '../../types'
 import ClassementEntry from './ClassementEntry'
 import RankIcon from './RankIcon'
-
-import Play from '../../home/play/src/Play'
 
 interface Props {
   rank : string;
@@ -80,12 +78,12 @@ const Header: CSSProperties = {
   justifyContent: 'space-around',
 
 }
-  const goldPic: CSSProperties = {
-    height: '250px',
-    width: '190px',
-    alignSelf: 'center',
-    margin: '-45px',
-  }
+  // const goldPic: CSSProperties = {
+  //   height: '250px',
+  //   width: '190px',
+  //   alignSelf: 'center',
+  //   margin: '-45px',
+  // }
   const headerTitle: CSSProperties = {
     alignSelf: 'center',
 

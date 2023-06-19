@@ -1,8 +1,7 @@
 import React, { useEffect, useState, CSSProperties, useMemo } from 'react';
 import Box, { BACKGROUND, PLAYER, BALL } from './box';
-import { io, Socket } from 'socket.io-client';
+import { Socket } from 'socket.io-client';
 import '../css/Game.css'
-import GameOver from '../src/Game-over'
 
 /* size */
 const ROW_SIZE = 10 * 2;

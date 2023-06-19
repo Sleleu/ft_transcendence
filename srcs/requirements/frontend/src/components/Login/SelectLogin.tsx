@@ -26,7 +26,7 @@ const SelectLogin: React.FC<SelectLoginProps> = ({user, onLoginUpdated}) => {
             setError(errorData.message || 'Something went wrong');
             return;
         }
-        const data = await response.json();
+        // const data = await response.json();
         onLoginUpdated(); // callback pour retourner sur home
     } catch (error) {
         if (error instanceof Error) {
@@ -45,7 +45,7 @@ const SelectLogin: React.FC<SelectLoginProps> = ({user, onLoginUpdated}) => {
       <div className='containerFullPage'>
         <div className='container'>
           <div style={{width: '80%'}}>
-            <img className='avatar-login' src={user.avatar} />
+            <img className='avatar-login' src={user.avatar} alt='avatar'/>
             <h1>Welcome, {user.username}!</h1>
             <h2>Please enter your new game login</h2>
             <form onSubmit={handleSubmit}>

@@ -26,6 +26,7 @@ const RoomEntry:React.FC<Props> = ({room, handleSelect, socket, user}) => {
 const [owner, setOwner] = useState(room.owner);
 const [newMsg, setNewMsg] = useState<boolean>(false);
 const [roomType, setRoomType] = useState<string>(room.type);
+const [nameDisplay, setNameDisplay] = useState<string>('');
 
 const RoomsContainer: CSSProperties = {
   boxShadow: newMsg ? 'inset 0 0 30px #0a0' : 'null',
@@ -41,6 +42,13 @@ const Block: CSSProperties = {
 }
 
 useEffect(() => {
+  if (room.type === 'direct')
+  { 
+    socket?.emit('displayDirect', {roomId: room.id}, (nameDisplay: string) => {
+      setNameDisplay(nameDisplay);
+    }) 
+  }
+
   socket?.on('newMessage', (message: MessageObj) => {
     if (message.roomId === room.id)
       setNewMsg(true);
@@ -61,18 +69,18 @@ useEffect(() => {
         };
   }, []);
 
-	function getOtherUser(roomName: string, username: string | undefined): string | null {
-		const [userA, userB] = roomName.split(' - ');
-		if (username === userA) {
-		  return userB;
-		} else if (username === userB) {
-		  return userA;
-		}
-		return null;
-	}
-	const nameDisplay = room?.type ==='direct' ?
-	getOtherUser(room.name, user.gameLogin)
-	: room?.name;
+	// function getOtherUser(roomName: string, username: string | undefined): string | null {
+	// 	const [userA, userB] = roomName.split(' - ');
+	// 	if (username === userA) {
+	// 	  return userB;
+	// 	} else if (username === userB) {
+	// 	  return userA;
+	// 	}
+	// 	return null;
+	// }
+	// const nameDisplay = room?.type ==='direct' ?
+	// getOtherUser(room.name, user.gameLogin)
+	// : room?.name;
   
   return (
     <div className='RoomBox' style={RoomsContainer} onClick={() => handleSelect(room.id, room.name, roomType, owner?.username)}>

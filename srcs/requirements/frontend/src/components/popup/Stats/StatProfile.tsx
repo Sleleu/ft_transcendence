@@ -1,5 +1,5 @@
-import React, {useState, CSSProperties} from 'react';
-import { PublicUserInfo, User } from '../../types';
+import React, {CSSProperties} from 'react';
+import { PublicUserInfo} from '../../types';
 import './StatStyle.css'
 
 interface Props {
@@ -35,8 +35,8 @@ const StatProfile: React.FC<Props> = ({profile}) => {
         margin: '0px',
     }
 
-    let ratio: string = profile.win + profile.loose === 0 ? '0' : ((profile.win / (profile.win + profile.loose)) * 100).toFixed(1);
-    ratio = ratio.endsWith('.0') ? ratio.slice(0, -2) : ratio;
+    // let ratio: string = profile.win + profile.loose === 0 ? '0' : ((profile.win / (profile.win + profile.loose)) * 100).toFixed(1);
+    // ratio = ratio.endsWith('.0') ? ratio.slice(0, -2) : ratio;
 
     function formatNumber(n: number): string {
         return n < 10 ? `0${n}` : `${n}`;
@@ -50,7 +50,7 @@ const StatProfile: React.FC<Props> = ({profile}) => {
         <div style={StatVictory}>
             <span className='text bold neon-big-cyan'>Profile</span>
             <div style={Center}>
-                <img src={profile.avatar} className='avatar-public' />
+                <img src={profile.avatar} className='avatar-public' alt='avatar'/>
                 <p className='text bold neon-purple'>{profile.gameLogin}</p>
             </div>
             <div style={Bottom}>
