@@ -37,7 +37,10 @@ const Queue = ({ mode, name, socket, changeComponent }: props) => {
             changeComponent(change)
         })
         socket?.on('errorQueue', async (message) => {
+<<<<<<< HEAD:requirements/frontend/src/components/home/play/src/Queue.tsx
             // eslint-disable-next-line
+=======
+>>>>>>> 259591dc41c0c04f8f1f60acd2d67bfd50d34396:srcs/requirements/frontend/src/components/home/play/src/Queue.tsx
             error = true;
             setErrorMessage(message);
             setErrorShow(true);

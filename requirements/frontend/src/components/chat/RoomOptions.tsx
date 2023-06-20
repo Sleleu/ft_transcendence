@@ -44,7 +44,11 @@ const RoomOptions: React.FC<Props> = ({position, setRoomClicked, user, admins, c
 
   return (
     <div className='roomOptions' style={popupStyle} onMouseLeave={() => setRoomClicked(false)}>
+<<<<<<< HEAD:requirements/frontend/src/components/chat/RoomOptions.tsx
       {!isOwner && <div className='roomOptionsContent' onClick={handleQuit}>Quit Room</div>}
+=======
+      <div className='roomOptionsContent' onClick={handleQuit}>Quit Room</div>
+>>>>>>> 259591dc41c0c04f8f1f60acd2d67bfd50d34396:srcs/requirements/frontend/src/components/chat/RoomOptions.tsx
       {isOwner && <div className='roomOptionsContent' onClick={handleDelete}>Delete Room</div>}
       {isAdmin && type === 'public' && <div className='roomOptionsContent' onClick={handleProtect}>Add Password</div>}
       {type === 'protected' && <div className='roomOptionsContent' onClick={handleUnprotect}>Remove Password</div>}

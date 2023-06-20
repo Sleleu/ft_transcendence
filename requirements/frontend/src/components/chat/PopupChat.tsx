@@ -26,14 +26,22 @@ interface popupInfo {
 
 const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, socket, room, clientName, changeComponent, field, whitelist, returnTo, friends}) => {
 
+<<<<<<< HEAD:requirements/frontend/src/components/chat/PopupChat.tsx
 	// const [isVisible, setIsVisible] = useState(true);
+=======
+	const [isVisible, setIsVisible] = useState(true);
+>>>>>>> 259591dc41c0c04f8f1f60acd2d67bfd50d34396:srcs/requirements/frontend/src/components/chat/PopupChat.tsx
 	const [ban, setBan] = useState('Ban');
 	const [mute, setMute] = useState('Mute');
 	const [admin, setAdmin] = useState('Promote as admin');
 	const [clientAdmin, setClientAdmin] = useState(false);
 
 
+<<<<<<< HEAD:requirements/frontend/src/components/chat/PopupChat.tsx
   // const roomName = room ? room.name : null;
+=======
+  const roomName = room ? room.name : null;
+>>>>>>> 259591dc41c0c04f8f1f60acd2d67bfd50d34396:srcs/requirements/frontend/src/components/chat/PopupChat.tsx
   const roomId = room ? room.id : null;
 
 	const popupStyle: React.CSSProperties = {
@@ -155,7 +163,11 @@ const PopupChat: React.FC<PopupProps> = ({ user, position, setSelectedTarget, so
     <div style={popupStyle} onClick={handleClickOutside} onMouseLeave={handleClickOutside}>
       <span style={UsernameStyle}>{user.gameLogin}</span>
       <button style={Buttons} onClick={handleSeeProfile}>See Profile</button>
+<<<<<<< HEAD:requirements/frontend/src/components/chat/PopupChat.tsx
       {room?.type !== 'direct' && <button style={Buttons} onClick={handleSendMessage}>Send Message</button>}
+=======
+      {room?.type != 'direct' && <button style={Buttons} onClick={handleSendMessage}>Send Message</button>}
+>>>>>>> 259591dc41c0c04f8f1f60acd2d67bfd50d34396:srcs/requirements/frontend/src/components/chat/PopupChat.tsx
       <button style={Buttons} onClick={handleInviteToPlay}>Invite to Play</button>
       {field !== 'friends' && !isFriend && <button style={Buttons} onClick={handleAddFriend}>Add Friend</button>}
       <button style={Buttons} onClick={handleBlock}>Block</button>

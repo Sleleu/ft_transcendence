@@ -32,6 +32,7 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 	const [friends, setFriends] = useState<User[]>([]);
 	const [blocked, setBlocked] = useState<User[]>([]);
 	const [room, setRoom] = useState<Room>();
+<<<<<<< HEAD:requirements/frontend/src/components/chat/ChatRoom.tsx
 	const [owner, setOwner] = useState<User>();
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [type, setType] = useState<string>('');
@@ -40,6 +41,15 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 	const filteredWhitelist = whitelist.filter((user) =>
 	 !banned.some((bannedUser) => bannedUser.id === user.id));
 
+=======
+	const [owner, setOwner] = useState<User>();	
+	const [messages, setMessages] = useState<Message[]>([]);
+	const [type, setType] = useState<string>('');
+
+	const filteredWhitelist = whitelist.filter((user) =>
+	 !banned.some((bannedUser) => bannedUser.id === user.id));
+	 
+>>>>>>> 259591dc41c0c04f8f1f60acd2d67bfd50d34396:srcs/requirements/frontend/src/components/chat/ChatRoom.tsx
 	 const passPopupRef = useRef<HTMLFormElement>(null);
 
 	 useEffect(() => {
@@ -58,10 +68,14 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 				setType(data.room.type);
 			});
 		})
+<<<<<<< HEAD:requirements/frontend/src/components/chat/ChatRoom.tsx
 			socket?.emit('displayDirect', {roomId: roomId}, (nameDisplay: string) => {
 				setDirectDisplay(nameDisplay);
 			}) ;
 			  socket?.on('joinError', (response) => {
+=======
+		socket?.on('joinError', (response) => {
+>>>>>>> 259591dc41c0c04f8f1f60acd2d67bfd50d34396:srcs/requirements/frontend/src/components/chat/ChatRoom.tsx
 			if (!response.room)
 				changeComponent(`privchat-${response.msg}`);
 			if (response.type === 'public' || response.type === 'protected')
@@ -73,7 +87,11 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 		socket?.emit('findRoomMessages', {id:roomId}, (messages: Message[]) => {
 			setMessages(messages);
 		});
+<<<<<<< HEAD:requirements/frontend/src/components/chat/ChatRoom.tsx
 
+=======
+		
+>>>>>>> 259591dc41c0c04f8f1f60acd2d67bfd50d34396:srcs/requirements/frontend/src/components/chat/ChatRoom.tsx
 		socket?.on('refreshFriends', (newUser: User, undo: boolean) => {
             if (undo)
 				setFriends((prev) => prev.filter((old) => old.id !== newUser.id))
@@ -141,9 +159,15 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 				setShowPass('password');
 			}
 		  };
+<<<<<<< HEAD:requirements/frontend/src/components/chat/ChatRoom.tsx
 
 		  document.addEventListener('mousedown', handleClickOutside);
 
+=======
+	  
+		  document.addEventListener('mousedown', handleClickOutside);
+	  
+>>>>>>> 259591dc41c0c04f8f1f60acd2d67bfd50d34396:srcs/requirements/frontend/src/components/chat/ChatRoom.tsx
         return () => {
 			document.removeEventListener('mousedown', handleClickOutside);
             socket?.emit('leave', {roomId: roomId}, () => {})
@@ -161,8 +185,12 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
             socket?.off('kickUser');
             socket?.off('msgError');
         };
+<<<<<<< HEAD:requirements/frontend/src/components/chat/ChatRoom.tsx
     // eslint-disable-next-line
 }, []);
+=======
+    }, []);
+>>>>>>> 259591dc41c0c04f8f1f60acd2d67bfd50d34396:srcs/requirements/frontend/src/components/chat/ChatRoom.tsx
 
 	const [usersField, setUsersField] = useState('salon');
 	const colorField : string = (usersField === 'salon') ? '#0ff'
@@ -199,7 +227,10 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
     const [showPopup, setShowPopup] = useState(false);
     const[popMsg, setPopMsg] = useState('');
     const popupRef = useRef<HTMLDivElement>(null);
+<<<<<<< HEAD:requirements/frontend/src/components/chat/ChatRoom.tsx
     // eslint-disable-next-line
+=======
+>>>>>>> 259591dc41c0c04f8f1f60acd2d67bfd50d34396:srcs/requirements/frontend/src/components/chat/ChatRoom.tsx
 	const handleClickOutside = (event:MouseEvent) => {
 		if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
 		  setShowPopup(false);
@@ -218,7 +249,11 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 		roomRank = 'Member';
 	}
 	let colorCodeRank : string = roomRank === 'Owner' ? '#fa0' : roomRank === 'Admin' ? '#e0e' : '#eee';
+<<<<<<< HEAD:requirements/frontend/src/components/chat/ChatRoom.tsx
 	const rankColor: CSSProperties = {
+=======
+	const rankColor: CSSProperties = {	
+>>>>>>> 259591dc41c0c04f8f1f60acd2d67bfd50d34396:srcs/requirements/frontend/src/components/chat/ChatRoom.tsx
 		textShadow:` 0 0 10px ${colorCodeRank}, 0 0 40px ${colorCodeRank}, 0 0 60px ${colorCodeRank}`,
 		boxShadow: `0 0 10px ${colorCodeRank}, 0 0 100px ${colorCodeRank}`,
 	}
@@ -252,6 +287,7 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 		setAskPass(false);
 	}
 
+<<<<<<< HEAD:requirements/frontend/src/components/chat/ChatRoom.tsx
     // eslint-disable-next-line
     const sortedMessages =  messages.sort((a, b) => b.id - a.id);
 
@@ -260,13 +296,35 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 
 	const nameDisplay = room?.type ==='direct' ?
 	directDisplay
+=======
+    const sortedMessages =  messages.sort((a, b) => b.id - a.id);
+	
+	const [askPass, setAskPass] = useState(false);
+	const returnTo : string = (room?.type === 'public' || room?.type === 'protected')  ? 'pubchat' : 'privchat';
+
+	function getOtherUser(roomName: string, username: string | undefined): string | null {
+		const [userA, userB] = roomName.split(' - ');
+		if (username === userA) {
+		  return userB;
+		} else if (username === userB) {
+		  return userA;
+		}
+		return null;
+	}
+	const nameDisplay = room?.type ==='direct' ?
+	getOtherUser(room.name, user.gameLogin)
+>>>>>>> 259591dc41c0c04f8f1f60acd2d67bfd50d34396:srcs/requirements/frontend/src/components/chat/ChatRoom.tsx
 	: room?.name;
 
 	const buttonNerfed: CSSProperties = {cursor: room?.type === 'direct' ? 'default' : 'pointer',}
 
     return (
 		<div className='ChatRoom'>
+<<<<<<< HEAD:requirements/frontend/src/components/chat/ChatRoom.tsx
 			<div>
+=======
+			<div> 
+>>>>>>> 259591dc41c0c04f8f1f60acd2d67bfd50d34396:srcs/requirements/frontend/src/components/chat/ChatRoom.tsx
 			{/* Popup On Error */}
             {showPopup && <div ref={popupRef} className='passPopup'>
                 <div className='popupMsgText'>{popMsg}</div>
@@ -289,7 +347,11 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 			 target={target} field='friends' changeComponent={changeComponent} handleUserClick={handleUserClick} connected={connected} key={target.id} admins={admins} owner={owner} blocked={blocked} room={room}/>)}
 			</div>
 	    </div>
+<<<<<<< HEAD:requirements/frontend/src/components/chat/ChatRoom.tsx
 
+=======
+		
+>>>>>>> 259591dc41c0c04f8f1f60acd2d67bfd50d34396:srcs/requirements/frontend/src/components/chat/ChatRoom.tsx
    			{/* Popup on user selection */}
 	<div>
 	{selectedTarget && <PopupChat user={selectedTarget} position={popupPosition} setSelectedTarget={setSelectedTarget} socket={socket}
@@ -297,12 +359,20 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
    </div>
 
 		<div className='RightBlock'>
+<<<<<<< HEAD:requirements/frontend/src/components/chat/ChatRoom.tsx
 
+=======
+					
+>>>>>>> 259591dc41c0c04f8f1f60acd2d67bfd50d34396:srcs/requirements/frontend/src/components/chat/ChatRoom.tsx
    			{/* Upper Block with Chatroom Options */}
 			   <div className='RoomBlock'>
 			  {room?.type !== 'direct' && <span className='RoomRank' style={rankColor}> <div>Rank : {roomRank} </div> </span>}
 			   <button className='RoomName' onClick={handleRoomClick} style={buttonNerfed}> <div>{nameDisplay}</div> </button>
+<<<<<<< HEAD:requirements/frontend/src/components/chat/ChatRoom.tsx
 			   <button className='Leave'
+=======
+			   <button className='Leave' 
+>>>>>>> 259591dc41c0c04f8f1f60acd2d67bfd50d34396:srcs/requirements/frontend/src/components/chat/ChatRoom.tsx
 			   onClick={() => changeComponent(returnTo)}>
 				<div>Leave</div> </button>
 			   </div>
@@ -323,11 +393,19 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 				{messages.map((message) => <MessageEntry author={message.author} text={message.text}  key={message.id} admins={admins} owner={owner} handleUserClick={handleUserClick} blocked={blocked} room={room}/>)}
 				</div>
 
+<<<<<<< HEAD:requirements/frontend/src/components/chat/ChatRoom.tsx
 				{/* input for messages */}
 				<form className='MessageBar' onSubmit={submitMessage}>
 				<input className='InputMessages' placeholder='Your message...' value={inputText}
 				onChange={handleTyping}></input>
 				<img className='SendIcon' src={sendLogo} onClick={submitMessage} alt='logo'></img>
+=======
+				{/* input for messages */}	
+				<form className='MessageBar' onSubmit={submitMessage}>
+				<input className='InputMessages' placeholder='Your message...' value={inputText}
+				onChange={handleTyping}></input>
+				<img className='SendIcon' src={sendLogo} onClick={submitMessage}></img>
+>>>>>>> 259591dc41c0c04f8f1f60acd2d67bfd50d34396:srcs/requirements/frontend/src/components/chat/ChatRoom.tsx
 				</form>
 			   </div>
     </div>

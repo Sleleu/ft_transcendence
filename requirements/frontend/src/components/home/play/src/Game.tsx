@@ -2,6 +2,10 @@ import React, { useEffect, useState, CSSProperties, useMemo } from 'react';
 import Box, { BACKGROUND, PLAYER, BALL } from './box';
 import { Socket } from 'socket.io-client';
 import '../css/Game.css'
+<<<<<<< HEAD:requirements/frontend/src/components/home/play/src/Game.tsx
+=======
+import GameOver from '../src/Game-over'
+>>>>>>> 259591dc41c0c04f8f1f60acd2d67bfd50d34396:srcs/requirements/frontend/src/components/home/play/src/Game.tsx
 
 /* size */
 const ROW_SIZE = 10 * 2;
