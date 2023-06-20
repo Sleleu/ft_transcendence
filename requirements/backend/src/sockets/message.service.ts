@@ -139,11 +139,7 @@ export class MessageService {
       where : {
         id: roomId,
       },
-<<<<<<< HEAD:requirements/backend/src/sockets/message.service.ts
       include: { owner: true, whitelist:true },
-=======
-      include: { owner: true },
->>>>>>> 259591dc41c0c04f8f1f60acd2d67bfd50d34396:srcs/requirements/backend/src/sockets/message.service.ts
     });
     return room;
   }
