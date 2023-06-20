@@ -173,7 +173,7 @@ const Game: React.FC<GameProps> = ({ changeComponent, socket, opponentID, gameMo
         } else if (state.ball === pos) {
           val = BALL;
         }
-        return <Box key={pos} name={val} mode={gameMode} watch={watchmode} />;
+        return <Box key={pos} name={val} mode={state.gameSpeed} />;
       });
     }, [state]);
 

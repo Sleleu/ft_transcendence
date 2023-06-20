@@ -3,8 +3,7 @@ import React, { CSSProperties} from 'react';
 
 interface BoxProps {
     name: number;
-    mode: string;
-    watch: boolean;
+    mode: number;
   }
 
 const BACKGROUND = 0;
@@ -80,23 +79,22 @@ const backgroundStyle: CSSProperties = {
 	boxShadow: "0 0 10px cyan, 0 0 20px cyan",
   };
 
-const getStyle = (val: number, mode: string, watchmode: boolean) =>{
-	if (val === BACKGROUND && (mode === "n" || watchmode)){
-		return {};
-	}
-	else if (val === BACKGROUND && (mode === "b" || watchmode))
+const getStyle = (val: number, mode: number) =>{
+	if (val === BACKGROUND)
 		return backgroundStyleBonus;
-	if (val === PLAYER && (mode === "n" || watchmode))
+
+	if (val === PLAYER && (mode === 8))
 		return playerStyleNormal;
-	else if (val === PLAYER && (mode === "b" || watchmode))
-    	return playerStyleBonus;
-  	else if (val === BALL && (mode === "n" || watchmode))
+	else if (val === PLAYER && (mode === 12))
+    return playerStyleBonus;
+
+  if (val === BALL && (mode === 8))
 		return ballStyleNormal;
 	else
 		return ballStyleBonus;
 }
 
 const Box = (props : BoxProps) => <div style={backgroundStyle}>
-						<div style={getStyle(props.name, props.mode, props.watch)}></div>
+						<div style={getStyle(props.name, props.mode)}></div>
 					</div>
 export default Box;

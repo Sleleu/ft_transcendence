@@ -19,7 +19,7 @@ function App() {
     <Router>
       <div>
         <Routes>
-          <Route path="/" Component={(props) => <NewLogin {...props} updateToken={updateToken} />} />
+          <Route path="/" Component={(props) => <Login {...props} updateToken={updateToken} />} />
           <Route path='/home'
           element={
           <PrivateRoute>

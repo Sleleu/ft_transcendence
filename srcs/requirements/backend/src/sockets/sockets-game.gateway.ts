@@ -17,7 +17,6 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	@WebSocketServer()
 	private server: Server;
 	private interval: NodeJS.Timeout | undefined;
-	// private gameSessions: Map<(Socket<any> | undefined)[], GameService> = new Map();
 	private gameSessions: Map<(number | undefined)[], GameService> = new Map();
 
 	constructor(
@@ -35,14 +34,10 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	}
 
 	async updatePlayerWinLoose(client: (number), won: boolean) {
-		// const token = client?.handshake.headers.cookie?.substring(14);
 		const user = await this.socketService.getUserWithid(client);
 
 		if (user)
-		{
 			this.socketService.changeWin(+user.id, won);
-		}
-		console.log("updating win and loose ", new Date().toISOString());
 	}
 
 	calculateNewElo(currentElo: number, opponentElo: number, win: boolean): number {
@@ -66,17 +61,12 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	}
 
 	async updatePlayerElo(client: number, opponent: number, won: boolean, gameserv: GameService) {
-		// const token = client?.handshake.headers.cookie?.substring(14);
-		// const opponentToken = opponent?.handshake.headers.cookie?.substring(14);
 		const user = await this.socketService.getUserWithid(client);
 		const opp = await this.socketService.getUserWithid(opponent);
 
 		console.log("updating elo ", new Date().toISOString());
 
 		if (user && opp) {
-		//   const user = await this.socketService.getUserWithToken(token);
-		//   const opp = await this.socketService.getUserWithToken(opponentToken);
-
 		  const newElo = this.calculateNewElo(user.elo, opp.elo, won);
 		  await this.updateHistory(client, gameserv, won, newElo);
 		  this.socketService.updateElo(+user.id, newElo);
@@ -84,7 +74,6 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	  }
 
 	  async updateHistory(client: number, gameserv: GameService, won: boolean, newElo: number) {
-		// const token = client?.handshake.headers.cookie?.substring(14);
 		const user = await this.socketService.getUserWithid(client);
 		if (user) {
 		  const playerScore = gameserv.getGameState().playerScore;
@@ -100,14 +89,12 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 			pointsLost: _numlos.toString(),
 			elo: (newElo - (+user.elo)).toString(),
 		  };
-		  console.log("setting history with ", historyDto.result, new Date().toISOString());
 		  await this.historyService.newEntry(historyDto);
 		}
 	  }
 
 	async updatePrismaData(connectedClients: (number | undefined)[], game_service: GameService): Promise<void>{
 		if (connectedClients[0] && connectedClients[1]) {
-			console.log("updating prisma data", new Date().toISOString());
 		  const won = game_service.getGameState().playerScore > game_service.getGameState().opponentScore;
 
 		  await Promise.all([
@@ -135,7 +122,6 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 			if ((game_service?.getwinner() && connectedClients[1] && connectedClients[0]) ||
 			(game_service?.getGameState().gameSpeed === 12 && game_service?.getGameState().elapsedTime >= 30))
 			{
-				console.log("inside interval winner");
 				await this.updatePrismaData(connectedClients, game_service);
 				this.gameOver(connectedClients, false);
 				if (timerInterval)
@@ -208,8 +194,6 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	  }
 
 	async updatePlayerStatus(client: (number | undefined), status: string) {
-		// const token = client?.handshake.headers.cookie?.substring(14);
-
 		if (client)
 		{
 			const user = await this.socketService.getUserWithid(client);
@@ -222,7 +206,6 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	async joinroom(@MessageBody() gameMode: gameModeDto, @ConnectedSocket() client: Socket): Promise<void>{
 		const player = await this.socketService.getUser(client.id);
 		const opponent = await this.socketService.getUserWithid(+(gameMode.opponentid));
-		console.log("ids are ", player?.id , " ", opponent?.id);
 		if (player && opponent && (!this.find_session(player.id, opponent.id))){
 			let clients = [player.id, opponent.id];
 			let i = 0;
@@ -245,10 +228,8 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	notifyClients(connectedClients: (number | undefined)[], gameserv: GameService, flag: boolean): void{
 		const won = gameserv.getGameState().playerScore > gameserv.getGameState().opponentScore;
 
-		console.log("notify clients", new Date().toISOString());
 		const winnerindex = won === true ? 0: 1;
 		const looserindex = won === true ? 1: 0;
-		console.log("left is ", flag);
 		if (flag === false){
 			this.server.to(`user_${connectedClients[looserindex]}`).emit("game-over", "Game Over!\n");
 			this.server.to(`user_${connectedClients[winnerindex]}`).emit("game-over", "Congratulation!\n");
@@ -262,7 +243,6 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 
 	gameOver(clients: (number | undefined)[], left: boolean): void{
 		for (const [connectedClients, game_serv] of this.gameSessions.entries()) {
-			console.log("inside game over, ", Date.now())
 			if (connectedClients.includes(clients[0]) || connectedClients.includes(clients[1])) {
 				this.notifyClients(connectedClients, game_serv, left);
 				this.getGameService(connectedClients)?.resetGame();
@@ -277,15 +257,14 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	async joinAsSpectator(@MessageBody() playerId: number, @ConnectedSocket() client: Socket): Promise<void> {
 		let found = false;
 		const spec = await this.socketService.getUser(client.id)
-
 		if (spec)
 		{
-			// const towatch = await this.socketService.getUserWithid((+playerId));
-			if (playerId)
+			const towatch = await this.socketService.getUserWithid((+playerId));
+			if (towatch)
 			{
 				console.log("joining as spectator")
 				for (const [connectedClients, game_serv] of this.gameSessions.entries()) {
-					if (connectedClients.includes(playerId)) {
+					if (connectedClients.includes(towatch.id)) {
 						game_serv.addSpectator(spec.id);
 						found = true;
 						break;
@@ -351,6 +330,7 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 			for (const [key, gameService] of this.gameSessions.entries()) {
 				if (gameService.lookupSpectator(spec.id))
 				{
+					console.log("removng spectator")
 					gameService.removeSpectator(spec.id);
 					break;
 				}
