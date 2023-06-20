@@ -5,7 +5,6 @@ import { useState} from 'react';
 import Home from './components/home/Home';
 import PrivateRoute from './PrivateRoute';
 import Login from './components/Login/Login';
-import NewLogin from './components/Login/New_Login';
 
 function App() {
 
@@ -19,7 +18,7 @@ function App() {
     <Router>
       <div>
         <Routes>
-          <Route path="/" Component={(props) => <NewLogin {...props} updateToken={updateToken} />} />
+          <Route path="/" Component={(props) => <Login {...props} updateToken={updateToken} />} />
           <Route path='/home'
           element={
           <PrivateRoute>
