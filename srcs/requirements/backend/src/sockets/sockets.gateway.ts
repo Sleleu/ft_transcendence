@@ -72,13 +72,6 @@ export class SocketsGateway {
     // const friendSockets: { [friendId: number]: Socket } = {};
     const friendSockets: { [friendId: number]: string } = {};
     for (const friend of user.friend) {
-      // const friendSocketId = this.socketService.findSocketById(friend.friendId);
-      // if (friendSocketId) {
-      //   const friendSocket = this.server.sockets.sockets.get(friendSocketId);
-      //   if (friendSocket) {
-          // friendSockets[friend.friendId] = friendSocket;
-        // }
-      // }
           friendSockets[friend.friendId] = `user_${friend.friendId}`;
       }
     await new Promise(resolve => setTimeout(resolve, 100));

@@ -122,7 +122,7 @@ function CreateAccount(props: Props) {
 				body: JSON.stringify(data) });
 				if (response.ok) {
 					const Token = await response.text()
-					
+
 					// Save the token in the local storage
 					Cookies.set('Authorization', Token);
 				  } else {

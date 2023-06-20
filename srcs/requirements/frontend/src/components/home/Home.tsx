@@ -132,7 +132,8 @@ function Home() {
             socket?.disconnect();
             socket?.off('invitePlayReq')
         };
-    }, [])
+    // eslint-disable-next-line
+}, [])
 
 
     const fecthMessage = async (id: number) => {
@@ -274,7 +275,7 @@ useEffect(() => {
                         {activeComponent === "ultimeLead" && <Classement rank={'ultime'} changeComponent={changeComponent} />}
                         {activeComponent.startsWith("watch") && <Game changeComponent={changeComponent} socket={socket} opponentID={extractId(activeComponent)} gameMode={activeComponent[activeComponent.length - 1]} watchmode={true} />}
 						{activeComponent.startsWith("PublicProfile") && <PublicProfile profileId={extractId(activeComponent)} changeComponent={changeComponent} />}
-                        {activeComponent.startsWith("queue") && <Queue mode={extractText(activeComponent)} name={user.username} socket={socket} changeComponent={changeComponent} />}
+                        {activeComponent.startsWith("queue") && <Queue mode={extractText(activeComponent)} name={user.gameLogin} socket={socket} changeComponent={changeComponent} />}
                         {activeComponent === "rank" && <Rank user={user} changeComponent={changeComponent} />}
                         {activeComponent === "Choices" && <GameChoice changeComponent={changeComponent} />}
                     </div>

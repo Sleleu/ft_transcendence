@@ -37,6 +37,7 @@ const Queue = ({ mode, name, socket, changeComponent }: props) => {
             changeComponent(change)
         })
         socket?.on('errorQueue', async (message) => {
+            // eslint-disable-next-line
             error = true;
             setErrorMessage(message);
             setErrorShow(true);
@@ -65,7 +66,7 @@ const Queue = ({ mode, name, socket, changeComponent }: props) => {
 
     return (
         <div className='containerQueue'>
-        { errorShow ? <div className='nameText' style={nameText}>{errorMessage}</div> 
+        { errorShow ? <div className='nameText' style={nameText}>{errorMessage}</div>
          :
         <div className='containerQueue'>
             {!find ? (<div className='headerQ'>Looking For An Opponent</div>) :

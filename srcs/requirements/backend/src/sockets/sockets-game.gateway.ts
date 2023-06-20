@@ -11,6 +11,8 @@ import { profile, time } from 'console';
 import { connect } from 'http2';
 import { session } from 'passport';
 import { timeInterval } from 'rxjs';
+import { FriendService } from 'src/friend/friend.service';
+import { User, Friend } from '@prisma/client';
 
 @WebSocketGateway({ cors: true })
 export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -22,6 +24,7 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	constructor(
 		private readonly socketService: SocketsService,
 		private readonly historyService: HistoryService,
+		private readonly friendService: FriendService,
 		) {}
 
 	afterInit() {
@@ -31,6 +34,7 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 	}
 
 	handleDisconnect(client: Socket) {
+		this.playerleft(client);
 	}
 
 	async updatePlayerWinLoose(client: (Socket<any>), won: boolean) {
@@ -202,7 +206,11 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 		if (token)
 		{
 			const user = await this.socketService.getUserWithToken(token);
-			this.socketService.changeState(+user.id, status)
+			if (user)
+			{
+				this.socketService.changeState(+user.id, status)
+				await this.refreshFriend(user)
+			}
 		}
 	}
 
@@ -331,4 +339,20 @@ export class SocketsGameGateway implements OnGatewayConnection, OnGatewayDisconn
 			}
 		}
 	}
+
+
+	async refreshFriend(user: User & { friend: Friend[] }) {
+		// const friendSockets: { [friendId: number]: Socket } = {};
+		const friendSockets: { [friendId: number]: string } = {};
+		for (const friend of user.friend) {
+			  friendSockets[friend.friendId] = `user_${friend.friendId}`;
+		  }
+		await new Promise(resolve => setTimeout(resolve, 100));
+		for (const friendId of Object.keys(friendSockets)) {
+		  const friendSocket = friendSockets[+friendId];
+		  const friendFriend = await this.friendService.getFriendsByUserId(+friendId);
+		  // friendSocket.emit('receiveFriend', { friends: friendFriend });
+		  this.server.to(friendSocket).emit('receiveFriend', { friends: friendFriend });
+		}
+	  }
 }

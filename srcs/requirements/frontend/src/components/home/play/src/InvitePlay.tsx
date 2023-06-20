@@ -73,6 +73,7 @@ const InvitePlay = ({ name, changeComponent, socket, friendId, mode, changeMode,
             socket?.off('accepted')
             changeMode()
         }
+    // eslint-disable-next-line
     }, [])
 
     return (

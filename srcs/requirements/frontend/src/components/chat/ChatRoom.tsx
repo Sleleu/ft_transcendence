@@ -32,14 +32,14 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 	const [friends, setFriends] = useState<User[]>([]);
 	const [blocked, setBlocked] = useState<User[]>([]);
 	const [room, setRoom] = useState<Room>();
-	const [owner, setOwner] = useState<User>();	
+	const [owner, setOwner] = useState<User>();
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [type, setType] = useState<string>('');
 	const [directDisplay, setDirectDisplay] = useState<string>('');
 
 	const filteredWhitelist = whitelist.filter((user) =>
 	 !banned.some((bannedUser) => bannedUser.id === user.id));
-	 
+
 	 const passPopupRef = useRef<HTMLFormElement>(null);
 
 	 useEffect(() => {
@@ -73,7 +73,7 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 		socket?.emit('findRoomMessages', {id:roomId}, (messages: Message[]) => {
 			setMessages(messages);
 		});
-		
+
 		socket?.on('refreshFriends', (newUser: User, undo: boolean) => {
             if (undo)
 				setFriends((prev) => prev.filter((old) => old.id !== newUser.id))
@@ -141,9 +141,9 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 				setShowPass('password');
 			}
 		  };
-	  
+
 		  document.addEventListener('mousedown', handleClickOutside);
-	  
+
         return () => {
 			document.removeEventListener('mousedown', handleClickOutside);
             socket?.emit('leave', {roomId: roomId}, () => {})
@@ -161,7 +161,8 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
             socket?.off('kickUser');
             socket?.off('msgError');
         };
-    }, []);
+    // eslint-disable-next-line
+}, []);
 
 	const [usersField, setUsersField] = useState('salon');
 	const colorField : string = (usersField === 'salon') ? '#0ff'
@@ -198,6 +199,7 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
     const [showPopup, setShowPopup] = useState(false);
     const[popMsg, setPopMsg] = useState('');
     const popupRef = useRef<HTMLDivElement>(null);
+    // eslint-disable-next-line
 	const handleClickOutside = (event:MouseEvent) => {
 		if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
 		  setShowPopup(false);
@@ -216,7 +218,7 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 		roomRank = 'Member';
 	}
 	let colorCodeRank : string = roomRank === 'Owner' ? '#fa0' : roomRank === 'Admin' ? '#e0e' : '#eee';
-	const rankColor: CSSProperties = {	
+	const rankColor: CSSProperties = {
 		textShadow:` 0 0 10px ${colorCodeRank}, 0 0 40px ${colorCodeRank}, 0 0 60px ${colorCodeRank}`,
 		boxShadow: `0 0 10px ${colorCodeRank}, 0 0 100px ${colorCodeRank}`,
 	}
@@ -250,8 +252,9 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 		setAskPass(false);
 	}
 
+    // eslint-disable-next-line
     const sortedMessages =  messages.sort((a, b) => b.id - a.id);
-	
+
 	const [askPass, setAskPass] = useState(false);
 	const returnTo : string = (room?.type === 'public' || room?.type === 'protected')  ? 'pubchat' : 'privchat';
 
@@ -263,7 +266,7 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 
     return (
 		<div className='ChatRoom'>
-			<div> 
+			<div>
 			{/* Popup On Error */}
             {showPopup && <div ref={popupRef} className='passPopup'>
                 <div className='popupMsgText'>{popMsg}</div>
@@ -286,7 +289,7 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 			 target={target} field='friends' changeComponent={changeComponent} handleUserClick={handleUserClick} connected={connected} key={target.id} admins={admins} owner={owner} blocked={blocked} room={room}/>)}
 			</div>
 	    </div>
-		
+
    			{/* Popup on user selection */}
 	<div>
 	{selectedTarget && <PopupChat user={selectedTarget} position={popupPosition} setSelectedTarget={setSelectedTarget} socket={socket}
@@ -294,12 +297,12 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
    </div>
 
 		<div className='RightBlock'>
-					
+
    			{/* Upper Block with Chatroom Options */}
 			   <div className='RoomBlock'>
 			  {room?.type !== 'direct' && <span className='RoomRank' style={rankColor}> <div>Rank : {roomRank} </div> </span>}
 			   <button className='RoomName' onClick={handleRoomClick} style={buttonNerfed}> <div>{nameDisplay}</div> </button>
-			   <button className='Leave' 
+			   <button className='Leave'
 			   onClick={() => changeComponent(returnTo)}>
 				<div>Leave</div> </button>
 			   </div>
@@ -320,11 +323,11 @@ const ChatRoom:React.FC<Props> = ({socket, roomIdStr, user, changeComponent}) =>
 				{messages.map((message) => <MessageEntry author={message.author} text={message.text}  key={message.id} admins={admins} owner={owner} handleUserClick={handleUserClick} blocked={blocked} room={room}/>)}
 				</div>
 
-				{/* input for messages */}	
+				{/* input for messages */}
 				<form className='MessageBar' onSubmit={submitMessage}>
 				<input className='InputMessages' placeholder='Your message...' value={inputText}
 				onChange={handleTyping}></input>
-				<img className='SendIcon' src={sendLogo} onClick={submitMessage}></img>
+				<img className='SendIcon' src={sendLogo} onClick={submitMessage} alt='logo'></img>
 				</form>
 			   </div>
     </div>
